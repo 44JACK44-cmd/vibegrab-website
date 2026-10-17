@@ -1,0 +1,38 @@
+---
+/**
+ * Aviso específico de una versión (por ejemplo, que hay que desinstalar
+ * una vez antes de instalar). Se muestra siempre antes del botón de descarga.
+ */
+import Icon from '@/components/Icon.astro';
+import { renderInline } from '@/lib/notes';
+import type { NoteSection } from '@/lib/releases';
+import type { Locale } from '@/config/routes';
+import { useTranslations } from '@/i18n/ui';
+
+interface Props {
+  section: NoteSection;
+  locale: Locale;
+}
+
+const { section, locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<aside class="release-warning" role="note">
+  <Icon name="warning" size={20} />
+  <div>
+    <strong>{t('download.warning.title')}</strong>
+    <ul class="notes__list" style="margin-top: var(--space-2)">
+      {
+        section.items.map((item) => (
+          <li class="notes__item" style="padding-left: var(--space-4)">
+            <span set:html={renderInline(item.text[locale])} />
+            {item.detail && (
+              <span class="notes__detail" set:html={renderInline(item.detail[locale])} />
+            )}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</aside>

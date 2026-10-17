@@ -1,0 +1,20 @@
+---
+import Icon from '@/components/Icon.astro';
+import type { Feature } from '@/content/features';
+import type { Locale } from '@/config/routes';
+
+interface Props {
+  feature: Feature;
+  locale: Locale;
+}
+
+const { feature, locale } = Astro.props;
+---
+
+<article class="card">
+  <span class="card__icon" aria-hidden="true">
+    <Icon name={feature.icon} size={20} />
+  </span>
+  <h3 class="card__title">{feature.title[locale]}</h3>
+  <p class="card__text">{feature.text[locale]}</p>
+</article>

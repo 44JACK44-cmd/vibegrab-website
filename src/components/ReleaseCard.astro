@@ -1,0 +1,147 @@
+---
+/**
+ * Entrada del historial de versiones.
+ */
+import Icon from '@/components/Icon.astro';
+import ReleaseNotes from '@/components/ReleaseNotes.astro';
+import { formatBytes, formatDate } from '@/lib/format';
+import { pickImportant, withoutImportant } from '@/lib/notes';
+import type { Release } from '@/lib/releases';
+import { versionPath, type Locale } from '@/config/routes';
+import { siteConfig } from '@/config/site';
+import { useTranslations } from '@/i18n/ui';
+
+interface Props {
+  release: Release;
+  locale: Locale;
+}
+
+const { release, locale } = Astro.props;
+const t = useTranslations(locale);
+
+const important = pickImportant(release.notes);
+const mainSections = withoutImportant(release.notes);
+const downloadHref = `/api/download?tag=${encodeURIComponent(release.tag)}&lang=${locale}`;
+const detailsHref = versionPath(release.tag, locale);
+const androidLabel = `${siteConfig.android.minVersionLabel[locale]}+`;
+---
+
+<article class="release" id={release.tag}>
+  <div class="release__side">
+    <span class="release__version">v{release.version}</span>
+    <time class="release__date" datetime={release.publishedAt}>
+      {formatDate(release.publishedAt, locale)}
+    </time>
+    <div style="display:flex; flex-direction:column; gap:var(--space-1); align-items:flex-start">
+      {
+        release.isLatestStable && (
+          <span class="badge badge--success">
+            <span class="badge__dot" />
+            {t('versions.latest')}
+          </span>
+        )
+      }
+      {
+        release.prerelease && <span class="badge badge--warning">{t('versions.prerelease')}</span>
+      }
+      {
+        !release.apk && <span class="badge badge--danger">{t('versions.noApk')}</span>
+      }
+      {
+        release.build !== null && (
+          <span class="badge">
+            {t('download.spec.build')} {release.build}
+          </span>
+        )
+      }
+    </div>
+  </div>
+
+  <div class="release__body">
+    {
+      release.title !== release.tag && (
+        <div class="release__head">
+          <h3
+            class="release__version"
+            style="font-family: var(--font-display); font-size: var(--text-lg)"
+          >
+            {release.title}
+          </h3>
+        </div>
+      )
+    }
+
+    <div class="release__meta">
+      {
+        release.apk && (
+          <span>
+            <Icon name="package" size={14} style="display:inline;vertical-align:-3px" />
+            {' '}{formatBytes(release.apk.sizeBytes, locale)}
+          </span>
+        )
+      }
+      <span>
+        <Icon name="smartphone" size={14} style="display:inline;vertical-align:-3px" />
+        {' '}{androidLabel}
+      </span>
+    </div>
+
+    {
+      release.higherSemverThanStable && (
+        <p class="callout callout--warning">
+          <Icon name="info" size={16} />
+          <span>{t('versions.higherNumberNote')}</span>
+        </p>
+      )
+    }
+
+    {
+      important && (
+        <p class="callout callout--warning">
+          <Icon name="warning" size={16} />
+          <span>
+            {important.items
+              .map((item) => [item.text[locale], item.detail?.[locale]].filter(Boolean).join(' '))
+              .join(' ')}
+          </span>
+        </p>
+      )
+    }
+
+    {
+      mainSections.length > 0 ? (
+        <ReleaseNotes
+          sections={mainSections}
+          locale={locale}
+          raw={release.notesSource === 'release-notes'}
+          headingLevel="h4"
+        />
+      ) : (
+        <p class="small muted">{t('versions.noNotes')}</p>
+      )
+    }
+
+    {
+      release.notesSource === 'release-notes' && (
+        <p class="tiny muted" style="margin-top: var(--space-3)">
+          {t('versions.rawNotes')}
+        </p>
+      )
+    }
+
+    <div class="release__actions">
+      {
+        release.apk ? (
+          <a class="btn btn--primary" href={downloadHref}>
+            <Icon name="download" size={17} />
+            {t('versions.download')}
+          </a>
+        ) : null
+      }
+      <a class="btn btn--secondary" href={detailsHref}>
+        {t('versions.details')}
+        <Icon name="arrow-right" size={16} />
+      </a>
+    </div>
+  </div>
+</article>

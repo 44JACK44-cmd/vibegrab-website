@@ -1,0 +1,22 @@
+---
+import type { InstallStep } from '@/content/install';
+import type { Locale } from '@/config/routes';
+
+interface Props {
+  steps: InstallStep[];
+  locale: Locale;
+}
+
+const { steps, locale } = Astro.props;
+---
+
+<ol class="steps">
+  {
+    steps.map((step) => (
+      <li class="step">
+        <h3 class="step__title">{step.title[locale]}</h3>
+        <p class="step__text">{step.text[locale]}</p>
+      </li>
+    ))
+  }
+</ol>

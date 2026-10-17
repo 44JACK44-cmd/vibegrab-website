@@ -1,0 +1,11 @@
+---
+/**
+ * Portada en español. Datos de versión en vivo desde GitHub (con caché).
+ */
+import HomeView from '@/components/views/HomeView.astro';
+import { getReleases } from '@/lib/releases';
+
+const payload = await getReleases();
+---
+
+<HomeView locale="es" payload={payload} />

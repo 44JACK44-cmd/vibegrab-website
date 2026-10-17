@@ -1,0 +1,8 @@
+---
+import LegalView from '@/components/views/LegalView.astro';
+import { termsOfUse } from '@/content/legal';
+
+export const prerender = true;
+---
+
+<LegalView locale="en" routeKey="terms" document={termsOfUse} titleKey="legal.terms.title" icon="file-text" />

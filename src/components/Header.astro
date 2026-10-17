@@ -1,0 +1,199 @@
+---
+/**
+ * Cabecera fija: identidad, navegación, cambio de tema e idioma y acceso
+ * directo a la descarga. Menú desplegable en móvil.
+ */
+import Icon from '@/components/Icon.astro';
+import { path, type Locale, type RouteKey, locales } from '@/config/routes';
+import { useTranslations } from '@/i18n/ui';
+
+interface Props {
+  locale: Locale;
+  routeKey: RouteKey;
+  /** Rutas equivalentes por idioma cuando no son las de la navegación. */
+  languagePaths?: Partial<Record<Locale, string>>;
+}
+
+const { locale, routeKey, languagePaths } = Astro.props;
+const t = useTranslations(locale);
+
+const links: Array<{ key: RouteKey; label: string }> = [
+  { key: 'home', label: t('nav.home') },
+  { key: 'features', label: t('nav.features') },
+  { key: 'download', label: t('nav.download') },
+  { key: 'versions', label: t('nav.versions') },
+  { key: 'about', label: t('nav.about') },
+  { key: 'help', label: t('nav.help') },
+];
+
+const currentIndex = links.findIndex((link) => link.key === routeKey);
+---
+
+<header class="site-header" data-scrolled="false">
+  <div class="container site-header__inner">
+    <a class="brand" href={path('home', locale)}>
+      <img
+        class="brand__mark"
+        src="/brand/vibegrab-logo.png"
+        width="34"
+        height="34"
+        alt=""
+        loading="eager"
+        decoding="async"
+      />
+      <span class="brand__text">
+        <span class="brand__name">VibeGrab</span>
+        <span class="brand__sub">{t('header.brandSub')}</span>
+      </span>
+    </a>
+
+    <nav class="nav" id="menu-principal" data-open="false" aria-label={t('nav.primary')}>
+      {
+        links.map((link, index) => (
+          <a
+            class="nav__link"
+            href={path(link.key, locale)}
+            aria-current={index === currentIndex ? 'page' : undefined}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+      <a class="btn btn--primary" href={path('download', locale)} style="margin-top: var(--space-4)">
+        <Icon name="download" size={18} />
+        {t('header.download')}
+      </a>
+    </nav>
+
+    <div class="header-actions">
+      <div class="lang-switch" role="group" aria-label={t('header.lang')}>
+        {
+          locales.map((code) => (
+            <a
+              href={languagePaths?.[code] ?? path(routeKey, code)}
+              hreflang={code}
+              aria-current={code === locale ? 'true' : undefined}
+              title={code === 'es' ? 'Español' : 'English'}
+            >
+              {code.toUpperCase()}
+            </a>
+          ))
+        }
+      </div>
+
+      <button class="icon-btn" type="button" data-theme-toggle aria-label={t('header.theme')}>
+        <span class="theme-icon theme-icon--sun"><Icon name="sun" size={18} /></span>
+        <span class="theme-icon theme-icon--moon"><Icon name="moon" size={18} /></span>
+      </button>
+
+      <a class="btn btn--primary" href={path('download', locale)}>
+        <Icon name="download" size={18} />
+        {t('header.download')}
+      </a>
+
+      <button
+        class="icon-btn nav-toggle"
+        type="button"
+        data-menu-toggle
+        aria-controls="menu-principal"
+        aria-expanded="false"
+        aria-label={t('header.menu.open')}
+        data-label-open={t('header.menu.open')}
+        data-label-close={t('header.menu.close')}
+      >
+        <span class="menu-icon menu-icon--open"><Icon name="menu" size={18} /></span>
+        <span class="menu-icon menu-icon--close"><Icon name="close" size={18} /></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<style>
+  :global([data-theme='dark']) .theme-icon--sun {
+    display: none;
+  }
+
+  :global([data-theme='light']) .theme-icon--moon {
+    display: none;
+  }
+
+  .nav-toggle .menu-icon {
+    display: grid;
+    place-items: center;
+  }
+
+  .nav-toggle .menu-icon--close {
+    display: none;
+  }
+
+  .nav-toggle[aria-expanded='true'] .menu-icon--open {
+    display: none;
+  }
+
+  .nav-toggle[aria-expanded='true'] .menu-icon--close {
+    display: grid;
+  }
+</style>
+
+<script>
+  /* Tema: guarda la preferencia en el navegador (sin cookies). */
+  const THEME_KEY = 'vibegrab-theme';
+
+  function bindThemeToggle() {
+    document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const current = document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
+        const next = current === 'light' ? 'dark' : 'light';
+        document.documentElement.dataset.theme = next;
+        try {
+          localStorage.setItem(THEME_KEY, next);
+        } catch {
+          /* modo privado: se ignora */
+        }
+      });
+    });
+  }
+
+  /* Menú móvil accesible. */
+  function bindMenuToggle() {
+    const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+    const menu = document.getElementById('menu-principal');
+    if (!toggle || !menu) return;
+
+    const setOpen = (open: boolean) => {
+      menu.dataset.open = String(open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute(
+        'aria-label',
+        open ? toggle.dataset.labelClose ?? 'Close menu' : toggle.dataset.labelOpen ?? 'Open menu',
+      );
+    };
+
+    toggle.addEventListener('click', () => {
+      setOpen(menu.dataset.open !== 'true');
+    });
+
+    menu.addEventListener('click', (event) => {
+      if ((event.target as HTMLElement).closest('a')) setOpen(false);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') setOpen(false);
+    });
+  }
+
+  /* Sombra de la cabecera al hacer scroll. */
+  function bindScrollState() {
+    const header = document.querySelector('.site-header');
+    if (!header) return;
+    const update = () => {
+      header.setAttribute('data-scrolled', String(window.scrollY > 8));
+    };
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+  }
+
+  bindThemeToggle();
+  bindMenuToggle();
+  bindScrollState();
+</script>

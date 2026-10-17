@@ -1,0 +1,162 @@
+---
+/**
+ * Página de descarga: la ficha con los datos reales de la versión estable,
+ * la guía de instalación y la solución de problemas.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/Icon.astro';
+import PageHero from '@/components/PageHero.astro';
+import DownloadPanel from '@/components/DownloadPanel.astro';
+import DataStatus from '@/components/DataStatus.astro';
+import Steps from '@/components/Steps.astro';
+import { installSteps, troubleshooting } from '@/content/install';
+import { formatBytes } from '@/lib/format';
+import type { ReleasesPayload } from '@/lib/releases';
+import { path, type Locale } from '@/config/routes';
+import { useTranslations } from '@/i18n/ui';
+
+interface Props {
+  locale: Locale;
+  payload: ReleasesPayload;
+  /** `no-disponible` cuando la redirección de descarga no pudo completarse. */
+  estado?: string | null;
+}
+
+const { locale, payload, estado = null } = Astro.props;
+const t = useTranslations(locale);
+
+const latest = payload.latest;
+const failed = estado === 'no-disponible';
+---
+
+<BaseLayout
+  locale={locale}
+  routeKey="download"
+  title={`${t('download.title')}${latest ? ` — v${latest.version}` : ''}`}
+  description={t('download.desc')}
+  softwareVersion={latest?.version}
+>
+  <PageHero
+    eyebrow={t('download.eyebrow')}
+    title={t('download.title')}
+    description={t('download.desc')}
+    icon="download"
+  >
+    <div style="margin-top: var(--space-5)">
+      <DataStatus payload={payload} locale={locale} />
+    </div>
+  </PageHero>
+
+  <section class="section section--tight">
+    <div class="container">
+      {
+        failed && (
+          <div class="callout callout--danger" style="margin-bottom: var(--space-6)">
+            <Icon name="warning" size={18} />
+            <div>
+              <strong>{t('download.error.title')}</strong>
+              <p class="small" style="margin-top: var(--space-1)">{t('download.error.desc')}</p>
+              <a class="link-arrow" href={path('download', locale)} style="margin-top: var(--space-3)">
+                {t('download.error.retry')}
+                <Icon name="refresh" size={16} />
+              </a>
+            </div>
+          </div>
+        )
+      }
+
+      {
+        latest ? (
+          <DownloadPanel release={latest} locale={locale} showWarning />
+        ) : (
+          <div class="pending-card">
+            <Icon name="info" size={18} />
+            <div>
+              <p>
+                <strong>{t('download.noRelease.title')}</strong>
+              </p>
+              <p class="tiny" style="margin-top: var(--space-1)">{t('download.noRelease.desc')}</p>
+            </div>
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <section class="section section--soft" id="instalacion">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">{t('home.install.eyebrow')}</p>
+        <h2>{t('download.installTitle')}</h2>
+        <p class="lede">
+          {
+            locale === 'es'
+              ? 'El procedimiento es el estándar de Android para instalar una aplicación descargada fuera de la tienda. No hace falta desactivar ninguna protección general del teléfono.'
+              : 'This is the standard Android procedure for installing an app from outside the store. There is no need to disable any of your phone\u2019s general protections.'
+          }
+        </p>
+      </div>
+
+      <Steps steps={installSteps} locale={locale} />
+    </div>
+  </section>
+
+  <section class="section" id="problemas">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">{t('help.eyebrow')}</p>
+        <h2>{t('download.troubleshootTitle')}</h2>
+      </div>
+
+      <div class="grid grid--2">
+        {
+          troubleshooting.map((item) => (
+            <article class="card">
+              <h3 class="card__title" style="font-size: var(--text-base)">
+                {item.problem[locale]}
+              </h3>
+              <p class="card__text">{item.solution[locale]}</p>
+            </article>
+          ))
+        }
+      </div>
+
+      <div style="margin-top: var(--space-7)">
+        <a class="link-arrow" href={path('help', locale)}>
+          {t('home.faq.cta')}
+          <Icon name="arrow-right" size={16} />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--soft">
+    <div class="container">
+      <div class="grid grid--2">
+        <div class="card">
+          <span class="card__icon" aria-hidden="true"><Icon name="shield" size={20} /></span>
+          <h3 class="card__title">{t('download.spec.sha')}</h3>
+          <p class="card__text">{t('download.hashHelp')}</p>
+          {latest?.apk && <p class="tiny mono muted">{formatBytes(latest.apk.sizeBytes, locale)}</p>}
+        </div>
+        <div class="card">
+          <span class="card__icon" aria-hidden="true"><Icon name="history" size={20} /></span>
+          <h3 class="card__title">{t('download.otherVersions')}</h3>
+          <p class="card__text">
+            {
+              locale === 'es'
+                ? 'Todas las publicaciones oficiales, con fecha, tamaño y notas. Puedes descargar cualquier versión que siga disponible.'
+                : 'Every official release, with date, size and notes. You can download any version that is still available.'
+            }
+          </p>
+          <div class="card__foot">
+            <a class="link-arrow" href={path('versions', locale)}>
+              {t('nav.versions')}
+              <Icon name="arrow-right" size={16} />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

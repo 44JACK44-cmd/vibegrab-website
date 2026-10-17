@@ -1,0 +1,26 @@
+---
+import { formatDate } from '@/lib/format';
+import type { TimelineItem } from '@/content/about';
+import type { Locale } from '@/config/routes';
+
+interface Props {
+  items: TimelineItem[];
+  locale: Locale;
+}
+
+const { items, locale } = Astro.props;
+---
+
+<ol class="timeline">
+  {
+    items.map((item) => (
+      <li class="timeline__item">
+        <time class="timeline__date" datetime={item.date}>
+          {formatDate(item.date, locale)}
+        </time>
+        <h3 class="timeline__title">{item.title[locale]}</h3>
+        <p class="timeline__text">{item.text[locale]}</p>
+      </li>
+    ))
+  }
+</ol>

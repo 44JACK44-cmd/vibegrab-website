@@ -1,0 +1,9 @@
+---
+import DownloadView from '@/components/views/DownloadView.astro';
+import { getReleases } from '@/lib/releases';
+
+const payload = await getReleases();
+const estado = Astro.url.searchParams.get('estado');
+---
+
+<DownloadView locale="en" payload={payload} estado={estado} />

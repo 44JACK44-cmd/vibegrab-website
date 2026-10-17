@@ -1,0 +1,253 @@
+---
+/**
+ * Ficha de descarga: datos reales de la versión estable, huella SHA-256,
+ * comprobación de disponibilidad y botón que descarga el APK publicado.
+ *
+ * El botón apunta a `/api/download`, que resuelve la versión y redirige al
+ * archivo real. Así el enlace visible es del dominio propio y no del
+ * repositorio de desarrollo.
+ */
+import Icon from '@/components/Icon.astro';
+import ReleaseNotes from '@/components/ReleaseNotes.astro';
+import ReleaseWarning from '@/components/ReleaseWarning.astro';
+import { pickImportant, withoutImportant } from '@/lib/notes';
+import { formatBytes, formatDate } from '@/lib/format';
+import type { Release } from '@/lib/releases';
+import { path, type Locale } from '@/config/routes';
+import { siteConfig } from '@/config/site';
+import { useTranslations } from '@/i18n/ui';
+
+interface Props {
+  release: Release;
+  locale: Locale;
+  /** Muestra el aviso de versión antes del botón (página de descarga). */
+  showWarning?: boolean;
+}
+
+const { release, locale, showWarning = true } = Astro.props;
+const t = useTranslations(locale);
+
+const important = pickImportant(release.notes);
+const mainSections = withoutImportant(release.notes);
+const downloadHref = `/api/download?tag=${encodeURIComponent(release.tag)}&lang=${locale}`;
+const apk = release.apk;
+const androidLabel = `${siteConfig.android.minVersionLabel[locale]} (${siteConfig.android.minSdk}+)`;
+---
+
+<div class="download-panel">
+  <div>
+    {
+      showWarning && important && <ReleaseWarning section={important} locale={locale} />
+    }
+
+    <div class="download-card">
+      <div class="download-card__head">
+        <img
+          class="download-card__logo"
+          src="/brand/vibegrab-logo.png"
+          width="62"
+          height="62"
+          alt=""
+          loading="eager"
+          decoding="async"
+        />
+        <div>
+          <p class="download-card__name">VibeGrab</p>
+          <p class="download-card__deliver">{t('download.eyebrow')}</p>
+        </div>
+        <div style="margin-inline-start:auto; display:flex; gap:var(--space-2); flex-wrap:wrap">
+          {release.isLatestStable && (
+            <span class="badge badge--success">
+              <span class="badge__dot" />
+              {t('versions.latest')}
+            </span>
+          )}
+          {release.prerelease && <span class="badge badge--warning">{t('versions.prerelease')}</span>}
+        </div>
+      </div>
+
+      <dl class="spec-list">
+        <div class="spec">
+          <dt>{t('download.spec.version')}</dt>
+          <dd class="mono">v{release.version}</dd>
+        </div>
+        {release.build !== null && (
+          <div class="spec">
+            <dt>{t('download.spec.build')}</dt>
+            <dd class="mono">{release.build}</dd>
+          </div>
+        )}
+        <div class="spec">
+          <dt>{t('download.spec.published')}</dt>
+          <dd>{formatDate(release.publishedAt, locale)}</dd>
+        </div>
+        <div class="spec">
+          <dt>{t('download.spec.size')}</dt>
+          <dd>{apk ? formatBytes(apk.sizeBytes, locale) : '—'}</dd>
+        </div>
+        <div class="spec">
+          <dt>{t('download.spec.android')}</dt>
+          <dd>{androidLabel}</dd>
+        </div>
+        <div class="spec">
+          <dt>{t('download.spec.file')}</dt>
+          <dd class="mono">{apk?.name ?? '—'}</dd>
+        </div>
+      </dl>
+
+      {
+        apk?.sha256 && (
+          <div>
+            <p class="tiny muted" style="margin-bottom: var(--space-2)">
+              <Icon name="shield" size={13} style="display:inline;vertical-align:-2px" />
+              {' '}{t('download.spec.sha')}
+            </p>
+            <div class="hash-row">
+              <code>{apk.sha256}</code>
+              <button
+                class="icon-btn"
+                type="button"
+                data-copy-hash={apk.sha256}
+                data-copied-label={t('download.copied')}
+                aria-label={t('download.copyHash')}
+                title={t('download.copyHash')}
+              >
+                <Icon name="copy" size={16} />
+              </button>
+            </div>
+            <p class="tiny muted" style="margin-top: var(--space-2)">{t('download.hashHelp')}</p>
+          </div>
+        )
+      }
+
+      <div class="download-card__actions">
+        {
+          apk ? (
+            <a class="btn btn--primary btn--lg btn--block" href={downloadHref}>
+              <Icon name="download" size={20} />
+              {t('download.button.size', { size: formatBytes(apk.sizeBytes, locale) })}
+            </a>
+          ) : (
+            <span class="btn btn--secondary btn--lg btn--block btn--disabled" aria-disabled="true">
+              <Icon name="warning" size={18} />
+              {t('download.button.unavailable')}
+            </span>
+          )
+        }
+
+        <p
+          class="download-card__note"
+          data-availability
+          data-tag={release.tag}
+          data-lang={locale}
+          data-checking={t('download.availability.checking')}
+          data-available={t('download.availability.available')}
+          data-unavailable={t('download.availability.unavailable')}
+          data-checked-at={t('download.availability.checkedAt')}
+        >
+          {t('download.availability.checking')}
+        </p>
+
+        {
+          apk && apk.downloadCount > 0 && (
+            <p class="download-card__note">
+              {t('download.button.downloads', { count: apk.downloadCount })}
+            </p>
+          )
+        }
+
+        <a class="btn btn--ghost btn--block" href={path('versions', locale)}>
+          <Icon name="history" size={16} />
+          {t('download.otherVersions')}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="stack stack--lg">
+    <div>
+      <h2 class="notes__title" style="margin-bottom: var(--space-4)">
+        <Icon name="bolt" size={15} />
+        {t('download.notesTitle')}
+      </h2>
+      {
+        mainSections.length > 0 ? (
+          <ReleaseNotes sections={mainSections} locale={locale} raw={release.notesSource === 'release-notes'} />
+        ) : (
+          <p class="small muted">{t('versions.noNotes')}</p>
+        )
+      }
+      {
+        release.notesSource === 'release-notes' && (
+          <p class="tiny muted" style="margin-top: var(--space-4)">
+            {t('versions.rawNotes')}
+          </p>
+        )
+      }
+    </div>
+
+    <a class="link-arrow" href={path('versions', locale)}>
+      {t('home.whatsnew.viewAll')}
+      <Icon name="arrow-right" size={16} />
+    </a>
+  </div>
+</div>
+
+<script>
+  /* Copiar la huella SHA-256 al portapapeles. */
+  document.querySelectorAll<HTMLButtonElement>('[data-copy-hash]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const value = button.dataset.copyHash ?? '';
+      try {
+        await navigator.clipboard.writeText(value);
+        button.classList.add('is-copied');
+        const original = button.getAttribute('aria-label');
+        button.setAttribute('aria-label', button.dataset.copiedLabel ?? 'Copiado');
+        window.setTimeout(() => {
+          if (original) button.setAttribute('aria-label', original);
+        }, 2000);
+      } catch {
+        /* Si el navegador no lo permite, se selecciona el texto. */
+        const row = button.parentElement?.querySelector('code');
+        if (row) {
+          const range = document.createRange();
+          range.selectNodeContents(row);
+          const selection = window.getSelection();
+          selection?.removeAllRanges();
+          selection?.addRange(range);
+        }
+      }
+    });
+  });
+
+  /**
+   * Comprobación informativa de disponibilidad del archivo.
+   * No bloquea nunca el botón: solo informa.
+   */
+  document.querySelectorAll<HTMLElement>('[data-availability]').forEach(async (node) => {
+    const tag = node.dataset.tag;
+    if (!tag) return;
+
+    const lang = node.dataset.lang ?? 'es';
+    const set = (text: string, state: 'ok' | 'warn') => {
+      node.textContent = text;
+      node.dataset.state = state;
+      node.style.color = state === 'ok' ? 'var(--success)' : 'var(--warning)';
+    };
+
+    try {
+      const response = await fetch(
+        `/api/verify?tag=${encodeURIComponent(tag)}&lang=${encodeURIComponent(lang)}`,
+        { headers: { Accept: 'application/json' } },
+      );
+      if (!response.ok) throw new Error(String(response.status));
+      const data = (await response.json()) as { available: boolean };
+      set(
+        data.available ? node.dataset.available ?? '' : node.dataset.unavailable ?? '',
+        data.available ? 'ok' : 'warn',
+      );
+    } catch {
+      set(node.dataset.unavailable ?? '', 'warn');
+    }
+  });
+</script>

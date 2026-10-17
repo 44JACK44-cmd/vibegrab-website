@@ -1,0 +1,121 @@
+---
+/**
+ * Pie de página: identidad, navegación completa, avisos legales y
+ * advertencia de no afiliación con las plataformas.
+ */
+import Icon from '@/components/Icon.astro';
+import { path, type Locale, type RouteKey } from '@/config/routes';
+import { siteConfig } from '@/config/site';
+import { useTranslations } from '@/i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const productLinks: Array<{ key: RouteKey; label: string }> = [
+  { key: 'home', label: t('nav.home') },
+  { key: 'features', label: t('nav.features') },
+  { key: 'download', label: t('nav.download') },
+  { key: 'versions', label: t('nav.versions') },
+];
+
+const resourceLinks: Array<{ key: RouteKey; label: string }> = [
+  { key: 'about', label: t('nav.about') },
+  { key: 'help', label: t('nav.help') },
+  { key: 'contact', label: t('footer.contact') },
+];
+
+const legalLinks: Array<{ key: RouteKey; label: string }> = [
+  { key: 'privacy', label: t('legal.privacy.title') },
+  { key: 'terms', label: t('legal.terms.title') },
+];
+
+const year = new Date().getFullYear();
+const contactConfigured = siteConfig.contact.email !== '' || siteConfig.contact.supportUrl !== '';
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <a class="brand" href={path('home', locale)}>
+          <img
+            class="brand__mark"
+            src="/brand/vibegrab-logo.png"
+            width="34"
+            height="34"
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="brand__text">
+            <span class="brand__name">VibeGrab</span>
+            <span class="brand__sub">{t('header.brandSub')}</span>
+          </span>
+        </a>
+        <p class="small muted" style="line-height: 1.7">{t('footer.tagline')}</p>
+      </div>
+
+      <nav class="footer__col" aria-label={t('footer.product')}>
+        <h2 class="footer__title">{t('footer.product')}</h2>
+        {
+          productLinks.map((link) => (
+            <a class="footer__link" href={path(link.key, locale)}>
+              {link.label}
+            </a>
+          ))
+        }
+      </nav>
+
+      <nav class="footer__col" aria-label={t('footer.resources')}>
+        <h2 class="footer__title">{t('footer.resources')}</h2>
+        {
+          resourceLinks.map((link) => (
+            <a class="footer__link" href={path(link.key, locale)}>
+              {link.label}
+            </a>
+          ))
+        }
+        {
+          contactConfigured && (
+            <a class="footer__link" href={`mailto:${siteConfig.contact.email}`}>
+              {siteConfig.contact.email}
+            </a>
+          )
+        }
+      </nav>
+
+      <nav class="footer__col" aria-label={t('footer.legal')}>
+        <h2 class="footer__title">{t('footer.legal')}</h2>
+        {
+          legalLinks.map((link) => (
+            <a class="footer__link" href={path(link.key, locale)}>
+              {link.label}
+            </a>
+          ))
+        }
+        <span class="footer__link" style="display: inline-flex; align-items: center; gap: 6px">
+          <Icon name="smartphone" size={15} />
+          {siteConfig.android.minVersionLabel[locale]}+
+        </span>
+      </nav>
+    </div>
+
+    <div class="callout callout--info" style="margin-bottom: var(--space-6)">
+      <Icon name="info" size={18} />
+      <p class="small">{t('footer.disclaimer')}</p>
+    </div>
+
+    <div class="footer__bottom">
+      <span>© {year} VibeGrab · {t('footer.rights')}</span>
+      <div class="footer__legal">
+        <a class="footer__link" href={path('privacy', locale)}>{t('legal.privacy.title')}</a>
+        <a class="footer__link" href={path('terms', locale)}>{t('legal.terms.title')}</a>
+        <a class="footer__link" href={path('contact', locale)}>{t('footer.contact')}</a>
+      </div>
+    </div>
+  </div>
+</footer>

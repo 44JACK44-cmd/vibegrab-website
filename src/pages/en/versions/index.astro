@@ -1,0 +1,8 @@
+---
+import VersionsView from '@/components/views/VersionsView.astro';
+import { getReleases } from '@/lib/releases';
+
+const payload = await getReleases();
+---
+
+<VersionsView locale="en" payload={payload} />

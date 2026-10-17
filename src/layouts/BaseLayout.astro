@@ -1,0 +1,180 @@
+---
+/**
+ * Plantilla base: metadatos, estructura y scripts comunes.
+ *
+ * - SEO: título, descripción, canonical, `hreflang` por idioma, Open Graph y
+ *   Twitter Card (para que el enlace se vea bien en WhatsApp o Telegram).
+ * - Tema claro/oscuro sin parpadeo (se fija antes del primer pintado).
+ * - Analítica opcional: solo se carga si se configura explícitamente.
+ */
+import '@/styles/tokens.css';
+import '@/styles/base.css';
+import '@/styles/components.css';
+import '@fontsource-variable/inter';
+import '@fontsource-variable/space-grotesk';
+
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import { siteConfig } from '@/config/site';
+import {
+  absoluteUrl,
+  alternates,
+  defaultLocale,
+  hreflangOf,
+  locales,
+  path,
+  type Locale,
+  type RouteKey,
+} from '@/config/routes';
+import { warnAboutPendingConfig } from '@/config/site';
+import { useTranslations } from '@/i18n/ui';
+
+interface Props {
+  locale: Locale;
+  routeKey: RouteKey;
+  title: string;
+  description: string;
+  ogImage?: string;
+  noindex?: boolean;
+  /** Si se indica, se publica un JSON-LD de la aplicación. */
+  softwareVersion?: string;
+  /** Ruta canónica cuando no coincide con la ruta base (fichas de versión). */
+  canonicalPath?: string;
+  /** Rutas equivalentes por idioma (fichas de versión). */
+  alternatePaths?: Partial<Record<Locale, string>>;
+}
+
+const {
+  locale,
+  routeKey,
+  title,
+  description,
+  ogImage = locale === 'en' ? siteConfig.seo.ogImageEn : siteConfig.seo.ogImage,
+  noindex = false,
+  softwareVersion,
+  canonicalPath,
+  alternatePaths,
+} = Astro.props;
+
+warnAboutPendingConfig();
+
+const t = useTranslations(locale);
+const canonical = canonicalPath
+  ? new URL(canonicalPath, siteConfig.url).href
+  : absoluteUrl(routeKey, locale);
+const alts = alternatePaths
+  ? locales.map((code) => ({
+      locale: code,
+      href: new URL(alternatePaths[code] ?? path(routeKey, code), siteConfig.url).href,
+    }))
+  : alternates(routeKey);
+const xDefault = alternatePaths
+  ? new URL(alternatePaths[defaultLocale] ?? path(routeKey, defaultLocale), siteConfig.url).href
+  : absoluteUrl(routeKey, defaultLocale);
+const ogImageUrl = new URL(ogImage, siteConfig.url).href;
+
+const analyticsDomain = import.meta.env.PUBLIC_ANALYTICS_DOMAIN as string | undefined;
+const analyticsSrc =
+  (import.meta.env.PUBLIC_ANALYTICS_SRC as string | undefined) ||
+  'https://plausible.io/js/script.js';
+
+const softwareJsonLd = softwareVersion
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: siteConfig.product.name,
+      applicationCategory: 'MultimediaApplication',
+      applicationSubCategory: 'Downloader',
+      operatingSystem: siteConfig.android.minVersionLabel.en,
+      softwareVersion,
+      url: canonical,
+      downloadUrl: `${siteConfig.url}/api/download`,
+      inLanguage: ['es', 'en'],
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+      },
+    }
+  : null;
+---
+
+<!doctype html>
+<html lang={locale} data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Tema antes del primer pintado: evita el destello blanco -->
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem('vibegrab-theme');
+          var prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+          var theme = stored === 'light' || stored === 'dark' ? stored : prefersLight ? 'light' : 'dark';
+          document.documentElement.dataset.theme = theme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'dark';
+        }
+      })();
+    </script>
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+
+    <!-- Idiomas -->
+    {
+      alts.map((alt) => (
+        <link rel="alternate" hreflang={hreflangOf(alt.locale)} href={alt.href} />
+      ))
+    }
+    <link rel="alternate" hreflang="x-default" href={xDefault} />
+
+    <!-- Open Graph / redes -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={siteConfig.product.name} />
+    <meta property="og:locale" content={locale === 'es' ? 'es_ES' : 'en_GB'} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${siteConfig.product.name} — ${siteConfig.product.tagline[locale]}`} />
+
+    <meta name="twitter:card" content={siteConfig.seo.twitterCard} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <meta name="theme-color" content={siteConfig.seo.themeColor} />
+    <meta name="color-scheme" content="dark light" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    {softwareJsonLd && <script type="application/ld+json" set:html={JSON.stringify(softwareJsonLd)} />}
+
+    {analyticsDomain && (
+      <script
+        is:inline
+        defer
+        data-domain={analyticsDomain}
+        src={analyticsSrc}
+      />
+    )}
+  </head>
+
+  <body>
+    <a class="skip-link" href="#contenido">{t('a11y.skip')}</a>
+    <Header locale={locale} routeKey={routeKey} languagePaths={alternatePaths} />
+    <main id="contenido">
+      <slot />
+    </main>
+    <Footer locale={locale} />
+  </body>
+</html>

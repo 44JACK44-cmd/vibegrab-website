@@ -1,0 +1,285 @@
+---
+/**
+ * Página de inicio.
+ *
+ * Composición: portada con el producto, características reales, novedades de
+ * la última versión estable, galería (o estado honesto si no hay capturas),
+ * instalación resumida y preguntas frecuentes.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/Icon.astro';
+import DeviceMockup from '@/components/DeviceMockup.astro';
+import FeatureCard from '@/components/FeatureCard.astro';
+import ReleaseNotes from '@/components/ReleaseNotes.astro';
+import Steps from '@/components/Steps.astro';
+import FaqList from '@/components/FaqList.astro';
+import ReleaseWarning from '@/components/ReleaseWarning.astro';
+import { features } from '@/content/features';
+import { installSteps } from '@/content/install';
+import { faq } from '@/content/faq';
+import { heroScreenshot, screenshots } from '@/config/screenshots';
+import { pickImportant, withoutImportant } from '@/lib/notes';
+import { formatBytes } from '@/lib/format';
+import { path, type Locale } from '@/config/routes';
+import { siteConfig } from '@/config/site';
+import type { ReleasesPayload } from '@/lib/releases';
+import { useTranslations } from '@/i18n/ui';
+
+interface Props {
+  locale: Locale;
+  payload: ReleasesPayload;
+}
+
+const { locale, payload } = Astro.props;
+const t = useTranslations(locale);
+
+const latest = payload.latest;
+const featured = features.filter((feature) => feature.featured);
+const important = latest ? pickImportant(latest.notes) : null;
+const latestNotes = latest ? withoutImportant(latest.notes) : [];
+const faqPreview = faq.slice(0, 5);
+
+const description = t('home.hero.desc');
+
+const sizeLabel = latest?.apk ? formatBytes(latest.apk.sizeBytes, locale) : null;
+---
+
+<BaseLayout
+  locale={locale}
+  routeKey="home"
+  title={`VibeGrab — ${t('home.hero.tagline')}`}
+  description={description}
+  softwareVersion={latest?.version}
+>
+  <!-- ------------------------------------------------------------ Portada -->
+  <section class="hero">
+    <div class="grid-backdrop" aria-hidden="true"></div>
+    <div class="container hero__inner">
+      <div class="hero__copy">
+        {
+          latest && (
+            <span class="badge badge--brand">
+              <span class="badge__dot" />
+              {locale === 'es' ? 'Versión' : 'Version'} v{latest.version}
+              {sizeLabel ? ` · ${sizeLabel}` : ''}
+            </span>
+          )
+        }
+
+        <div class="hero__title">
+          <h1>VibeGrab</h1>
+          <p class="hero__tagline">{t('home.hero.tagline')}</p>
+        </div>
+
+        <p class="hero__desc">{description}</p>
+
+        <div class="btn-row">
+          <a
+            class="btn btn--primary btn--lg"
+            href={latest?.apk ? `/api/download?tag=${encodeURIComponent(latest.tag)}&lang=${locale}` : path('download', locale)}
+          >
+            <Icon name="download" size={20} />
+            {t('home.hero.cta.download')}
+          </a>
+          <a class="btn btn--secondary btn--lg" href={path('features', locale)}>
+            {t('home.hero.cta.discover')}
+            <Icon name="arrow-right" size={18} />
+          </a>
+        </div>
+
+        <div class="hero__meta">
+          <span class="hero__meta-item">
+            <Icon name="smartphone" size={16} />
+            {t('home.hero.meta.android')}
+          </span>
+          <span class="hero__meta-item">
+            <Icon name="shield" size={16} />
+            {t('home.hero.meta.free')}
+          </span>
+          {
+            latest?.apk && (
+              <span class="hero__meta-item">
+                <Icon name="package" size={16} />
+                {formatBytes(latest.apk.sizeBytes, locale)}
+              </span>
+            )
+          }
+        </div>
+      </div>
+
+      <DeviceMockup locale={locale} release={latest} screenshot={heroScreenshot} />
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------ Características -->
+  <section class="section" id="caracteristicas">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">{t('home.features.eyebrow')}</p>
+        <h2>{t('home.features.title')}</h2>
+        <p class="lede">{t('home.features.desc')}</p>
+      </div>
+
+      <div class="grid grid--3">
+        {featured.map((feature) => <FeatureCard feature={feature} locale={locale} />)}
+      </div>
+
+      <div style="margin-top: var(--space-6)">
+        <a class="link-arrow" href={path('features', locale)}>
+          {locale === 'es' ? 'Ver todas las características' : 'See all features'}
+          <Icon name="arrow-right" size={16} />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------ Novedades -->
+  {
+    latest && (
+      <section class="section section--soft" id="novedades">
+        <div class="container">
+          <div class="download-panel">
+            <div class="stack">
+              <div class="section-head" style="margin-bottom:0">
+                <p class="eyebrow">{t('home.whatsnew.eyebrow')}</p>
+                <h2>{t('home.whatsnew.title')}</h2>
+                <p class="lede">
+                  {locale === 'es' ? 'Versión' : 'Version'} <strong>v{latest.version}</strong>
+                  {latest.build !== null ? ` (build ${latest.build})` : ''} ·{' '}
+                  <time datetime={latest.publishedAt}>
+                    {new Intl.DateTimeFormat(locale === 'es' ? 'es-ES' : 'en-GB', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                    }).format(new Date(latest.publishedAt))}
+                  </time>
+                </p>
+              </div>
+
+              <div class="btn-row">
+                <a
+                  class="btn btn--primary"
+                  href={latest.apk ? `/api/download?tag=${encodeURIComponent(latest.tag)}&lang=${locale}` : path('download', locale)}
+                >
+                  <Icon name="download" size={18} />
+                  {latest.apk ? t('download.button.size', { size: formatBytes(latest.apk.sizeBytes, locale) }) : t('download.button')}
+                </a>
+                <a class="btn btn--secondary" href={path('versions', locale)}>
+                  <Icon name="history" size={16} />
+                  {t('download.otherVersions')}
+                </a>
+              </div>
+            </div>
+
+            <div class="card">
+              {important && <ReleaseWarning section={important} locale={locale} />}
+              {
+                latestNotes.length > 0 ? (
+                  <ReleaseNotes
+                    sections={latestNotes}
+                    locale={locale}
+                    raw={latest.notesSource === 'release-notes'}
+                    headingLevel="h3"
+                  />
+                ) : (
+                  <p class="small muted">{t('versions.noNotes')}</p>
+                )
+              }
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- -------------------------------------------------------------- Galería -->
+  {
+    screenshots.length > 0 && (
+      <section class="section" id="galeria">
+        <div class="container">
+          <div class="section-head">
+            <p class="eyebrow">{t('home.gallery.eyebrow')}</p>
+            <h2>{t('home.gallery.title')}</h2>
+          </div>
+
+          <div class="shots">
+            {screenshots.map((shot) => (
+              <figure>
+                <div class="shot">
+                  <img src={shot.src} alt={shot.alt[locale]} loading="lazy" decoding="async" />
+                </div>
+                <figcaption class="shot__caption">{shot.caption[locale]}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- ---------------------------------------------------------- Instalación -->
+  <section class="section section--soft" id="instalacion">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">{t('home.install.eyebrow')}</p>
+        <h2>{t('home.install.title')}</h2>
+      </div>
+
+      <Steps steps={installSteps.slice(0, 3)} locale={locale} />
+
+      <div style="margin-top: var(--space-6)">
+        <a class="link-arrow" href={path('help', locale)}>
+          {t('home.install.cta')}
+          <Icon name="arrow-right" size={16} />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------------ CTA -->
+  <section class="section">
+    <div class="container">
+      <div class="cta-band">
+        <div class="cta-band__glow" aria-hidden="true"></div>
+        <div class="stack stack--lg" style="align-items:center">
+          <div class="stack" style="align-items:center">
+            <h2>{t('home.cta.title')}</h2>
+            <p class="lede" style="text-align:center">{t('home.cta.desc')}</p>
+          </div>
+          <div class="btn-row" style="justify-content:center">
+            <a class="btn btn--primary btn--lg" href={path('download', locale)}>
+              <Icon name="download" size={20} />
+              {t('home.hero.cta.download')}
+            </a>
+            <a class="btn btn--secondary btn--lg" href={path('versions', locale)}>
+              {t('nav.versions')}
+            </a>
+          </div>
+          <p class="tiny muted">
+            {siteConfig.android.minVersionLabel[locale]}+
+            {sizeLabel ? ` · ${sizeLabel}` : ''} · {t('home.hero.meta.free')}
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------------ FAQ -->
+  <section class="section section--soft">
+    <div class="container container--narrow">
+      <div class="section-head section-head--center">
+        <p class="eyebrow">{t('home.faq.eyebrow')}</p>
+        <h2>{t('home.faq.title')}</h2>
+      </div>
+
+      <FaqList items={faqPreview} locale={locale} openFirst />
+
+      <div style="margin-top: var(--space-6); text-align:center">
+        <a class="link-arrow" href={path('help', locale)}>
+          {t('home.faq.cta')}
+          <Icon name="arrow-right" size={16} />
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

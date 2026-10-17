@@ -1,0 +1,8 @@
+---
+import LegalView from '@/components/views/LegalView.astro';
+import { privacyPolicy } from '@/content/legal';
+
+export const prerender = true;
+---
+
+<LegalView locale="en" routeKey="privacy" document={privacyPolicy} titleKey="legal.privacy.title" icon="shield" />

@@ -1,0 +1,104 @@
+---
+/**
+ * Centro de ayuda: preguntas frecuentes, instalación y solución de problemas.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/Icon.astro';
+import PageHero from '@/components/PageHero.astro';
+import FaqList from '@/components/FaqList.astro';
+import Steps from '@/components/Steps.astro';
+import { faq } from '@/content/faq';
+import { installSteps, troubleshooting } from '@/content/install';
+import { path, type Locale } from '@/config/routes';
+import { useTranslations } from '@/i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<BaseLayout
+  locale={locale}
+  routeKey="help"
+  title={`${t('help.title')} — VibeGrab`}
+  description={t('help.desc')}
+>
+  <PageHero
+    eyebrow={t('help.eyebrow')}
+    title={t('help.title')}
+    description={t('help.desc')}
+    icon="lifebuoy"
+  />
+
+  <section class="section section--tight" id="preguntas">
+    <div class="container container--narrow">
+      <div class="section-head">
+        <h2>{t('help.faq.title')}</h2>
+      </div>
+      <FaqList items={faq} locale={locale} openFirst />
+    </div>
+  </section>
+
+  <section class="section section--soft" id="instalacion">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">{t('home.install.eyebrow')}</p>
+        <h2>{t('help.install.title')}</h2>
+      </div>
+      <Steps steps={installSteps} locale={locale} />
+    </div>
+  </section>
+
+  <section class="section" id="problemas">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">{t('help.eyebrow')}</p>
+        <h2>{t('download.troubleshootTitle')}</h2>
+      </div>
+
+      <div class="grid grid--2">
+        {
+          troubleshooting.map((item) => (
+            <article class="card">
+              <h3 class="card__title" style="font-size: var(--text-base)">
+                {item.problem[locale]}
+              </h3>
+              <p class="card__text">{item.solution[locale]}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--soft">
+    <div class="container">
+      <div class="cta-band">
+        <div class="cta-band__glow" aria-hidden="true"></div>
+        <div class="stack stack--lg" style="align-items:center">
+          <h2>{t('help.contact.title')}</h2>
+          <p class="lede" style="text-align:center">
+            {
+              locale === 'es'
+                ? 'Si tu duda no está resuelta aquí, consulta las vías de contacto disponibles.'
+                : 'If your question is not answered here, check the available contact channels.'
+            }
+          </p>
+          <div class="btn-row" style="justify-content:center">
+            <a class="btn btn--primary btn--lg" href={path('contact', locale)}>
+              <Icon name="mail" size={19} />
+              {t('footer.contact')}
+            </a>
+            <a class="btn btn--secondary btn--lg" href={path('download', locale)}>
+              <Icon name="download" size={18} />
+              {t('nav.download')}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

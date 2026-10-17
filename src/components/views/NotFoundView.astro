@@ -1,0 +1,36 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { path, type Locale } from '@/config/routes';
+import { useTranslations } from '@/i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<BaseLayout
+  locale={locale}
+  routeKey="home"
+  title={`404 — VibeGrab`}
+  description={t('notfound.desc')}
+  noindex
+>
+  <section class="container">
+    <div class="error-page">
+      <p class="error-page__code">404</p>
+      <h1>{t('notfound.title')}</h1>
+      <p class="lede" style="text-align:center">{t('notfound.desc')}</p>
+      <div class="btn-row" style="justify-content:center">
+        <a class="btn btn--primary btn--lg" href={path('home', locale)}>
+          {t('notfound.home')}
+        </a>
+        <a class="btn btn--secondary btn--lg" href={path('download', locale)}>
+          {t('notfound.download')}
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,115 @@
+---
+/**
+ * Historial de versiones: todas las publicaciones oficiales, ordenadas por
+ * fecha real de publicación (no por número de versión).
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/Icon.astro';
+import PageHero from '@/components/PageHero.astro';
+import ReleaseCard from '@/components/ReleaseCard.astro';
+import DataStatus from '@/components/DataStatus.astro';
+import type { ReleasesPayload } from '@/lib/releases';
+import { path, type Locale } from '@/config/routes';
+import { useTranslations } from '@/i18n/ui';
+
+interface Props {
+  locale: Locale;
+  payload: ReleasesPayload;
+}
+
+const { locale, payload } = Astro.props;
+const t = useTranslations(locale);
+
+const stable = payload.releases.filter((release) => !release.prerelease && release.apk);
+const prereleases = payload.releases.filter((release) => release.prerelease);
+const withoutApk = payload.releases.filter((release) => !release.apk && !release.prerelease);
+const hasReleases = stable.length > 0 || prereleases.length > 0 || withoutApk.length > 0;
+---
+
+<BaseLayout
+  locale={locale}
+  routeKey="versions"
+  title={`${t('versions.title')} — VibeGrab`}
+  description={t('versions.desc')}
+  softwareVersion={payload.latest?.version}
+>
+  <PageHero
+    eyebrow={t('versions.eyebrow')}
+    title={t('versions.title')}
+    description={t('versions.desc')}
+    icon="history"
+  >
+    <div style="margin-top: var(--space-5)">
+      <DataStatus payload={payload} locale={locale} />
+    </div>
+  </PageHero>
+
+  <section class="section section--tight">
+    <div class="container">
+      <p class="callout callout--info" style="margin-bottom: var(--space-7)">
+        <Icon name="info" size={18} />
+        <span>{t('versions.orderNote')}</span>
+      </p>
+
+      {
+        stable.length > 0 ? (
+          <div class="release-list">
+            {stable.map((release) => (
+              <ReleaseCard release={release} locale={locale} />
+            ))}
+          </div>
+        ) : hasReleases ? null : (
+          <div class="pending-card">
+            <Icon name="info" size={18} />
+            <div>
+              <p>
+                <strong>{t('versions.empty')}</strong>
+              </p>
+              <p class="tiny" style="margin-top: var(--space-1)">{t('download.noRelease.desc')}</p>
+            </div>
+          </div>
+        )
+      }
+
+      {
+        prereleases.length > 0 && (
+          <details class="release-details" style="margin-top: var(--space-8)">
+            <summary>
+              {t('versions.prereleases.show')} ({prereleases.length})
+            </summary>
+            <p class="small muted" style="margin: var(--space-4) 0">
+              {t('versions.prereleases.note')}
+            </p>
+            <div class="release-list">
+              {prereleases.map((release) => (
+                <ReleaseCard release={release} locale={locale} />
+              ))}
+            </div>
+          </details>
+        )
+      }
+
+      {
+        withoutApk.length > 0 && (
+          <div style="margin-top: var(--space-8)">
+            <h2 class="section-head" style="margin-bottom: var(--space-5); font-size: var(--text-2xl)">
+              {t('versions.noApk')}
+            </h2>
+            <div class="release-list">
+              {withoutApk.map((release) => (
+                <ReleaseCard release={release} locale={locale} />
+              ))}
+            </div>
+          </div>
+        )
+      }
+
+      <div class="btn-row" style="margin-top: var(--space-8); justify-content:center">
+        <a class="btn btn--primary btn--lg" href={path('download', locale)}>
+          <Icon name="download" size={20} />
+          {t('download.button')}
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,64 @@
+---
+/**
+ * Vista reutilizable para la política de privacidad y los términos de uso.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import { formatDate } from '@/lib/format';
+import type { LegalDocument } from '@/content/legal';
+import type { Locale, RouteKey } from '@/config/routes';
+import type { StringKey } from '@/i18n/ui';
+import { useTranslations } from '@/i18n/ui';
+
+interface Props {
+  locale: Locale;
+  routeKey: RouteKey;
+  document: LegalDocument;
+  titleKey: StringKey;
+  icon: string;
+}
+
+const { locale, routeKey, document, titleKey, icon } = Astro.props;
+const t = useTranslations(locale);
+const title = t(titleKey);
+---
+
+<BaseLayout
+  locale={locale}
+  routeKey={routeKey}
+  title={`${title} — VibeGrab`}
+  description={`${title} de VibeGrab. ${t('legal.reviewNote')}`}
+>
+  <PageHero eyebrow={t('footer.legal')} title={title} icon={icon}>
+    <p class="badge" style="margin-top: var(--space-4)">
+      {t('legal.updated')}: {formatDate(document.updated, locale)}
+    </p>
+  </PageHero>
+
+  <section class="section section--tight">
+    <div class="container">
+      <p class="callout callout--info" style="max-width: 72ch; margin-bottom: var(--space-7)">
+        <span>{t('legal.reviewNote')}</span>
+      </p>
+
+      <article class="prose">
+        {
+          document.sections.map((section) => (
+            <section>
+              <h2 id={section.id}>{section.heading[locale]}</h2>
+              {section.paragraphs?.map((paragraph) => <p>{paragraph[locale]}</p>)}
+              {section.bullets && (
+                <ul>
+                  {section.bullets.map((bullet) => (
+                    <li>{bullet[locale]}</li>
+                  ))}
+                </ul>
+              )}
+              {section.closing?.map((paragraph) => <p>{paragraph[locale]}</p>)}
+            </section>
+          ))
+        }
+      </article>
+    </div>
+  </section>
+</BaseLayout>

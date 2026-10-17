@@ -1,0 +1,24 @@
+---
+/**
+ * Detalle de una versión concreta (etiqueta `vX.Y.Z-B`).
+ */
+import VersionDetailView from '@/components/views/VersionDetailView.astro';
+import NotFoundView from '@/components/views/NotFoundView.astro';
+import { getReleaseByTag, getReleases } from '@/lib/releases';
+
+const tag = Astro.params.version ?? '';
+const payload = await getReleases();
+const release = await getReleaseByTag(tag);
+
+if (!release) {
+  Astro.response.status = 404;
+}
+---
+
+{
+  release ? (
+    <VersionDetailView locale="es" release={release} payload={payload} />
+  ) : (
+    <NotFoundView locale="es" />
+  )
+}

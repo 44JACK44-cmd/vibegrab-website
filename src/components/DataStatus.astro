@@ -1,0 +1,44 @@
+---
+/**
+ * Estado de los datos de GitHub: si vienen en directo, de caché o del
+ * respaldo local, y de cuándo es la información. Transparencia para el
+ * usuario y aviso honesto cuando el dato puede estar desactualizado.
+ */
+import Icon from '@/components/Icon.astro';
+import { formatDateTime } from '@/lib/format';
+import type { ReleasesPayload } from '@/lib/releases';
+import type { Locale } from '@/config/routes';
+import { useTranslations } from '@/i18n/ui';
+
+interface Props {
+  payload: ReleasesPayload;
+  locale: Locale;
+}
+
+const { payload, locale } = Astro.props;
+const t = useTranslations(locale);
+
+const sourceLabel = buildSourceLabel();
+
+function buildSourceLabel(): string {
+  if (payload.source === 'github') return t('download.data.source.github');
+  if (payload.source === 'cache') return t('download.data.source.cache');
+  return t('download.data.source.snapshot');
+}
+
+const stamp = payload.stale ? payload.fetchedAt : (payload.lastSuccessfulAt ?? payload.fetchedAt);
+const headline = payload.stale ? t('download.data.stale') : t('download.data.updated');
+---
+
+<p class="data-status" data-stale={String(payload.stale)}>
+  <span>
+    <span class="data-status__dot" aria-hidden="true"></span>
+    {headline}
+    · {sourceLabel}
+    · {formatDateTime(stamp, locale)}
+  </span>
+  <span class="tiny">
+    <Icon name="refresh" size={13} />
+    {payload.releases.length} {locale === 'es' ? 'publicaciones' : 'releases'}
+  </span>
+</p>

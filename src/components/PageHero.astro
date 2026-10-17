@@ -1,0 +1,31 @@
+---
+/**
+ * Cabecera de páginas interiores: antetítulo, título, descripción y
+ * acciones opcionales.
+ */
+import Icon from '@/components/Icon.astro';
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  description?: string;
+  icon?: string;
+}
+
+const { eyebrow, title, description, icon } = Astro.props;
+---
+
+<section class="section section--tight" style="position:relative; overflow:hidden">
+  <div class="glow-backdrop" aria-hidden="true" style="height:280px"></div>
+  <div class="container" style="position:relative">
+    <div class="section-head" style="margin-bottom:0">
+      <p class="eyebrow">
+        {icon && <Icon name={icon} size={14} />}
+        {eyebrow}
+      </p>
+      <h1>{title}</h1>
+      {description && <p class="lede">{description}</p>}
+    </div>
+    <slot />
+  </div>
+</section>

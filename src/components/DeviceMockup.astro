@@ -1,0 +1,85 @@
+---
+/**
+ * Marco de teléfono de la portada.
+ *
+ * No simula una captura de la app: es una pieza de marca con el logotipo, el
+ * lema y tres funciones reales. Cuando exista una captura real configurada,
+ * se muestra en su lugar.
+ */
+import Icon from '@/components/Icon.astro';
+import type { Release } from '@/lib/releases';
+import { formatDate } from '@/lib/format';
+import type { Locale } from '@/config/routes';
+import { useTranslations } from '@/i18n/ui';
+
+interface Props {
+  locale: Locale;
+  release: Release | null;
+  screenshot?: string | null;
+}
+
+const { locale, release, screenshot = null } = Astro.props;
+const t = useTranslations(locale);
+
+const features = [
+  { icon: 'download', label: t('home.hero.mockup.downloads') },
+  { icon: 'video', label: t('home.hero.mockup.player') },
+  { icon: 'library', label: t('home.hero.mockup.library') },
+];
+---
+
+<div class="device" role="img" aria-label={`VibeGrab${release ? ` v${release.version}` : ''}`}>
+  <div class="device__screen">
+    {
+      screenshot ? (
+        <img src={screenshot} alt="" loading="eager" decoding="async" />
+      ) : (
+        <div class="device__poster">
+          <div class="device__top">
+            <img
+              src="/brand/vibegrab-logo.png"
+              width="26"
+              height="26"
+              alt=""
+              loading="eager"
+              decoding="async"
+            />
+            <span>VibeGrab</span>
+          </div>
+
+          <div class="device__hero">
+            <img
+              class="device__logo"
+              src="/brand/vibegrab-logo.png"
+              width="92"
+              height="92"
+              alt=""
+              loading="eager"
+              decoding="async"
+            />
+            <p class="device__tagline">{t('home.hero.tagline')}</p>
+          </div>
+
+          <ul class="device__features">
+            {features.map((feature) => (
+              <li>
+                <Icon name={feature.icon} size={17} />
+                <span>{feature.label}</span>
+              </li>
+            ))}
+          </ul>
+
+          {release && (
+            <div class="device__version">
+              <strong>v{release.version}</strong>
+              <span>
+                {release.build !== null ? `build ${release.build} · ` : ''}
+                {formatDate(release.publishedAt, locale)}
+              </span>
+            </div>
+          )}
+        </div>
+      )
+    }
+  </div>
+</div>

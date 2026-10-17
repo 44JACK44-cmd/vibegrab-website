@@ -1,0 +1,144 @@
+---
+/**
+ * Sobre nosotros: historia verificable, cronología, objetivos y principios.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/Icon.astro';
+import PageHero from '@/components/PageHero.astro';
+import Timeline from '@/components/Timeline.astro';
+import { aboutGoals, aboutIntro, aboutPrinciples, timeline } from '@/content/about';
+import { formatDate } from '@/lib/format';
+import type { ReleasesPayload } from '@/lib/releases';
+import { path, type Locale } from '@/config/routes';
+import { useTranslations } from '@/i18n/ui';
+
+interface Props {
+  locale: Locale;
+  payload: ReleasesPayload;
+}
+
+const { locale, payload } = Astro.props;
+const t = useTranslations(locale);
+
+const latest = payload.latest;
+const releaseCount = payload.releases.length;
+---
+
+<BaseLayout
+  locale={locale}
+  routeKey="about"
+  title={`${t('about.title')} — VibeGrab`}
+  description={aboutIntro[0][locale]}
+>
+  <PageHero
+    eyebrow={t('about.eyebrow')}
+    title={t('about.title')}
+    icon="info"
+  >
+    <div class="prose" style="margin-top: var(--space-5)">
+      {aboutIntro.map((paragraph) => <p>{paragraph[locale]}</p>)}
+    </div>
+  </PageHero>
+
+  <section class="section section--tight">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">{t('about.verified.title')}</p>
+      </div>
+
+      <div class="grid grid--4">
+        <div class="card">
+          <span class="card__icon" aria-hidden="true"><Icon name="calendar" size={20} /></span>
+          <p class="tiny muted">{t('about.verified.created')}</p>
+          <p class="card__title" style="font-size: var(--text-base)">
+            {formatDate('2026-09-23', locale)}
+          </p>
+        </div>
+        <div class="card">
+          <span class="card__icon" aria-hidden="true"><Icon name="package" size={20} /></span>
+          <p class="tiny muted">{t('about.verified.releases')}</p>
+          <p class="card__title" style="font-size: var(--text-base)">{releaseCount}</p>
+        </div>
+        <div class="card">
+          <span class="card__icon" aria-hidden="true"><Icon name="chip" size={20} /></span>
+          <p class="tiny muted">{t('about.verified.latest')}</p>
+          <p class="card__title mono" style="font-size: var(--text-base)">
+            {latest ? `v${latest.version}` : '—'}
+          </p>
+        </div>
+        <div class="card">
+          <span class="card__icon" aria-hidden="true"><Icon name="smartphone" size={20} /></span>
+          <p class="tiny muted">{t('download.spec.android')}</p>
+          <p class="card__title" style="font-size: var(--text-base)">
+            {t('home.hero.meta.android')}
+          </p>
+        </div>
+      </div>
+
+      <p class="tiny muted" style="margin-top: var(--space-4)">{t('about.verified.note')}</p>
+    </div>
+  </section>
+
+  <section class="section section--soft">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">{t('about.timeline.title')}</p>
+        <h2>{t('about.timeline.title')}</h2>
+      </div>
+      <Timeline items={timeline} locale={locale} />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid grid--2">
+        <div class="stack">
+          <div class="section-head" style="margin-bottom: var(--space-3)">
+            <p class="eyebrow">{t('about.goals.title')}</p>
+            <h2 style="font-size: var(--text-2xl)">{t('about.goals.title')}</h2>
+          </div>
+          <ul class="notes__list">
+            {
+              aboutGoals.map((goal) => (
+                <li class="notes__item">{goal[locale]}</li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div class="stack">
+          <div class="section-head" style="margin-bottom: var(--space-3)">
+            <p class="eyebrow">{t('about.principles.title')}</p>
+            <h2 style="font-size: var(--text-2xl)">{t('about.principles.title')}</h2>
+          </div>
+          <ul class="notes__list">
+            {
+              aboutPrinciples.map((principle) => (
+                <li class="notes__item">{principle[locale]}</li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--soft">
+    <div class="container">
+      <div class="card" style="max-width: 780px; margin-inline: auto">
+        <span class="card__icon" aria-hidden="true"><Icon name="lifebuoy" size={20} /></span>
+        <h2 class="card__title" style="font-size: var(--text-xl)">{t('about.team.title')}</h2>
+        <p class="card__text">{t('about.team.text')}</p>
+        <div class="card__foot btn-row">
+          <a class="btn btn--primary" href={path('download', locale)}>
+            <Icon name="download" size={18} />
+            {t('home.hero.cta.download')}
+          </a>
+          <a class="btn btn--secondary" href={path('contact', locale)}>
+            {t('footer.contact')}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

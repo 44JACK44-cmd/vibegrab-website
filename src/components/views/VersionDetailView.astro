@@ -1,0 +1,125 @@
+---
+/**
+ * Detalle de una versión concreta.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/Icon.astro';
+import DownloadPanel from '@/components/DownloadPanel.astro';
+import DataStatus from '@/components/DataStatus.astro';
+import { formatDate } from '@/lib/format';
+import type { Release, ReleasesPayload } from '@/lib/releases';
+import { path, versionPath, type Locale } from '@/config/routes';
+import { useTranslations } from '@/i18n/ui';
+
+interface Props {
+  locale: Locale;
+  release: Release;
+  payload: ReleasesPayload;
+}
+
+const { locale, release, payload } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<BaseLayout
+  locale={locale}
+  routeKey="versions"
+  title={`VibeGrab v${release.version}${release.build !== null ? ` (build ${release.build})` : ''} — ${t('versions.detailTitle')}`}
+  description={`${t('versions.detailTitle')}: v${release.version} · ${formatDate(release.publishedAt, locale)}`}
+  softwareVersion={release.version}
+  canonicalPath={versionPath(release.tag, locale)}
+  alternatePaths={{
+    es: versionPath(release.tag, 'es'),
+    en: versionPath(release.tag, 'en'),
+  }}
+>
+  <section class="section section--tight" style="position:relative; overflow:hidden">
+    <div class="glow-backdrop" aria-hidden="true" style="height:240px"></div>
+    <div class="container" style="position:relative">
+      <a class="link-arrow" href={path('versions', locale)} style="margin-bottom: var(--space-5)">
+        <Icon name="arrow-left" size={16} />
+        {t('versions.backToList')}
+      </a>
+
+      <div class="section-head" style="margin-bottom: var(--space-6)">
+        <p class="eyebrow">
+          <Icon name="package" size={14} />
+          {t('versions.detailTitle')}
+        </p>
+        <h1 class="mono" style="font-size: var(--text-3xl)">{release.tag}</h1>
+        <p class="lede">
+          <time datetime={release.publishedAt}>{formatDate(release.publishedAt, locale)}</time>
+          {
+            release.isLatestStable && (
+              <span class="badge badge--success" style="margin-inline-start: var(--space-3)">
+                <span class="badge__dot" />
+                {t('versions.latest')}
+              </span>
+            )
+          }
+          {
+            release.prerelease && (
+              <span class="badge badge--warning" style="margin-inline-start: var(--space-3)">
+                {t('versions.prerelease')}
+              </span>
+            )
+          }
+        </p>
+      </div>
+
+      <DataStatus payload={payload} locale={locale} />
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container">
+      {
+        release.higherSemverThanStable && (
+          <p class="callout callout--warning" style="margin-bottom: var(--space-5)">
+            <Icon name="info" size={16} />
+            <span>{t('versions.higherNumberNote')}</span>
+          </p>
+        )
+      }
+
+      {
+        release.apk ? (
+          <DownloadPanel release={release} locale={locale} showWarning />
+        ) : (
+          <div class="pending-card">
+            <Icon name="warning" size={18} />
+            <div>
+              <p>
+                <strong>{t('versions.noApk')}</strong>
+              </p>
+              <p class="tiny" style="margin-top: var(--space-1)">
+                {
+                  locale === 'es'
+                    ? 'Esta publicación no incluye un archivo APK, así que no se ofrece para descargar.'
+                    : 'This release does not include an APK file, so it is not offered for download.'
+                }
+              </p>
+            </div>
+          </div>
+        )
+      }
+
+      {
+        release.rawBody && (
+          <details class="faq__item" style="margin-top: var(--space-7)">
+            <summary class="faq__question">
+              <span>{t('versions.rawNotes')}</span>
+              <Icon name="chevron-down" size={18} />
+            </summary>
+            <div class="faq__answer">
+              <pre
+                class="mono tiny"
+                style="white-space: pre-wrap; word-break: break-word; margin: 0"
+              >{release.rawBody}</pre>
+            </div>
+          </details>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>

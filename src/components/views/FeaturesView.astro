@@ -1,0 +1,108 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/Icon.astro';
+import PageHero from '@/components/PageHero.astro';
+import FeatureCard from '@/components/FeatureCard.astro';
+import { featureGroupLabels, features, type FeatureGroup } from '@/content/features';
+import { path, type Locale } from '@/config/routes';
+import { useTranslations } from '@/i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const groups: FeatureGroup[] = ['download', 'play', 'organise', 'discover'];
+---
+
+<BaseLayout
+  locale={locale}
+  routeKey="features"
+  title={`${t('nav.features')} — VibeGrab`}
+  description={t('home.features.desc')}
+>
+  <PageHero
+    eyebrow={t('home.features.eyebrow')}
+    title={t('home.features.title')}
+    description={t('home.features.desc')}
+    icon="layers"
+  />
+
+  <section class="section section--tight">
+    <div class="container stack stack--lg" style="gap: var(--space-8)">
+      {
+        groups.map((group) => {
+          const items = features.filter((feature) => feature.group === group);
+          if (items.length === 0) return null;
+          return (
+            <div>
+              <h2 class="section-head" style="margin-bottom: var(--space-5); font-size: var(--text-2xl)">
+                {featureGroupLabels[group][locale]}
+              </h2>
+              <div class="grid grid--3">
+                {items.map((feature) => (
+                  <FeatureCard feature={feature} locale={locale} />
+                ))}
+              </div>
+            </div>
+          );
+        })
+      }
+    </div>
+  </section>
+
+  <section class="section section--soft">
+    <div class="container">
+      <div class="grid grid--2">
+        <div class="card">
+          <span class="card__icon" aria-hidden="true"><Icon name="shield" size={20} /></span>
+          <h3 class="card__title">
+            {locale === 'es' ? 'Sin rastreadores' : 'No trackers'}
+          </h3>
+          <p class="card__text">
+            {
+              locale === 'es'
+                ? 'La aplicación no incorpora analítica, publicidad ni informes de fallos de terceros. Tus descargas, ajustes y biblioteca se quedan en tu teléfono.'
+                : 'The app includes no third-party analytics, advertising or crash reporting. Your downloads, settings and library stay on your phone.'
+            }
+          </p>
+          <div class="card__foot">
+            <a class="link-arrow" href={path('privacy', locale)}>
+              {t('legal.privacy.title')}
+              <Icon name="arrow-right" size={16} />
+            </a>
+          </div>
+        </div>
+
+        <div class="card">
+          <span class="card__icon" aria-hidden="true"><Icon name="refresh" size={20} /></span>
+          <h3 class="card__title">
+            {locale === 'es' ? 'Siempre al día' : 'Always up to date'}
+          </h3>
+          <p class="card__text">
+            {
+              locale === 'es'
+                ? 'La app avisa de las versiones nuevas y resume los cambios antes de instalar. Esta web publica el mismo historial con el tamaño y la huella de cada APK.'
+                : 'The app notifies you about new versions and summarises the changes before installing. This site publishes the same history with each APK\u2019s size and fingerprint.'
+            }
+          </p>
+          <div class="card__foot">
+            <a class="link-arrow" href={path('versions', locale)}>
+              {t('nav.versions')}
+              <Icon name="arrow-right" size={16} />
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-row" style="margin-top: var(--space-7); justify-content:center">
+        <a class="btn btn--primary btn--lg" href={path('download', locale)}>
+          <Icon name="download" size={20} />
+          {t('home.hero.cta.download')}
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,47 @@
+---
+/**
+ * Notas de versión agrupadas por categoría.
+ */
+import Icon from '@/components/Icon.astro';
+import { categoryMeta, renderInline, sortedSections } from '@/lib/notes';
+import type { NoteSection } from '@/lib/releases';
+import type { Locale } from '@/config/routes';
+
+interface Props {
+  sections: NoteSection[];
+  locale: Locale;
+  /** Notas originales sin curar: se marcan visualmente como tales. */
+  raw?: boolean;
+  headingLevel?: 'h3' | 'h4';
+}
+
+const { sections, locale, raw = false, headingLevel = 'h3' } = Astro.props;
+const ordered = sortedSections(sections);
+const Heading = headingLevel;
+---
+
+<div class:list={['notes', { 'notes--raw': raw }]}>
+  {
+    ordered.map((section) => {
+      const meta = categoryMeta[section.category];
+      return (
+        <section class="notes__group">
+          <Heading class="notes__title">
+            <Icon name={meta.icon} size={15} />
+            {meta.label[locale]}
+          </Heading>
+          <ul class="notes__list">
+            {section.items.map((item) => (
+              <li class="notes__item">
+                <span set:html={renderInline(item.text[locale])} />
+                {item.detail && (
+                  <span class="notes__detail" set:html={renderInline(item.detail[locale])} />
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      );
+    })
+  }
+</div>

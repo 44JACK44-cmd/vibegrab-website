@@ -1,0 +1,132 @@
+---
+/**
+ * Contacto y soporte.
+ *
+ * No se inventan correos ni formularios: si no hay un canal configurado, se
+ * dice de forma explícita y se ofrecen los recursos que sí existen.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/Icon.astro';
+import PageHero from '@/components/PageHero.astro';
+import { siteConfig } from '@/config/site';
+import { path, type Locale } from '@/config/routes';
+import { useTranslations } from '@/i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const email = siteConfig.contact.email;
+const supportUrl = siteConfig.contact.supportUrl;
+const configured = email !== '' || supportUrl !== '';
+---
+
+<BaseLayout
+  locale={locale}
+  routeKey="contact"
+  title={`${t('contact.title')} — VibeGrab`}
+  description={t('contact.desc')}
+>
+  <PageHero
+    eyebrow={t('contact.eyebrow')}
+    title={t('contact.title')}
+    description={t('contact.desc')}
+    icon="mail"
+  />
+
+  <section class="section section--tight">
+    <div class="container container--narrow">
+      {
+        configured ? (
+          <div class="grid grid--2">
+            {email && (
+              <a class="card card--link" href={`mailto:${email}`}>
+                <span class="card__icon" aria-hidden="true">
+                  <Icon name="mail" size={20} />
+                </span>
+                <h2 class="card__title" style="font-size: var(--text-lg)">
+                  {t('contact.email.label')}
+                </h2>
+                <p class="card__text">{email}</p>
+                <div class="card__foot">
+                  <span class="link-arrow">
+                    {locale === 'es' ? 'Escribir' : 'Write'}
+                    <Icon name="arrow-up-right" size={16} />
+                  </span>
+                </div>
+              </a>
+            )}
+            {supportUrl && (
+              <a class="card card--link" href={supportUrl} rel="noopener noreferrer">
+                <span class="card__icon" aria-hidden="true">
+                  <Icon name="lifebuoy" size={20} />
+                </span>
+                <h2 class="card__title" style="font-size: var(--text-lg)">
+                  {t('contact.support.label')}
+                </h2>
+                <p class="card__text">{supportUrl.replace(/^https?:\/\//, '')}</p>
+                <div class="card__foot">
+                  <span class="link-arrow">
+                    {locale === 'es' ? 'Abrir' : 'Open'}
+                    <Icon name="arrow-up-right" size={16} />
+                  </span>
+                </div>
+              </a>
+            )}
+          </div>
+        ) : (
+          <div class="pending-card">
+            <Icon name="info" size={20} />
+            <div>
+              <p>
+                <strong>{t('contact.pending')}</strong>
+              </p>
+              <p class="small" style="margin-top: var(--space-2)">{t('contact.pendingHint')}</p>
+              <div class="btn-row" style="margin-top: var(--space-4)">
+                <a class="btn btn--secondary" href={path('help', locale)}>
+                  <Icon name="lifebuoy" size={17} />
+                  {t('nav.help')}
+                </a>
+                <a class="btn btn--ghost" href={path('download', locale)}>
+                  {t('nav.download')}
+                </a>
+              </div>
+            </div>
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <section class="section section--soft">
+    <div class="container container--narrow">
+      <div class="card">
+        <span class="card__icon" aria-hidden="true"><Icon name="file-text" size={20} /></span>
+        <h2 class="card__title">{t('contact.report.title')}</h2>
+        <p class="card__text">{t('contact.report.text')}</p>
+      </div>
+
+      <div class="grid grid--2" style="margin-top: var(--space-6)">
+        <a class="card card--link" href={path('help', locale)}>
+          <h3 class="card__title" style="font-size: var(--text-base)">{t('nav.help')}</h3>
+          <p class="card__text">
+            {locale === 'es'
+              ? 'Preguntas frecuentes, instalación y solución de problemas.'
+              : 'FAQ, installation and troubleshooting.'}
+          </p>
+        </a>
+        <a class="card card--link" href={path('privacy', locale)}>
+          <h3 class="card__title" style="font-size: var(--text-base)">{t('legal.privacy.title')}</h3>
+          <p class="card__text">
+            {locale === 'es'
+              ? 'Qué datos usa la app y qué recoge esta web.'
+              : 'What data the app uses and what this site collects.'}
+          </p>
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

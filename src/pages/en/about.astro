@@ -1,0 +1,8 @@
+---
+import AboutView from '@/components/views/AboutView.astro';
+import { getReleases } from '@/lib/releases';
+
+const payload = await getReleases();
+---
+
+<AboutView locale="en" payload={payload} />

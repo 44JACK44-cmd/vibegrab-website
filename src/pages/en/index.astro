@@ -1,0 +1,11 @@
+---
+/**
+ * English homepage. Live release data from GitHub (cached).
+ */
+import HomeView from '@/components/views/HomeView.astro';
+import { getReleases } from '@/lib/releases';
+
+const payload = await getReleases();
+---
+
+<HomeView locale="en" payload={payload} />
