@@ -2,16 +2,17 @@
 import { defineConfig } from 'astro/config';
 import vercel from '@astrojs/vercel';
 import sitemap from '@astrojs/sitemap';
+import { resolveSiteUrl } from './src/config/site-url.ts';
 
 /**
  * Dominio canónico del sitio.
  *
- * NO se asume que el dominio esté comprado: se lee de `SITE_URL` y, si no se
- * define, se usa `https://vibegrab.com` como valor previsto para producción.
- * En Vercel puedes desplegar primero en el subdominio `*.vercel.app` y añadir
- * el dominio propio más adelante (ver DEPLOY.md).
+ * Se resuelve en `src/config/site-url.ts`: `SITE_URL` si está definida, si no
+ * el dominio de producción que Vercel inyecta automáticamente
+ * (`VERCEL_PROJECT_PRODUCTION_URL`) y, en último caso, el respaldo comprobado.
+ * Así el sitio no publica URLs de un dominio que no sea suyo.
  */
-const SITE = process.env.SITE_URL || 'https://vibegrab.com';
+const SITE = resolveSiteUrl(process.env);
 
 // https://astro.build/config
 export default defineConfig({

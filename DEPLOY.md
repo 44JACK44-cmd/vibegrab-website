@@ -34,7 +34,7 @@ En **Project → Settings → Environment Variables** (Production y Preview):
 
 | Nombre | Valor | Obligatoria |
 | --- | --- | --- |
-| `SITE_URL` | `https://vibegrab.com` o el subdominio de Vercel mientras tanto | Recomendada |
+| `SITE_URL` | Dominio propio, solo si ya lo has registrado | No |
 | `GITHUB_REPO` | `44JACK44-cmd/vibeGrab` | No (ya es el valor por defecto) |
 | `GITHUB_TOKEN` | Token de solo lectura de GitHub | No |
 | `RELEASES_CACHE_MINUTES` | `10` | No |
@@ -53,17 +53,24 @@ reciban.
 
 ### Mientras no haya dominio
 
-1. Despliega y obtén la URL `https://<proyecto>.vercel.app`.
-2. Define `SITE_URL` con esa URL para que canonical, Open Graph y sitemap sean
-   coherentes (por ejemplo `https://vibegrab-website.vercel.app`).
-3. **No añadas dominios que no hayas registrado**: romperá el acceso al sitio.
-4. Cuando compres el dominio, cambia `SITE_URL` al dominio definitivo y
-   redespliega.
+No hace falta configurar nada. La URL canónica se resuelve en
+`src/config/site-url.ts` con este orden de prioridad:
 
-> Si `SITE_URL` no se define, el valor por defecto del código es
-> `https://vibegrab.com`. Ese dominio **no es de este proyecto**, así que si la
-> web se publica con ese valor, canonical/Open Graph/sitemap apuntarán a un
-> dominio ajeno. Defínelo siempre.
+1. `SITE_URL`, si está definida.
+2. `VERCEL_PROJECT_PRODUCTION_URL`, que Vercel inyecta por su cuenta en cada
+   build y en cada función, con el dominio de producción del proyecto
+   (`https://<proyecto>.vercel.app`).
+3. El respaldo del proyecto, para desarrollo local sin `.env`.
+
+Al desplegar en Vercel, `canonical`, `hreflang`, Open Graph, `robots.txt` y los
+dos sitemaps apuntan solos a `https://<proyecto>.vercel.app`.
+
+Cuando registres un dominio propio (paso 4), define `SITE_URL` con ese dominio y
+redespliega.
+
+> **Nunca** pongas en `SITE_URL` un dominio que no hayas registrado, ni lo añadas
+> en Vercel: el sitio publicaría URLs ajenas y, si el dominio queda apuntado al
+> proyecto, `*.vercel.app` redirige allí y **el sitio queda inaccesible**.
 
 ## 4. Dominio propio
 
@@ -77,7 +84,7 @@ reciban.
 > elimínalo**, y `*.vercel.app` vuelve a funcionar.
 
 1. **Vercel → Project → Settings → Domains → Add**.
-2. Añade `vibegrab.com` y `www.vibegrab.com`.
+2. Añade `tudominio.com` y `www.tudominio.com` (los que hayas registrado tú).
 3. En el registrador, crea los registros que indique Vercel:
    - `A @ 76.76.21.21` (o el valor que muestre Vercel),
    - `CNAME www cname.vercel-dns.com`.
@@ -91,16 +98,16 @@ Con el sitio desplegado (sustituye el dominio):
 
 ```bash
 # Última versión y feed
-curl -s https://vibegrab.com/api/releases | head -40
+curl -s https://vibegrab-website.vercel.app/api/releases | head -40
 
 # La descarga debe ser un 302 al APK real
-curl -sI "https://vibegrab.com/api/download" | findstr /i "location x-vibegrab-version"
+curl -sI "https://vibegrab-website.vercel.app/api/download" | findstr /i "location x-vibegrab-version"
 
 # Una etiqueta inexistente vuelve a la página con aviso
-curl -sI "https://vibegrab.com/api/download?tag=v9.9.9-99" | findstr /i location
+curl -sI "https://vibegrab-website.vercel.app/api/download?tag=v9.9.9-99" | findstr /i location
 
 # Disponibilidad del archivo
-curl -s "https://vibegrab.com/api/verify"
+curl -s "https://vibegrab-website.vercel.app/api/verify"
 ```
 
 Comprobaciones manuales:

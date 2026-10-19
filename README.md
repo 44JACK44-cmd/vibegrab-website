@@ -4,7 +4,7 @@ Sitio de presentación, descarga e historial de versiones de **VibeGrab**, la ap
 de descargas y reproducción multimedia para Android. El contenido de versiones
 se obtiene de **GitHub Releases** y se actualiza sin tocar el código.
 
-- Dominio previsto: `https://vibegrab.com` (configurable; ver [DEPLOY.md](./DEPLOY.md))
+- URL pública: `https://vibegrab-website.vercel.app` (el dominio se resuelve solo; ver [DEPLOY.md](./DEPLOY.md))
 - Repositorio de la app: `44JACK44-cmd/vibeGrab` (solo lectura)
 - Idiomas: español en la raíz (`/`) e inglés en `/en/`
 
@@ -175,7 +175,7 @@ Están documentadas en `.env.example`. Las importantes:
 
 | Variable | Por defecto | Notas |
 | --- | --- | --- |
-| `SITE_URL` | `https://vibegrab.com` | Canonical, Open Graph y sitemap |
+| `SITE_URL` | vacío | Dominio propio (opcional). Si falta, se usa el dominio de producción de Vercel |
 | `GITHUB_REPO` | `44JACK44-cmd/vibeGrab` | Repositorio de releases |
 | `GITHUB_TOKEN` | vacío | Solo servidor; sube el límite de la API |
 | `RELEASES_CACHE_MINUTES` | `10` | 1–1440 |

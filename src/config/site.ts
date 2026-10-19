@@ -4,10 +4,10 @@
  * Todo lo que es "dato del negocio" vive aquí. Si algo no es verificable
  * todavía, se deja vacío y la interfaz lo indica en lugar de inventarlo.
  */
+import { resolveSiteUrl } from '@/config/site-url';
 import { publicEnv, serverEnv } from '@/lib/env';
 
 const REPO_FALLBACK = '44JACK44-cmd/vibeGrab';
-const SITE_URL_FALLBACK = 'https://vibegrab.com';
 
 /** Datos técnicos comprobados en el propio proyecto Flutter. */
 export const android = {
@@ -33,16 +33,18 @@ export const product = {
   },
 } as const;
 
-function normalizeUrl(url: string): string {
-  return url.replace(/\/+$/, '');
-}
-
 export const siteConfig = {
   product,
   android,
 
-  /** URL canónica. Configurable con `SITE_URL`. */
-  url: normalizeUrl(publicEnv('SITE_URL') ?? serverEnv('SITE_URL') ?? SITE_URL_FALLBACK),
+  /**
+   * URL canónica. Se resuelve en `@/config/site-url`: primero `SITE_URL`, luego
+   * el dominio de producción que Vercel inyecta solo, y por último el respaldo.
+   */
+  url: resolveSiteUrl({
+    SITE_URL: publicEnv('SITE_URL') ?? serverEnv('SITE_URL'),
+    VERCEL_PROJECT_PRODUCTION_URL: serverEnv('VERCEL_PROJECT_PRODUCTION_URL'),
+  }),
 
   /** Repositorio de publicación de releases. Configurable con `GITHUB_REPO`. */
   repo: serverEnv('GITHUB_REPO') ?? REPO_FALLBACK,
