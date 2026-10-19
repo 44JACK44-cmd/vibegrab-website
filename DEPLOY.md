@@ -151,3 +151,16 @@ anterior. No hace falta tocar el repositorio de la app.
   `TAG_PATTERN` en `src/lib/releases.ts` y las pruebas.
 - Si el APK deja de llamarse `VibeGrab.apk`, no hay que cambiar código: se usa
   el primer `.apk` válido y se prefiere el nombre conocido si existe.
+
+## 11. Verificación de Google Search Console
+
+El archivo `public/googlec0d5ac6fe8d7300f.html` verifica la propiedad del sitio
+en Google Search Console (propiedad de tipo "prefijo de URL"). Se sirve en la
+raíz: `https://vibegrab-website.vercel.app/googlec0d5ac6fe8d7300f.html`.
+
+**No borrar.** Si se elimina, Google pierde la verificación. No afecta al
+rendimiento ni al SEO negativo (es un archivo estático suelto).
+
+Cuando exista el dominio propio, añadir **además** una propiedad de tipo
+"Dominio" y verificarla por **DNS (registro TXT)**; esa verificación no depende
+de ningún archivo ni del hosting, así que sobrevive a cambios de proveedor.
