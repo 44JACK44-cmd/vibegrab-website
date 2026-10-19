@@ -55,11 +55,26 @@ reciban.
 
 1. Despliega y obtén la URL `https://<proyecto>.vercel.app`.
 2. Define `SITE_URL` con esa URL para que canonical, Open Graph y sitemap sean
-   coherentes.
-3. Cuando compres el dominio, cambia `SITE_URL` al dominio definitivo y
+   coherentes (por ejemplo `https://vibegrab-website.vercel.app`).
+3. **No añadas dominios que no hayas registrado**: romperá el acceso al sitio.
+4. Cuando compres el dominio, cambia `SITE_URL` al dominio definitivo y
    redespliega.
 
+> Si `SITE_URL` no se define, el valor por defecto del código es
+> `https://vibegrab.com`. Ese dominio **no es de este proyecto**, así que si la
+> web se publica con ese valor, canonical/Open Graph/sitemap apuntarán a un
+> dominio ajeno. Defínelo siempre.
+
 ## 4. Dominio propio
+
+> **Aviso importante.** Añade en Vercel **solo** dominios que ya hayas registrado
+> a tu nombre y cuyo DNS puedas editar. Añadir un dominio de terceros (por
+> ejemplo `vibegrab.com`, que NO pertenece a este proyecto) hace que Vercel
+> redirija `*.vercel.app` hacia ese dominio y **el sitio deja de ser accesible**.
+> Vercel no regala dominios: el registro se paga aparte (GoDaddy, Namecheap,
+> Porkbun, Cloudflare…) o se usa un subdominio gratuito.
+> Si ya has añadido un dominio que no es tuyo: **Project → Settings → Domains →
+> elimínalo**, y `*.vercel.app` vuelve a funcionar.
 
 1. **Vercel → Project → Settings → Domains → Add**.
 2. Añade `vibegrab.com` y `www.vibegrab.com`.
