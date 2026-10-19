@@ -26,6 +26,10 @@ jobs:
       - run: npm ci
 
       - name: Regenerar snapshot
+        # Un fallo puntual de la API (límite de peticiones, caída) no debe
+        # marcar el workflow como fallido: el respaldo solo mejora el modo
+        # degradado y la web consulta GitHub en cada petición.
+        continue-on-error: true
         run: npm run snapshot
 
       - name: Guardar cambios si hay versiones nuevas
