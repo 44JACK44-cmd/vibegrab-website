@@ -38,6 +38,7 @@ En **Project → Settings → Environment Variables** (Production y Preview):
 | `GITHUB_REPO` | `44JACK44-cmd/vibeGrab` | No (ya es el valor por defecto) |
 | `GITHUB_TOKEN` | Token de solo lectura de GitHub | No |
 | `RELEASES_CACHE_MINUTES` | `10` | No |
+| `REVIEWS_CACHE_MINUTES` | `10` | No |
 | `RELEASES_RETRY_SECONDS` | `60` | No |
 | `CONTACT_EMAIL` | Correo real de soporte | No |
 | `SUPPORT_URL` | Foro o formulario de soporte | No |

@@ -74,7 +74,6 @@ src/
     features.ts          Funcionalidades verificadas de la app
     app-tour.ts          Pantallas reales de la app (pestañas y vistas)
     security.ts          Seguridad, procedencia y limitaciones
-    reviews.ts           Reseñas verificadas (vacío: no hay fuente real)
     faq.ts, install.ts   Ayuda e instalación
     about.ts             Historia y principios del proyecto
     legal.ts             Privacidad y términos
@@ -84,6 +83,8 @@ src/
   layouts/BaseLayout.astro
   lib/
     releases.ts          Integración con GitHub, caché y validación
+    reviews.ts           Marca, validación y formato de las opiniones
+    reviews-server.ts    Lectura de las opiniones desde GitHub (solo servidor)
     notes.ts             Categorías y orden de las notas
     stats.ts             Métricas verificables del producto
     format.ts            Fechas, tamaños, hashes y contadores
@@ -91,6 +92,7 @@ src/
     api/download.ts      Redirección verificada al APK
     api/verify.ts        Comprobación de disponibilidad (JSON)
     api/releases.ts      Feed JSON con caché
+    api/reviews.ts       Opiniones de la comunidad (JSON)
     sitemap-versions.xml.ts
     ...                  Rutas ES y EN
   styles/                tokens.css, base.css, components.css, sections.css
@@ -234,14 +236,27 @@ Los identificadores están en `src/content/app-tour.ts`.
 
 ## Reseñas y comunidad
 
-`src/content/reviews.ts` está **vacío a propósito**: no hay reseñas verificadas
-publicadas y no se inventan testimonios ni puntuaciones. La sección de comunidad
-muestra un estado honesto mientras tanto.
+Las opiniones se guardan como **issues públicos** del repositorio de la web
+(`44JACK44-cmd/vibegrab-website`) y se leen de la API pública de GitHub.
 
-Para activarlas hace falta una fuente real (un foro, una tienda de aplicaciones
-o un formulario con almacenamiento real). Cuando exista, define `reviewsSource`
-y añade cada opinión con su texto, autoría, fecha, versión y fuente. La sección
-las mostrará automáticamente.
+El flujo es real y sin intermediarios:
+
+1. La persona rellena la puntuación (1–5) y la opinión.
+2. El formulario abre el compositor de issues de GitHub con el texto ya
+   escrito y una marca con los datos estructurados:
+   `<!-- vibegrab-review {"rating":5,"version":"1.1.38","lang":"es"} -->`
+3. Inicia sesión en GitHub y publica. La opinión queda **firmada por su
+   cuenta**, que es la única forma de que un testimonio sea atribuible.
+4. La web la recoge en el siguiente `npm run snapshot`-like refresh (la caché
+   dura `REVIEWS_CACHE_MINUTES`, 10 minutos por defecto).
+
+Moderación: **cerrar el issue retira la opinión** de la lista, sin tocar
+código. Solo se aceptan issues con la marca válida, puntuación entre 1 y 5 y
+texto entre 20 y 800 caracteres.
+
+Si algún día se quiere cambiar de almacén (por ejemplo a una base de datos),
+el punto de conexión es `src/lib/reviews-server.ts`; la interfaz y el
+formulario no cambian.
 
 ## Estado y pendientes
 
@@ -253,7 +268,9 @@ las mostrará automáticamente.
 - **Estadísticas de usuarios**: no hay fuente fiable de usuarios únicos ni de
   instalaciones. La web solo muestra el contador de descargas del archivo que
   publica GitHub, etiquetado como tal. No se deduce ninguna cifra de usuarios.
-- **Reseñas**: sin fuente real todavía (ver arriba).
+- **Reseñas**: el sistema está activo y usa los issues públicos del repositorio
+  como almacén real. Todavía no hay ninguna opinión publicada, así que la
+  sección lo indica con claridad. La primera que se cree aparecerá sola.
 - **Licencia**: la app no tiene licencia publicada; los textos legales no
   afirman lo contrario.
 - **Aviso de `npm audit`**: hay 3 avisos altos en dependencias transitivas de

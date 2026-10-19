@@ -1,28 +1,40 @@
 ---
 /**
- * Comunidad y opiniones.
+ * Comunidad: opiniones reales y formulario para dejar la propia.
  *
- * No hay testimonios inventados. Si existe una fuente real de opiniones
- * (`src/content/reviews.ts`), se muestran con su atribución, fecha y versión.
- * Si no existe, la sección explica la situation y ofrece las vías reales para
- * informar, sin puntuación media ficticia ni reseñas de relleno.
+ * No hay testimonios inventados. Las opiniones se leen de los issues
+ * públicos del repositorio (ver `src/lib/reviews.ts`), firmadas por cuentas
+ * reales. Si todavía no hay ninguna, la sección lo dice con claridad en lugar
+ * de rellenar con reseñas de mentira.
+ *
+ * El formulario lleva la opinión al compositor de issues de GitHub: la
+ * publica la persona con su cuenta, así la atribución es verificable y el
+ * moderador puede cerrar el issue para retirarla.
  */
 import Icon from '@/components/Icon.astro';
-import { reviews, reviewsSource } from '@/content/reviews';
+import ReviewForm from '@/components/ReviewForm.astro';
+import { communityCopy } from '@/lib/reviews';
+import { getReviews } from '@/lib/reviews-server';
 import { formatDate } from '@/lib/format';
-import { path, type Locale } from '@/config/routes';
-import { siteConfig } from '@/config/site';
 import { useTranslations } from '@/i18n/ui';
+import type { Locale } from '@/config/routes';
 
 interface Props {
   locale: Locale;
+  /** Versiones publicadas, para el selector del formulario. */
+  versions?: string[];
 }
 
-const { locale } = Astro.props;
+const { locale, versions = [] } = Astro.props;
+const copy = communityCopy;
 const t = useTranslations(locale);
 
-const contactConfigured = siteConfig.contact.email !== '' || siteConfig.contact.supportUrl !== '';
+const payload = await getReviews();
+const reviews = payload.reviews;
+const average = payload.average;
 const hasReviews = reviews.length > 0;
+
+const fullStars = average === null ? 0 : Math.round(average);
 ---
 
 <section class="section section--soft" id="comunidad">
@@ -33,92 +45,112 @@ const hasReviews = reviews.length > 0;
       <p class="lede">{t('community.desc')}</p>
     </div>
 
-    {
-      hasReviews ? (
-        <div class="reviews">
-          {reviews.map((review) => (
-            <figure class="review">
-              <blockquote class="review__text">{review.text[locale]}</blockquote>
-              <figcaption class="review__meta">
-                <span class="review__author">{review.author}</span>
-                <span class="review__date">
-                  <time datetime={review.date}>{formatDate(review.date, locale)}</time>
-                  {review.version ? ` · v${review.version}` : ''}
-                </span>
-                <span class="review__source">
-                  {review.sourceUrl ? (
-                    <a href={review.sourceUrl} rel="noopener nofollow" target="_blank">
-                      {review.source}
-                    </a>
-                  ) : (
-                    review.source
-                  )}
-                </span>
-              </figcaption>
-            </figure>
-          ))}
+    <div class="community">
+      <div class="community__form">
+        <div class="community__form-head">
+          <span class="card__icon" aria-hidden="true">
+            <Icon name="message" size={20} />
+          </span>
+          <div>
+            <h3 class="community__form-title">{copy.formTitle[locale]}</h3>
+            <p class="community__form-intro">{copy.formIntro[locale]}</p>
+          </div>
         </div>
-      ) : (
-        <div class="community__empty">
-          <div class="community__empty-head">
-            <span class="card__icon" aria-hidden="true">
-              <Icon name="message" size={20} />
-            </span>
-            <div>
-              <p class="community__empty-title">{t('community.empty.title')}</p>
-              <p class="community__empty-text">{t('community.empty.text')}</p>
+
+        <ReviewForm locale={locale} versions={versions} />
+      </div>
+
+      <div class="community__reviews">
+        {
+          hasReviews && average !== null ? (
+            <div class="community__summary">
+              <div class="community__score">
+                <span class="community__score-value">{average.toFixed(1)}</span>
+                <span class="community__score-max">/ 5</span>
+              </div>
+              <div class="community__summary-body">
+                <div class="community__stars" aria-hidden="true">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <span class:list={['community__star', { 'is-on': star <= fullStars }]}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                        <path d="m12 3.6 2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8L3.6 9.7l5.8-.8z" />
+                      </svg>
+                    </span>
+                  ))}
+                </div>
+                <p class="community__summary-text">
+                  {copy.summaryAverage[locale].replace('{value}', average.toFixed(1))}
+                  {' · '}
+                  {copy.summaryCount[locale].replace('{count}', String(reviews.length))}
+                </p>
+              </div>
             </div>
-          </div>
-
-          <ul class="community__channels">
-            <li class="community__channel">
-              <Icon name="file-text" size={17} />
+          ) : (
+            <div class="community__empty">
+              <span class="card__icon" aria-hidden="true">
+                <Icon name="message" size={20} />
+              </span>
               <div>
-                <p class="community__channel-title">{t('community.channels.report.title')}</p>
-                <p class="community__channel-text">{t('community.channels.report.text')}</p>
+                <p class="community__empty-title">{copy.summaryEmpty[locale]}</p>
               </div>
-            </li>
-            <li class="community__channel">
-              <Icon name="lifebuoy" size={17} />
-              <div>
-                <p class="community__channel-title">{t('community.channels.help.title')}</p>
-                <p class="community__channel-text">{t('community.channels.help.text')}</p>
-              </div>
-            </li>
-            <li class="community__channel">
-              <Icon name="shield" size={17} />
-              <div>
-                <p class="community__channel-title">{t('community.channels.rights.title')}</p>
-                <p class="community__channel-text">{t('community.channels.rights.text')}</p>
-              </div>
-            </li>
-          </ul>
+            </div>
+          )
+        }
 
-          <div class="btn-row">
-            {contactConfigured ? (
-              <a class="btn btn--primary" href={path('contact', locale)}>
-                <Icon name="mail" size={18} />
-                {t('footer.contact')}
-              </a>
-            ) : (
-              <a class="btn btn--secondary" href={path('help', locale)}>
-                <Icon name="lifebuoy" size={18} />
-                {t('help.title')}
-              </a>
-            )}
-            <a class="btn btn--ghost" href={path('download', locale)}>
-              <Icon name="download" size={18} />
-              {t('nav.download')}
-            </a>
-          </div>
+        {
+          hasReviews && (
+            <ul class="reviews">
+              {reviews.map((review) => (
+                <li class="review">
+                  <div class="review__head">
+                    <img
+                      class="review__avatar"
+                      src={`https://github.com/${review.author}.png?size=72`}
+                      width="36"
+                      height="36"
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <div class="review__who">
+                      <a class="review__author" href={review.authorUrl} rel="noopener nofollow" target="_blank">
+                        {review.author}
+                      </a>
+                      <p class="review__meta">
+                        <time datetime={review.date}>{formatDate(review.date, locale)}</time>
+                        {review.version && ` · ${copy.reviewVersion[locale].replace('{version}', review.version)}`}
+                      </p>
+                    </div>
+                    <div class="review__rating" aria-label={`${review.rating} de 5`}>
+                      <span class="community__stars" aria-hidden="true">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <span class:list={['community__star', { 'is-on': star <= review.rating }]}>
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                              <path d="m12 3.6 2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8L3.6 9.7l5.8-.8z" />
+                            </svg>
+                          </span>
+                        ))}
+                      </span>
+                    </div>
+                  </div>
 
-          {reviewsSource.name && (
-            <p class="tiny muted">
-              {t('community.source', { source: reviewsSource.name })}
-            </p>
-          )}
-        </div>
-      )
-    }
+                  <p class="review__text">{review.text}</p>
+
+                  <p class="review__source">
+                    <Icon name="code" size={13} />
+                    <a href={review.sourceUrl} rel="noopener nofollow" target="_blank">
+                      {copy.reviewSource[locale]}
+                    </a>
+                    {review.lang !== locale && <span class="review__lang">{review.lang.toUpperCase()}</span>}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+
+        <p class="community__moderation tiny muted">{copy.sourceNote[locale]}</p>
+      </div>
+    </div>
   </div>
 </section>

@@ -1,0 +1,190 @@
+---
+/**
+ * Formulario de opinión de la comunidad.
+ *
+ * Recoge la puntuación y el comentario y abre el compositor de issues de
+ * GitHub con el texto ya escrito. La publicación la confirma la persona con
+ * su cuenta de GitHub, así la opinión queda atribuida a alguien real y el
+ * moderador puede cerrar el issue si procede.
+ *
+ * El envío es real: no hay un "enviar" que aparente guardar algo y no lo
+ * guarde. Si el texto no cumple las reglas mínimas, se avisa en el propio
+ * formulario y no se abre nada.
+ */
+import Icon from '@/components/Icon.astro';
+import { communityCopy, REVIEW_MAX_LENGTH, REVIEW_MIN_LENGTH } from '@/lib/reviews';
+import type { Locale } from '@/config/routes';
+
+interface Props {
+  locale: Locale;
+  /** Versiones publicadas, para que la persona elija la que usa. */
+  versions?: string[];
+}
+
+const { locale, versions = [] } = Astro.props;
+const copy = communityCopy;
+const stars = [5, 4, 3, 2, 1];
+---
+
+<form class="review-form" data-review-form data-locale={locale} novalidate>
+  <fieldset class="review-form__rating">
+    <legend class="review-form__label">{copy.formRating[locale]}</legend>
+    <div class="review-form__stars" role="radiogroup" aria-label={copy.formRating[locale]}>
+      {
+        stars.map((value) => (
+          <label class="review-form__star" data-value={value}>
+            <input
+              type="radio"
+              name="rating"
+              value={value}
+              checked={value === 5}
+              required
+            />
+            <span class="review-form__star-icon" aria-hidden="true">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                <path d="m12 3.6 2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8L3.6 9.7l5.8-.8z" />
+              </svg>
+            </span>
+            <span class="visually-hidden">{value} / 5</span>
+          </label>
+        ))
+      }
+    </div>
+    <p class="review-form__error" data-error="rating" role="alert" hidden>
+      {copy.formErrorRating[locale]}
+    </p>
+  </fieldset>
+
+  <div class="review-form__field">
+    <label class="review-form__label" for="review-text">{copy.formText[locale]}</label>
+    <textarea
+      id="review-text"
+      name="text"
+      class="review-form__textarea"
+      rows="5"
+      minlength={REVIEW_MIN_LENGTH}
+      maxlength={REVIEW_MAX_LENGTH}
+      placeholder={copy.formTextPlaceholder[locale]}
+      required
+    ></textarea>
+    <p class="review-form__counter tiny muted" data-counter aria-live="polite"></p>
+    <p class="review-form__error" data-error="text" role="alert" hidden>
+      {copy.formErrorShort[locale]}
+    </p>
+  </div>
+
+  {
+    versions.length > 0 && (
+      <div class="review-form__field">
+        <label class="review-form__label" for="review-version">
+          {copy.formVersion[locale]}
+        </label>
+        <select id="review-version" name="version" class="review-form__select">
+          <option value="">—</option>
+          {versions.map((version) => (
+            <option value={version}>v{version}</option>
+          ))}
+        </select>
+      </div>
+    )
+  }
+
+  {/* Trampa para bots: no se muestra y no se envía si viene rellena. */}
+  <div class="review-form__honeypot" aria-hidden="true">
+    <label for="review-website">Website</label>
+    <input id="review-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <button class="btn btn--primary review-form__submit" type="submit">
+    <Icon name="message" size={18} />
+    {copy.formSubmit[locale]}
+  </button>
+
+  <p class="review-form__note tiny muted">{copy.formNote[locale]}</p>
+</form>
+
+<script>
+  import { buildReviewIssueUrl, REVIEW_MAX_LENGTH, REVIEW_MIN_LENGTH } from '@/lib/reviews';
+
+  /**
+   * Envío de la opinión: valida y abre el compositor de GitHub.
+   */
+  function initReviewForm() {
+    document.querySelectorAll<HTMLFormElement>('[data-review-form]').forEach((form) => {
+      const locale = form.dataset.locale === 'en' ? 'en' : 'es';
+      const text = form.querySelector<HTMLTextAreaElement>('#review-text');
+      const version = form.querySelector<HTMLSelectElement>('#review-version');
+      const honeypot = form.querySelector<HTMLInputElement>('#review-website');
+      const counter = form.querySelector<HTMLElement>('[data-counter]');
+      const errors = {
+        rating: form.querySelector<HTMLElement>('[data-error="rating"]'),
+        text: form.querySelector<HTMLElement>('[data-error="text"]'),
+      };
+
+      const show = (key: 'rating' | 'text', visible: boolean) => {
+        if (errors[key]) errors[key]!.hidden = !visible;
+      };
+
+      const updateCounter = () => {
+        if (!counter || !text) return;
+        const length = text.value.trim().length;
+        counter.textContent = `${length} / ${REVIEW_MAX_LENGTH}`;
+        counter.style.color = length > 0 && length < REVIEW_MIN_LENGTH ? 'var(--warning)' : '';
+      };
+
+      text?.addEventListener('input', () => {
+        updateCounter();
+        show('text', false);
+      });
+      updateCounter();
+
+      // Pintado de las estrellas al elegir
+      const stars = Array.from(form.querySelectorAll<HTMLElement>('.review-form__star'));
+      const paint = () => {
+        const chosen = Number(form.querySelector<HTMLInputElement>('input[name="rating"]:checked')?.value ?? 0);
+        stars.forEach((star) => {
+          star.classList.toggle('is-active', Number(star.dataset.value) <= chosen);
+        });
+      };
+      stars.forEach((star) => {
+        star.querySelector('input')?.addEventListener('change', () => {
+          paint();
+          show('rating', false);
+        });
+      });
+      paint();
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        // Trampa para bots: si viene rellena, no se hace nada.
+        if (honeypot && honeypot.value.trim() !== '') return;
+
+        const value = text?.value.trim() ?? '';
+        const rating = Number(form.querySelector<HTMLInputElement>('input[name="rating"]:checked')?.value ?? 0);
+
+        let valid = true;
+        if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+          show('rating', true);
+          valid = false;
+        }
+        if (value.length < REVIEW_MIN_LENGTH || value.length > REVIEW_MAX_LENGTH) {
+          show('text', true);
+          valid = false;
+        }
+        if (!valid) return;
+
+        const url = buildReviewIssueUrl({
+          text: value,
+          rating,
+          version: version?.value || undefined,
+          lang: locale,
+        });
+
+        window.open(url, '_blank', 'noopener,noreferrer');
+      });
+    });
+  }
+
+  initReviewForm();
+</script>

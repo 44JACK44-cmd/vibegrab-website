@@ -325,7 +325,7 @@ const downloadHref = latest?.apk
   </section>
 
   <!-- ------------------------------------------------------------ Comunidad -->
-  <Community locale={locale} />
+  <Community locale={locale} versions={payload.releases.map((release) => release.version)} />
 
   <!-- ------------------------------------------------------------------ CTA -->
   <section class="section">

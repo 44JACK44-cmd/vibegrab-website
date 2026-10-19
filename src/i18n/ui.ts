@@ -425,48 +425,12 @@ const dict = {
   /* ------------------------------------------------------------ Comunidad */
   'community.eyebrow': { es: 'Comunidad', en: 'Community' },
   'community.title': {
-    es: 'Lo que dice y lo que se puede hacer',
-    en: 'What people say and what you can do',
+    es: 'Lo que dice la comunidad y lo que puedes contar tú',
+    en: 'What the community says and what you can share',
   },
   'community.desc': {
-    es: 'Todavía no hay reseñas verificadas publicadas, así que no inventamos testimonios ni puntuaciones. Mientras tanto, estas son las vías reales para participar.',
-    en: 'There are no verified reviews published yet, so we do not invent testimonials or ratings. In the meantime, these are the real ways to take part.',
-  },
-  'community.empty.title': {
-    es: 'Aún no hay reseñas verificadas',
-    en: 'No verified reviews yet',
-  },
-  'community.empty.text': {
-    es: 'Publicamos opiniones solo cuando vienen de una fuente real y comprobable, con su fecha y su contexto. Rellenar la sección con testimonios inventados no es una opción.',
-    en: 'We publish opinions only when they come from a real, verifiable source, with their date and context. Filling this section with invented testimonials is not an option.',
-  },
-  'community.channels.report.title': {
-    es: 'Informar de un problema',
-    en: 'Report a problem',
-  },
-  'community.channels.report.text': {
-    es: 'Indica la versión, tu modelo de teléfono, tu versión de Android y los pasos para reproducirlo.',
-    en: 'Include the version, your phone model, your Android version and the steps to reproduce it.',
-  },
-  'community.channels.help.title': {
-    es: 'Resolver una duda',
-    en: 'Resolve a question',
-  },
-  'community.channels.help.text': {
-    es: 'La guía de instalación y las preguntas frecuentes cubren los casos más habituales.',
-    en: 'The install guide and the FAQ cover the most common cases.',
-  },
-  'community.channels.rights.title': {
-    es: 'Reportar un uso indebido',
-    en: 'Report misuse',
-  },
-  'community.channels.rights.text': {
-    es: 'VibeGrab es una herramienta y la responsabilidad de lo que se descarga es de quien la usa.',
-    en: 'VibeGrab is a tool and responsibility for what is downloaded belongs to whoever uses it.',
-  },
-  'community.source': {
-    es: 'Opiniones collected from {source}.',
-    en: 'Reviews collected from {source}.',
+    es: 'Las opiniones se publican firmadas por cuentas reales y se guardan en el repositorio público del proyecto, así cada valoración es atribuible. Si has usado VibeGrab, cuéntanos qué tal.',
+    en: 'Opinions are published signed by real accounts and are stored in the project’s public repository, so every rating is attributable. If you have used VibeGrab, tell us how it went.',
   },
 
   /* ------------------------------------------------------ Estados genéricos */
