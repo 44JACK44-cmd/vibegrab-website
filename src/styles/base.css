@@ -291,14 +291,9 @@ code {
 }
 
 .btn--primary:hover {
-  background: var(--brand-100);
-  color: #04202c;
+  background: var(--brand-hover);
+  color: var(--brand-ink);
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset, 0 14px 32px -12px var(--brand-tint-strong);
-}
-
-[data-theme='light'] .btn--primary:hover {
-  background: var(--brand-500);
-  color: #fff;
 }
 
 .btn--secondary {
@@ -412,7 +407,10 @@ code {
   box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 20%, transparent);
 }
 
-/* Rejillas --------------------------------------------------------------- */
+/* ------------------------------------------------------------------ Rejillas
+   `min(Xpx, 100%)` evita que una pista con ancho mínimo fijo desborde en
+   pantallas estrechas: la pista se encoge hasta el ancho disponible.
+   ------------------------------------------------------------------------- */
 
 .grid {
   display: grid;
@@ -420,15 +418,15 @@ code {
 }
 
 .grid--2 {
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
 }
 
 .grid--3 {
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
 }
 
 .grid--4 {
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr));
 }
 
 /* Separadores y fondos --------------------------------------------------- */

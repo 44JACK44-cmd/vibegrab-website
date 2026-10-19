@@ -68,6 +68,33 @@ export const aboutPrinciples: LocalizedText[] = [
 ];
 
 /**
+ * Cómo evoluciona el producto. Describe el ciclo real de trabajo: se
+ * recoge una necesidad, se implementa, se prueba y se publica con sus notas.
+ */
+export const aboutEvolution: LocalizedText[] = [
+  {
+    es: 'Cada cambio nace de algo concreto que no funcionaba bien o que faltaba. No se añaden funciones por rellenar una lista.',
+    en: 'Every change starts from something concrete that did not work well or was missing. Features are not added to fill a list.',
+  },
+  {
+    es: 'La aplicación incorpora sus propias pruebas automatizadas: las que fallan impiden publicar la versión.',
+    en: 'The application carries its own automated tests: the ones that fail prevent the release from going out.',
+  },
+  {
+    es: 'Al publicar una versión, la app incluye una pantalla de novedades que explica al usuario qué ha cambiado, no un mensaje de commit.',
+    en: 'When a version is published, the app includes a what’s-new screen that explains to the user what changed, not a commit message.',
+  },
+  {
+    es: 'Esta web se actualiza sola: lee las publicaciones oficiales, así que en cuanto hay una versión nueva aparece aquí sin tocar nada.',
+    en: 'This site updates itself: it reads the official releases, so a new version appears here as soon as it is published, with nothing to change by hand.',
+  },
+  {
+    es: 'La distribución es transparente: cada APK publica su tamaño y su huella SHA-256 para que cualquiera pueda comprobarlo.',
+    en: 'Distribution is transparent: every APK publishes its size and its SHA-256 fingerprint so anyone can check it.',
+  },
+];
+
+/**
  * Hitos verificables.
  *
  * - 2026-09-23 y 2026-09-24: primer commit y creación del repositorio
@@ -129,6 +156,14 @@ export const timeline: TimelineItem[] = [
     text: {
       es: 'Llega la pantalla de novedades por versión y el aviso de actualización con resumen de cambios. Además, el APK pasa a firmarse con una clave nueva, lo que exige una reinstalación única desde versiones anteriores.',
       en: 'The per-version what\u2019s-new screen and the update prompt with a change summary arrive. The APK also moves to a new signing key, which requires a one-time reinstall from earlier versions.',
+    },
+  },
+  {
+    date: '2026-10-19',
+    title: { es: 'MP3 reales y análisis más rápido', en: 'Real MP3 files and faster analysis' },
+    text: {
+      es: 'Se publican tres versiones seguidas: los audios descargados salen como MP3 reales con sus etiquetas y su carátula, el análisis de enlaces devuelve todas las calidades disponibles y responde antes, y los ajustes quedan reorganizados en bloques.',
+      en: 'Three versions are published in a row: downloaded audio comes out as real MP3 files with their tags and cover, link analysis returns every available quality and answers sooner, and the settings are reorganised into blocks.',
     },
   },
 ];

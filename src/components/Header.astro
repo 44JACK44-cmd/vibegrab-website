@@ -17,16 +17,24 @@ interface Props {
 const { locale, routeKey, languagePaths } = Astro.props;
 const t = useTranslations(locale);
 
-const links: Array<{ key: RouteKey; label: string }> = [
-  { key: 'home', label: t('nav.home') },
-  { key: 'features', label: t('nav.features') },
-  { key: 'download', label: t('nav.download') },
-  { key: 'versions', label: t('nav.versions') },
-  { key: 'about', label: t('nav.about') },
-  { key: 'help', label: t('nav.help') },
-];
+interface NavLink {
+  key: string;
+  label: string;
+  href: string;
+  /** Solo las páginas reales marcan el estado activo. */
+  routeKey?: RouteKey;
+}
 
-const currentIndex = links.findIndex((link) => link.key === routeKey);
+const home = path('home', locale);
+
+const links: NavLink[] = [
+  { key: 'home', label: t('nav.home'), href: home, routeKey: 'home' },
+  { key: 'features', label: t('nav.features'), href: path('features', locale), routeKey: 'features' },
+  { key: 'demo', label: t('nav.demo'), href: `${home}#demo` },
+  { key: 'news', label: t('nav.news'), href: `${home}#novedades` },
+  { key: 'versions', label: t('nav.versions'), href: path('versions', locale), routeKey: 'versions' },
+  { key: 'about', label: t('nav.about'), href: path('about', locale), routeKey: 'about' },
+];
 ---
 
 <header class="site-header" data-scrolled="false">
@@ -49,11 +57,11 @@ const currentIndex = links.findIndex((link) => link.key === routeKey);
 
     <nav class="nav" id="menu-principal" data-open="false" aria-label={t('nav.primary')}>
       {
-        links.map((link, index) => (
+        links.map((link) => (
           <a
             class="nav__link"
-            href={path(link.key, locale)}
-            aria-current={index === currentIndex ? 'page' : undefined}
+            href={link.href}
+            aria-current={link.routeKey === routeKey ? 'page' : undefined}
           >
             {link.label}
           </a>

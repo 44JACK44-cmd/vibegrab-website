@@ -1,0 +1,92 @@
+---
+/**
+ * Banda de métricas verificables.
+ *
+ * Muestra solo datos que proceden de la API pública de GitHub Releases. Cada
+ * cifra lleva su etiqueta explícita y, cuando corresponde, la aclaración de
+ * qué significa exactamente. Si un dato no existe, el bloque se omite en
+ * lugar de rellenarlo.
+ */
+import Icon from '@/components/Icon.astro';
+import { formatBytes, formatCount, formatDate } from '@/lib/format';
+import { downloadCountCaveat, type ProductStats } from '@/lib/stats';
+import type { Locale } from '@/config/routes';
+import { useTranslations } from '@/i18n/ui';
+
+interface Props {
+  stats: ProductStats;
+  locale: Locale;
+}
+
+const { stats, locale } = Astro.props;
+const t = useTranslations(locale);
+
+interface Metric {
+  icon: string;
+  value: string;
+  label: string;
+  note?: string;
+}
+
+const metrics: Metric[] = [];
+
+if (stats.latestVersion) {
+  metrics.push({
+    icon: 'chip',
+    value: `v${stats.latestVersion}`,
+    label: t('stats.latestVersion'),
+    note: stats.latestPublishedAt
+      ? t('stats.publishedOn', { date: formatDate(stats.latestPublishedAt, locale) })
+      : undefined,
+  });
+}
+
+if (stats.stableReleaseCount > 0) {
+  metrics.push({
+    icon: 'package',
+    value: formatCount(stats.stableReleaseCount, locale),
+    label: t('stats.stableReleases'),
+    note:
+      stats.prereleaseCount > 0
+        ? t('stats.prereleaseNote', { count: formatCount(stats.prereleaseCount, locale) })
+        : undefined,
+  });
+}
+
+if (stats.apkSizeBytes) {
+  metrics.push({
+    icon: 'hard-drive',
+    value: formatBytes(stats.apkSizeBytes, locale),
+    label: t('stats.apkSize'),
+    note: t('stats.apkSizeNote'),
+  });
+}
+
+if (stats.apkDownloadCount && stats.apkDownloadCount > 0) {
+  metrics.push({
+    icon: 'download',
+    value: formatCount(stats.apkDownloadCount, locale),
+    label: t('stats.fileDownloads'),
+    note: downloadCountCaveat[locale],
+  });
+}
+---
+
+{
+  metrics.length > 0 && (
+    <ul class="stat-strip" aria-label={t('stats.title')}>
+      {metrics.map((metric) => (
+        <li class="stat-strip__item">
+          <span class="stat-strip__icon" aria-hidden="true">
+            <Icon name={metric.icon} size={18} />
+          </span>
+          <div class="stat-strip__body">
+            <p class="stat-strip__value">{metric.value}</p>
+            <p class="stat-strip__label">{metric.label}</p>
+            {metric.note && <p class="stat-strip__note">{metric.note}</p>}
+          </div>
+        </li>
+      ))}
+    </ul>
+  )
+}

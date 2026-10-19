@@ -93,6 +93,10 @@ export const privacyPolicy: LegalDocument = {
           en: 'Storage (read and write, or file access depending on the Android version): save and read downloads in Movies/VibeGrab.',
         },
         {
+          es: 'Acceso a todos los archivos: solo se pide si decides usar el lector de estados de WhatsApp, y Android lo muestra como un permiso especial y reversible.',
+          en: 'All files access: it is only requested if you choose to use the WhatsApp status reader, and Android shows it as a special, reversible permission.',
+        },
+        {
           es: 'Servicio en primer plano: mantener las descargas y la reproducción activas mientras usas otras aplicaciones.',
           en: 'Foreground service: keep downloads and playback running while you use other apps.',
         },
@@ -185,11 +189,21 @@ export const privacyPolicy: LegalDocument = {
     {
       id: 'terceros',
       heading: { es: 'Servicios de terceros', en: 'Third-party services' },
-      paragraphs: [
+      bullets: [
         {
           es: 'GitHub: la web y la aplicación leen de la API pública de GitHub la lista de versiones y descargan el APK desde sus servidores. Se rige por la política de privacidad de GitHub.',
           en: 'GitHub: the website and the app read the release list from the public GitHub API and download the APK from its servers. GitHub\u2019s own privacy policy applies.',
         },
+        {
+          es: 'lrclib.net: si activas la letra sincronizada, la aplicación consulta ese servicio público con el título y el artista de la pista. Si no lo activas, no se consulta.',
+          en: 'lrclib.net: if you turn on synced lyrics, the app queries that public service with the track\u2019s title and artist. If you do not turn it on, it is not queried.',
+        },
+        {
+          es: 'El servidor de análisis del proyecto: es configurable, así que en los ajustes puedes indicar otra dirección. En ese caso la consulta se hace a la que tú indiques.',
+          en: 'The project\u2019s analysis server: it is configurable, so you can point the app at a different address in the settings. In that case the request goes to whichever address you choose.',
+        },
+      ],
+      paragraphs: [
         {
           es: 'No se venden, alquilan ni comparten datos personales con terceros, porque la aplicación y la web no recopilan datos personales identificativos.',
           en: 'Personal data is not sold, rented or shared with third parties, because the app and the site do not collect identifying personal data.',

@@ -274,7 +274,14 @@ describe('caché y tolerancia a fallos', () => {
     expect(payload.source).toBe('snapshot');
     expect(payload.stale).toBe(true);
     expect(payload.releases.length).toBeGreaterThan(0);
-    expect(payload.latest?.tag).toBe('v1.1.35-40');
+    // La etiqueta no se fija a mano: se compara con la más reciente por fecha
+    // del propio snapshot, para que el test no se rompa al publicar una
+    // versión nueva.
+    const snapshotReleases = [...payload.releases].sort(
+      (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+    );
+    expect(payload.latest?.tag).toBe(snapshotReleases[0].tag);
+    expect(payload.latest?.apk).not.toBeNull();
   });
 
   it('tras un fallo no insiste en cada petición (espera de reintento)', async () => {

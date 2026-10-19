@@ -54,6 +54,57 @@ export interface Troubleshoot {
   solution: LocalizedText;
 }
 
+/**
+ * El recorrido completo, desde la web hasta el uso: descargar, instalar,
+ * abrir la app y empezar a reproducir o descargar.
+ */
+export const howItWorks: InstallStep[] = [
+  {
+    title: { es: 'Descarga desde esta web', en: 'Download from this site' },
+    text: {
+      es: 'Pulsa el botón de descarga. Obtendrás el archivo APK de la última versión estable publicada, con su tamaño y su huella SHA-256 a la vista.',
+      en: 'Tap the download button. You get the APK file of the latest published stable version, with its size and SHA-256 fingerprint on screen.',
+    },
+  },
+  {
+    title: { es: 'Instálalo en Android', en: 'Install it on Android' },
+    text: {
+      es: 'Abre el APK y permite la instalación únicamente desde la app con la que lo abriste. Android te avisará de que el archivo viene de fuera de Google Play: es lo normal en una app distribuida así.',
+      en: 'Open the APK and allow installation only from the app you opened it with. Android will warn that the file comes from outside Google Play: that is normal for an app distributed this way.',
+    },
+  },
+  {
+    title: { es: 'Abre VibeGrab', en: 'Open VibeGrab' },
+    text: {
+      es: 'La app pide los permisos que necesita para descargar y reproducir. El explorador, el navegador, el analizador, las descargas, la biblioteca y la configuración están en las seis pestañas inferiores.',
+      en: 'The app asks for the permissions it needs to download and play. Explore, browser, analyse, downloads, library and settings are the six tabs at the bottom.',
+    },
+  },
+  {
+    title: { es: 'Descarga y reproduce', en: 'Download and play' },
+    text: {
+      es: 'Pega un enlace o comparte uno desde otra app, elige el formato y deja que la descarga avance en segundo plano. Cuando termine, el archivo aparece en tu biblioteca y se reproduce dentro de la app.',
+      en: 'Paste a link or share one from another app, pick the format and let the download run in the background. When it finishes, the file appears in your library and plays inside the app.',
+    },
+  },
+];
+
+/**
+ * Aviso sobre la procedencia del archivo. Importante: no se pide desactivar
+ * protecciones de forma permanente, solo autorizar una fuente concreta.
+ */
+export const provenanceNote = {
+  title: { es: 'De dónde viene el archivo', en: 'Where the file comes from' },
+  text: {
+    es: 'Cada versión publicada indica su número, su fecha, su tamaño y su huella SHA-256. Si comparas esa huella con la del archivo que has descargado, sabrás que el archivo no se ha modificado por el camino. Descarga siempre desde esta web: es el único sitio oficial del proyecto.',
+    en: 'Every published version shows its number, date, size and SHA-256 fingerprint. If you compare that fingerprint with the file you downloaded, you will know it has not been altered along the way. Always download from this site: it is the only official site of the project.',
+  },
+  warning: {
+    es: 'Android te pedirá permiso para instalar aplicaciones de origen externo. Concédelo solo a la app con la que abres el archivo (tu navegador o tu gestor de archivos) y no hace falta desactivar las protecciones de seguridad del sistema.',
+    en: 'Android will ask you to allow apps from an external source. Grant it only to the app you open the file with (your browser or your file manager); there is no need to turn off the system security protections.',
+  },
+};
+
 export const troubleshooting: Troubleshoot[] = [
   {
     problem: {

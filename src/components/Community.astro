@@ -1,0 +1,124 @@
+---
+/**
+ * Comunidad y opiniones.
+ *
+ * No hay testimonios inventados. Si existe una fuente real de opiniones
+ * (`src/content/reviews.ts`), se muestran con su atribución, fecha y versión.
+ * Si no existe, la sección explica la situation y ofrece las vías reales para
+ * informar, sin puntuación media ficticia ni reseñas de relleno.
+ */
+import Icon from '@/components/Icon.astro';
+import { reviews, reviewsSource } from '@/content/reviews';
+import { formatDate } from '@/lib/format';
+import { path, type Locale } from '@/config/routes';
+import { siteConfig } from '@/config/site';
+import { useTranslations } from '@/i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const contactConfigured = siteConfig.contact.email !== '' || siteConfig.contact.supportUrl !== '';
+const hasReviews = reviews.length > 0;
+---
+
+<section class="section section--soft" id="comunidad">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">{t('community.eyebrow')}</p>
+      <h2>{t('community.title')}</h2>
+      <p class="lede">{t('community.desc')}</p>
+    </div>
+
+    {
+      hasReviews ? (
+        <div class="reviews">
+          {reviews.map((review) => (
+            <figure class="review">
+              <blockquote class="review__text">{review.text[locale]}</blockquote>
+              <figcaption class="review__meta">
+                <span class="review__author">{review.author}</span>
+                <span class="review__date">
+                  <time datetime={review.date}>{formatDate(review.date, locale)}</time>
+                  {review.version ? ` · v${review.version}` : ''}
+                </span>
+                <span class="review__source">
+                  {review.sourceUrl ? (
+                    <a href={review.sourceUrl} rel="noopener nofollow" target="_blank">
+                      {review.source}
+                    </a>
+                  ) : (
+                    review.source
+                  )}
+                </span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      ) : (
+        <div class="community__empty">
+          <div class="community__empty-head">
+            <span class="card__icon" aria-hidden="true">
+              <Icon name="message" size={20} />
+            </span>
+            <div>
+              <p class="community__empty-title">{t('community.empty.title')}</p>
+              <p class="community__empty-text">{t('community.empty.text')}</p>
+            </div>
+          </div>
+
+          <ul class="community__channels">
+            <li class="community__channel">
+              <Icon name="file-text" size={17} />
+              <div>
+                <p class="community__channel-title">{t('community.channels.report.title')}</p>
+                <p class="community__channel-text">{t('community.channels.report.text')}</p>
+              </div>
+            </li>
+            <li class="community__channel">
+              <Icon name="lifebuoy" size={17} />
+              <div>
+                <p class="community__channel-title">{t('community.channels.help.title')}</p>
+                <p class="community__channel-text">{t('community.channels.help.text')}</p>
+              </div>
+            </li>
+            <li class="community__channel">
+              <Icon name="shield" size={17} />
+              <div>
+                <p class="community__channel-title">{t('community.channels.rights.title')}</p>
+                <p class="community__channel-text">{t('community.channels.rights.text')}</p>
+              </div>
+            </li>
+          </ul>
+
+          <div class="btn-row">
+            {contactConfigured ? (
+              <a class="btn btn--primary" href={path('contact', locale)}>
+                <Icon name="mail" size={18} />
+                {t('footer.contact')}
+              </a>
+            ) : (
+              <a class="btn btn--secondary" href={path('help', locale)}>
+                <Icon name="lifebuoy" size={18} />
+                {t('help.title')}
+              </a>
+            )}
+            <a class="btn btn--ghost" href={path('download', locale)}>
+              <Icon name="download" size={18} />
+              {t('nav.download')}
+            </a>
+          </div>
+
+          {reviewsSource.name && (
+            <p class="tiny muted">
+              {t('community.source', { source: reviewsSource.name })}
+            </p>
+          )}
+        </div>
+      )
+    }
+  </div>
+</section>

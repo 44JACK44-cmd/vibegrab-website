@@ -33,6 +33,14 @@ const legalLinks: Array<{ key: RouteKey; label: string }> = [
   { key: 'terms', label: t('legal.terms.title') },
 ];
 
+/** Apartados de la portada, accesibles desde cualquier página. */
+const sectionLinks: Array<{ id: string; label: string }> = [
+  { id: 'como-funciona', label: t('nav.how') },
+  { id: 'demo', label: t('nav.demo') },
+  { id: 'novedades', label: t('nav.news') },
+  { id: 'preguntas', label: t('nav.faq') },
+];
+
 const year = new Date().getFullYear();
 const contactConfigured = siteConfig.contact.email !== '' || siteConfig.contact.supportUrl !== '';
 ---
@@ -75,6 +83,13 @@ const contactConfigured = siteConfig.contact.email !== '' || siteConfig.contact.
         {
           resourceLinks.map((link) => (
             <a class="footer__link" href={path(link.key, locale)}>
+              {link.label}
+            </a>
+          ))
+        }
+        {
+          sectionLinks.map((link) => (
+            <a class="footer__link" href={`${path('home', locale)}#${link.id}`}>
               {link.label}
             </a>
           ))

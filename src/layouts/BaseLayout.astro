@@ -10,11 +10,13 @@
 import '@/styles/tokens.css';
 import '@/styles/base.css';
 import '@/styles/components.css';
+import '@/styles/sections.css';
 import '@fontsource-variable/inter';
 import '@fontsource-variable/space-grotesk';
 
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
+import SectionNav from '@/components/SectionNav.astro';
 import { siteConfig } from '@/config/site';
 import {
   absoluteUrl,
@@ -172,6 +174,7 @@ const softwareJsonLd = softwareVersion
   <body>
     <a class="skip-link" href="#contenido">{t('a11y.skip')}</a>
     <Header locale={locale} routeKey={routeKey} languagePaths={alternatePaths} />
+    {routeKey === 'home' && <SectionNav locale={locale} />}
     <main id="contenido">
       <slot />
     </main>

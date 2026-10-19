@@ -2,24 +2,34 @@
 /**
  * Página de inicio.
  *
- * Composición: portada con el producto, características reales, novedades de
- * la última versión estable, galería (o estado honesto si no hay capturas),
- * instalación resumida y preguntas frecuentes.
+ * Composición: portada con el producto y la versión estable real, métricas
+ * verificables, escaparate de funciones con diagramas, recorrido de uso,
+ * demostración de las pantallas reales de la app, novedades publicadas,
+ * seguridad y uso responsable, comunidad y preguntas frecuentes.
+ *
+ * Todos los datos provienen de la API pública de GitHub Releases o del
+ * contenido verificado en `src/content/*`.
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Icon from '@/components/Icon.astro';
 import DeviceMockup from '@/components/DeviceMockup.astro';
-import FeatureCard from '@/components/FeatureCard.astro';
+import FeatureShowcase from '@/components/FeatureShowcase.astro';
+import StatStrip from '@/components/StatStrip.astro';
+import AppTour from '@/components/AppTour.astro';
+import ScreenshotGallery from '@/components/ScreenshotGallery.astro';
+import Community from '@/components/Community.astro';
 import ReleaseNotes from '@/components/ReleaseNotes.astro';
 import Steps from '@/components/Steps.astro';
 import FaqList from '@/components/FaqList.astro';
 import ReleaseWarning from '@/components/ReleaseWarning.astro';
-import { features } from '@/content/features';
-import { installSteps } from '@/content/install';
+import { features, spotlightFeatures } from '@/content/features';
+import { howItWorks, provenanceNote } from '@/content/install';
+import { securityPoints, limitations } from '@/content/security';
 import { faq } from '@/content/faq';
-import { heroScreenshot, screenshots } from '@/config/screenshots';
+import { heroScreenshot } from '@/config/screenshots';
 import { pickImportant, withoutImportant } from '@/lib/notes';
-import { formatBytes } from '@/lib/format';
+import { formatBytes, formatDate } from '@/lib/format';
+import { collectStats } from '@/lib/stats';
 import { path, type Locale } from '@/config/routes';
 import { siteConfig } from '@/config/site';
 import type { ReleasesPayload } from '@/lib/releases';
@@ -34,14 +44,16 @@ const { locale, payload } = Astro.props;
 const t = useTranslations(locale);
 
 const latest = payload.latest;
-const featured = features.filter((feature) => feature.featured);
+const stats = collectStats(payload);
 const important = latest ? pickImportant(latest.notes) : null;
 const latestNotes = latest ? withoutImportant(latest.notes) : [];
-const faqPreview = faq.slice(0, 5);
+const faqPreview = faq.slice(0, 6);
 
 const description = t('home.hero.desc');
-
 const sizeLabel = latest?.apk ? formatBytes(latest.apk.sizeBytes, locale) : null;
+const downloadHref = latest?.apk
+  ? `/api/download?tag=${encodeURIComponent(latest.tag)}&lang=${locale}`
+  : path('download', locale);
 ---
 
 <BaseLayout
@@ -74,15 +86,12 @@ const sizeLabel = latest?.apk ? formatBytes(latest.apk.sizeBytes, locale) : null
         <p class="hero__desc">{description}</p>
 
         <div class="btn-row">
-          <a
-            class="btn btn--primary btn--lg"
-            href={latest?.apk ? `/api/download?tag=${encodeURIComponent(latest.tag)}&lang=${locale}` : path('download', locale)}
-          >
+          <a class="btn btn--primary btn--lg" href={downloadHref}>
             <Icon name="download" size={20} />
             {t('home.hero.cta.download')}
           </a>
-          <a class="btn btn--secondary btn--lg" href={path('features', locale)}>
-            {t('home.hero.cta.discover')}
+          <a class="btn btn--secondary btn--lg" href="#como-funciona">
+            {t('home.hero.cta.how')}
             <Icon name="arrow-right" size={18} />
           </a>
         </div>
@@ -97,17 +106,39 @@ const sizeLabel = latest?.apk ? formatBytes(latest.apk.sizeBytes, locale) : null
             {t('home.hero.meta.free')}
           </span>
           {
-            latest?.apk && (
+            sizeLabel && (
               <span class="hero__meta-item">
                 <Icon name="package" size={16} />
-                {formatBytes(latest.apk.sizeBytes, locale)}
+                {sizeLabel}
               </span>
             )
           }
         </div>
+
+        {
+          latest?.publishedAt && (
+            <p class="hero__stamp">
+              <Icon name="calendar" size={15} />
+              <span>
+                {t('home.hero.published', { date: formatDate(latest.publishedAt, locale) })}
+              </span>
+              <a href={path('versions', locale)} class="hero__stamp-link">
+                {t('home.hero.publishedLink')}
+                <Icon name="arrow-right" size={14} />
+              </a>
+            </p>
+          )
+        }
       </div>
 
       <DeviceMockup locale={locale} release={latest} screenshot={heroScreenshot} />
+    </div>
+  </section>
+
+  <!-- --------------------------------------------------------- Métricas -->
+  <section class="section section--tight">
+    <div class="container">
+      <StatStrip stats={stats} locale={locale} />
     </div>
   </section>
 
@@ -120,15 +151,69 @@ const sizeLabel = latest?.apk ? formatBytes(latest.apk.sizeBytes, locale) : null
         <p class="lede">{t('home.features.desc')}</p>
       </div>
 
-      <div class="grid grid--3">
-        {featured.map((feature) => <FeatureCard feature={feature} locale={locale} />)}
+      <FeatureShowcase features={spotlightFeatures} locale={locale} />
+
+      <div class="showcase__more">
+        <p class="showcase__more-count">
+          {t('home.features.count', { count: features.length })}
+        </p>
+        <a class="btn btn--secondary" href={path('features', locale)}>
+          {t('home.features.all')}
+          <Icon name="arrow-right" size={17} />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- -------------------------------------------------------- Cómo funciona -->
+  <section class="section section--soft" id="como-funciona">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">{t('home.how.eyebrow')}</p>
+        <h2>{t('home.how.title')}</h2>
+        <p class="lede">{t('home.how.desc')}</p>
+      </div>
+
+      <Steps steps={howItWorks} locale={locale} />
+
+      <div class="provenance">
+        <div class="provenance__head">
+          <span class="card__icon" aria-hidden="true">
+            <Icon name="shield" size={20} />
+          </span>
+          <div>
+            <h3 class="provenance__title">{provenanceNote.title[locale]}</h3>
+            <p class="provenance__text">{provenanceNote.text[locale]}</p>
+          </div>
+        </div>
+        <p class="callout callout--warning">
+          <Icon name="info" size={18} />
+          <span>{provenanceNote.warning[locale]}</span>
+        </p>
       </div>
 
       <div style="margin-top: var(--space-6)">
-        <a class="link-arrow" href={path('features', locale)}>
-          {locale === 'es' ? 'Ver todas las características' : 'See all features'}
+        <a class="link-arrow" href={path('help', locale)}>
+          {t('home.install.cta')}
           <Icon name="arrow-right" size={16} />
         </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------ La aplicación -->
+  <section class="section" id="demo">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">{t('home.demo.eyebrow')}</p>
+        <h2>{t('home.demo.title')}</h2>
+        <p class="lede">{t('home.demo.desc')}</p>
+      </div>
+
+      <AppTour locale={locale} />
+
+      <div class="demo__gallery">
+        <ScreenshotGallery locale={locale} />
       </div>
     </div>
   </section>
@@ -147,11 +232,7 @@ const sizeLabel = latest?.apk ? formatBytes(latest.apk.sizeBytes, locale) : null
                   {locale === 'es' ? 'Versión' : 'Version'} <strong>v{latest.version}</strong>
                   {latest.build !== null ? ` (build ${latest.build})` : ''} ·{' '}
                   <time datetime={latest.publishedAt}>
-                    {new Intl.DateTimeFormat(locale === 'es' ? 'es-ES' : 'en-GB', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric',
-                    }).format(new Date(latest.publishedAt))}
+                    {formatDate(latest.publishedAt, locale)}
                   </time>
                 </p>
               </div>
@@ -169,6 +250,10 @@ const sizeLabel = latest?.apk ? formatBytes(latest.apk.sizeBytes, locale) : null
                   {t('download.otherVersions')}
                 </a>
               </div>
+
+              <p class="tiny muted">
+                {t('home.whatsnew.sourceNote')}
+              </p>
             </div>
 
             <div class="card">
@@ -192,49 +277,55 @@ const sizeLabel = latest?.apk ? formatBytes(latest.apk.sizeBytes, locale) : null
     )
   }
 
-  <!-- -------------------------------------------------------------- Galería -->
-  {
-    screenshots.length > 0 && (
-      <section class="section" id="galeria">
-        <div class="container">
-          <div class="section-head">
-            <p class="eyebrow">{t('home.gallery.eyebrow')}</p>
-            <h2>{t('home.gallery.title')}</h2>
-          </div>
-
-          <div class="shots">
-            {screenshots.map((shot) => (
-              <figure>
-                <div class="shot">
-                  <img src={shot.src} alt={shot.alt[locale]} loading="lazy" decoding="async" />
-                </div>
-                <figcaption class="shot__caption">{shot.caption[locale]}</figcaption>
-              </figure>
-            ))}
-          </div>
-        </div>
-      </section>
-    )
-  }
-
-  <!-- ---------------------------------------------------------- Instalación -->
-  <section class="section section--soft" id="instalacion">
+  <!-- ------------------------------------------------- Seguridad y uso responsable -->
+  <section class="section" id="seguridad">
     <div class="container">
       <div class="section-head">
-        <p class="eyebrow">{t('home.install.eyebrow')}</p>
-        <h2>{t('home.install.title')}</h2>
+        <p class="eyebrow">{t('home.security.eyebrow')}</p>
+        <h2>{t('home.security.title')}</h2>
+        <p class="lede">{t('home.security.desc')}</p>
       </div>
 
-      <Steps steps={installSteps.slice(0, 3)} locale={locale} />
+      <div class="grid grid--2">
+        {
+          securityPoints.map((point) => (
+            <article class="card">
+              <span class="card__icon" aria-hidden="true">
+                <Icon name={point.icon} size={20} />
+              </span>
+              <h3 class="card__title">{point.title[locale]}</h3>
+              <p class="card__text">{point.text[locale]}</p>
+              {point.link && (
+                <div class="card__foot">
+                  <a class="link-arrow" href={path(point.link.key, locale)}>
+                    {point.link.label[locale]}
+                    <Icon name="arrow-right" size={16} />
+                  </a>
+                </div>
+              )}
+            </article>
+          ))
+        }
+      </div>
 
-      <div style="margin-top: var(--space-6)">
-        <a class="link-arrow" href={path('help', locale)}>
-          {t('home.install.cta')}
-          <Icon name="arrow-right" size={16} />
-        </a>
+      <div class="limitations">
+        <p class="limitations__title">
+          <Icon name="info" size={16} />
+          {t('home.security.limitations')}
+        </p>
+        <ul class="notes__list">
+          {
+            limitations.map((item) => (
+              <li class="notes__item">{item[locale]}</li>
+            ))
+          }
+        </ul>
       </div>
     </div>
   </section>
+
+  <!-- ------------------------------------------------------------ Comunidad -->
+  <Community locale={locale} />
 
   <!-- ------------------------------------------------------------------ CTA -->
   <section class="section">
@@ -247,12 +338,12 @@ const sizeLabel = latest?.apk ? formatBytes(latest.apk.sizeBytes, locale) : null
             <p class="lede" style="text-align:center">{t('home.cta.desc')}</p>
           </div>
           <div class="btn-row" style="justify-content:center">
-            <a class="btn btn--primary btn--lg" href={path('download', locale)}>
+            <a class="btn btn--primary btn--lg" href={downloadHref}>
               <Icon name="download" size={20} />
               {t('home.hero.cta.download')}
             </a>
-            <a class="btn btn--secondary btn--lg" href={path('versions', locale)}>
-              {t('nav.versions')}
+            <a class="btn btn--secondary btn--lg" href={path('features', locale)}>
+              {t('nav.features')}
             </a>
           </div>
           <p class="tiny muted">
@@ -265,7 +356,7 @@ const sizeLabel = latest?.apk ? formatBytes(latest.apk.sizeBytes, locale) : null
   </section>
 
   <!-- ------------------------------------------------------------------ FAQ -->
-  <section class="section section--soft">
+  <section class="section section--soft" id="preguntas">
     <div class="container container--narrow">
       <div class="section-head section-head--center">
         <p class="eyebrow">{t('home.faq.eyebrow')}</p>

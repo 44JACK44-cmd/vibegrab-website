@@ -1,0 +1,149 @@
+---
+/**
+ * Recorrido por la aplicación.
+ *
+ * Presenta las seis pestañas reales de VibeGrab y las pantallas a las que se
+ * entra desde dentro de la app, con lo que cada una ofrece. Los nombres y el
+ * comportamiento proceden del código Flutter del proyecto.
+ *
+ * Accesibilidad: patrón `tablist` completo, con `aria-selected`, navegación
+ * por flechas, `Home`/`End` y foco gestionado.
+ */
+import Icon from '@/components/Icon.astro';
+import { appScreens, appTabs, type AppScreen } from '@/content/app-tour';
+import type { Locale } from '@/config/routes';
+import { useTranslations } from '@/i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const secondary = appScreens.filter((screen) => !screen.tab);
+
+function panelId(screen: AppScreen, kind: 'tab' | 'panel'): string {
+  return `tour-${kind}-${screen.id}`;
+}
+---
+
+<section class="tour" aria-labelledby="tour-title">
+  <h2 id="tour-title" class="visually-hidden">{t('tour.title')}</h2>
+
+  <div class="tour__tabs" role="tablist" aria-label={t('tour.tabsLabel')}>
+    {
+      appTabs.map((screen, index) => (
+        <button
+          type="button"
+          class="tour__tab"
+          role="tab"
+          id={panelId(screen, 'tab')}
+          aria-controls={panelId(screen, 'panel')}
+          aria-selected={index === 0 ? 'true' : 'false'}
+          tabindex={index === 0 ? 0 : -1}
+          data-tour-tab
+        >
+          <Icon name={screen.icon} size={17} />
+          <span>{screen.name[locale]}</span>
+        </button>
+      ))
+    }
+  </div>
+
+  {
+    appTabs.map((screen, index) => (
+      <div
+        class="tour__panel"
+        role="tabpanel"
+        id={panelId(screen, 'panel')}
+        aria-labelledby={panelId(screen, 'tab')}
+        hidden={index !== 0}
+        data-tour-panel
+      >
+        <div class="tour__panel-head">
+          <p class="tour__location">
+            <Icon name="compass" size={13} />
+            {screen.location[locale]}
+          </p>
+          <h3 class="tour__title">{screen.name[locale]}</h3>
+          <p class="tour__summary">{screen.summary[locale]}</p>
+        </div>
+
+        <ul class="tour__highlights">
+          {screen.highlights.map((highlight) => (
+            <li class="tour__highlight">
+              <Icon name="check" size={15} />
+              <span>{highlight[locale]}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))
+  }
+
+  <div class="tour__more">
+    <p class="tour__more-title">
+      {locale === 'es' ? 'Y además, dentro de la app' : 'And inside the app too'}
+    </p>
+    <ul class="tour__more-list">
+      {
+        secondary.map((screen) => (
+          <li class="tour__more-item">
+            <span class="tour__more-icon" aria-hidden="true">
+              <Icon name={screen.icon} size={16} />
+            </span>
+            <div>
+              <p class="tour__more-name">{screen.name[locale]}</p>
+              <p class="tour__more-text">{screen.summary[locale]}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<script>
+  /**
+   * pestañas accesibles: flechas, Inicio y Fin.
+   */
+  function initTour() {
+    document.querySelectorAll<HTMLElement>('[data-tour-tab]').forEach((first) => {
+      const list = first.closest('[role="tablist"]');
+      if (!list) return;
+
+      const tabs = Array.from(list.querySelectorAll<HTMLButtonElement>('[data-tour-tab]'));
+
+      const select = (tab: HTMLButtonElement, focus = true) => {
+        tabs.forEach((candidate) => {
+          const active = candidate === tab;
+          candidate.setAttribute('aria-selected', String(active));
+          candidate.tabIndex = active ? 0 : -1;
+          const panel = document.getElementById(
+            candidate.getAttribute('aria-controls') ?? '',
+          );
+          if (panel) panel.hidden = !active;
+        });
+        if (focus) tab.focus();
+      };
+
+      tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => select(tab, false));
+        tab.addEventListener('keydown', (event) => {
+          const keys = ['ArrowRight', 'ArrowLeft', 'Home', 'End'];
+          if (!keys.includes(event.key)) return;
+          event.preventDefault();
+          let next = index;
+          if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
+          if (event.key === 'ArrowLeft') next = (index - 1 + tabs.length) % tabs.length;
+          if (event.key === 'Home') next = 0;
+          if (event.key === 'End') next = tabs.length - 1;
+          select(tabs[next]);
+        });
+      });
+    });
+  }
+
+  initTour();
+</script>

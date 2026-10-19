@@ -15,6 +15,10 @@ const dict = {
   'nav.versions': { es: 'Versiones', en: 'Versions' },
   'nav.about': { es: 'Sobre nosotros', en: 'About' },
   'nav.help': { es: 'Ayuda', en: 'Help' },
+  'nav.demo': { es: 'La app', en: 'The app' },
+  'nav.news': { es: 'Novedades', en: "What's new" },
+  'nav.how': { es: 'Cómo funciona', en: 'How it works' },
+  'nav.faq': { es: 'Preguntas frecuentes', en: 'FAQ' },
 
   'header.download': { es: 'Descargar', en: 'Download' },
   'header.menu.open': { es: 'Abrir menú', en: 'Open menu' },
@@ -56,6 +60,15 @@ const dict = {
   },
   'home.hero.cta.download': { es: 'Descargar para Android', en: 'Download for Android' },
   'home.hero.cta.discover': { es: 'Descubrir VibeGrab', en: 'Discover VibeGrab' },
+  'home.hero.cta.how': { es: 'Cómo funciona', en: 'How it works' },
+  'home.hero.published': {
+    es: 'Publicada el {date}',
+    en: 'Published on {date}',
+  },
+  'home.hero.publishedLink': {
+    es: 'Ver todas las versiones',
+    en: 'See all versions',
+  },
   'home.hero.meta.android': { es: 'Android 7.0 o superior', en: 'Android 7.0 or newer' },
   'home.hero.meta.free': { es: 'Gratis y sin cuenta', en: 'Free, no account needed' },
   'home.hero.mockup.downloads': { es: 'Descargas', en: 'Downloads' },
@@ -70,6 +83,34 @@ const dict = {
   'home.features.desc': {
     es: 'Cada función de esta lista corresponde a algo que ya existe en la aplicación. Nada de promesas.',
     en: 'Every feature listed here corresponds to something already present in the application. No promises.',
+  },
+  'home.features.count': {
+    es: '{count} funciones verificadas en el código de la app',
+    en: '{count} features verified in the app code',
+  },
+  'home.features.all': {
+    es: 'Ver todas las características',
+    en: 'See all features',
+  },
+
+  'home.how.eyebrow': { es: 'Cómo funciona', en: 'How it works' },
+  'home.how.title': {
+    es: 'De la descarga al primer archivo, en cuatro pasos',
+    en: 'From the download to your first file, in four steps',
+  },
+  'home.how.desc': {
+    es: 'VibeGrab se distribuye como APK, así que la instalación es la de siempre en Android: abrir el archivo y autorizar una única fuente. Nada de desactivar protecciones del sistema.',
+    en: 'VibeGrab is distributed as an APK, so installing is the usual Android routine: open the file and authorise one single source. No system protections to turn off.',
+  },
+
+  'home.demo.eyebrow': { es: 'La aplicación', en: 'The application' },
+  'home.demo.title': {
+    es: 'Una app de Android con seis pestañas y nada que no exista',
+    en: 'An Android app with six tabs and nothing that is not real',
+  },
+  'home.demo.desc': {
+    es: 'Estas son las pantallas reales de VibeGrab, con lo que ofrece cada una. Los diagramas explican cómo funciona cada parte; en cuanto haya capturas reales de la app, se mostrarán aquí.',
+    en: 'These are the real screens of VibeGrab and what each one offers. The diagrams explain how each part works; as soon as real screenshots of the app exist, they will show up here.',
   },
 
   'home.whatsnew.eyebrow': { es: 'Novedades', en: "What's new" },
@@ -86,6 +127,24 @@ const dict = {
     es: 'Notas de la versión tal y como las publicó el desarrollador.',
     en: 'Release notes exactly as published by the developer.',
   },
+  'home.whatsnew.sourceNote': {
+    es: 'Estas novedades proceden de la publicación oficial de la versión.',
+    en: 'These notes come from the official release of this version.',
+  },
+
+  'home.security.eyebrow': { es: 'Seguridad y uso responsable', en: 'Security & responsible use' },
+  'home.security.title': {
+    es: 'De dónde viene el archivo y qué se puede esperar',
+    en: 'Where the file comes from and what to expect',
+  },
+  'home.security.desc': {
+    es: 'Sin promesas grandilocuentes: esto es lo que la web y la aplicación hacen de verdad, y también lo que no hacen.',
+    en: 'No grand claims: this is what the website and the app actually do, and also what they do not do.',
+  },
+  'home.security.limitations': {
+    es: 'Limitaciones que conviene conocer',
+    en: 'Limitations worth knowing',
+  },
 
   'home.gallery.eyebrow': { es: 'La aplicación', en: 'The app' },
   'home.gallery.title': { es: 'Así se ve VibeGrab', en: 'This is what VibeGrab looks like' },
@@ -96,6 +155,10 @@ const dict = {
   'home.gallery.pendingHint': {
     es: 'Cuando estén listas, se mostrarán aquí como imágenes reales de la aplicación.',
     en: 'Once available, they will appear here as real images from the application.',
+  },
+  'home.gallery.diagramNote': {
+    es: 'Los dibujos de esta página son diagramas que explican el funcionamiento, no capturas de la aplicación.',
+    en: 'The drawings on this page are diagrams that explain how things work; they are not screenshots of the application.',
   },
 
   'home.install.eyebrow': { es: 'Instalación', en: 'Installation' },
@@ -243,6 +306,10 @@ const dict = {
   'about.goals.title': { es: 'Objetivos', en: 'Goals' },
   'about.verified.title': { es: 'Datos verificables', en: 'Verifiable data' },
   'about.verified.created': { es: 'Primer commit del proyecto', en: 'First commit' },
+  'about.verified.firstRelease': {
+    es: 'Primera versión publicada',
+    en: 'First published release',
+  },
   'about.verified.repo': { es: 'Repositorio publicado', en: 'Repository published' },
   'about.verified.releases': { es: 'Versiones publicadas', en: 'Releases published' },
   'about.verified.latest': { es: 'Última versión estable', en: 'Latest stable version' },
@@ -254,6 +321,18 @@ const dict = {
   'about.team.text': {
     es: 'VibeGrab lo desarrolla actualmente una sola persona, de forma independiente. No hay una empresa detrás ni un equipo al que atribuir el proyecto, y esta web no lo simula.',
     en: 'VibeGrab is currently developed by a single, independent person. There is no company behind it and no team to credit, and this website does not pretend otherwise.',
+  },
+  'about.evolution.title': {
+    es: 'Cómo evoluciona el proyecto',
+    en: 'How the project evolves',
+  },
+  'about.team.contactOk': {
+    es: 'Hay un canal de contacto publicado en esta web para consultas, avisos de errores y peticiones.',
+    en: 'A contact channel is published on this site for questions, bug reports and requests.',
+  },
+  'about.team.contactPending': {
+    es: 'Todavía no hay un canal de contacto publicado. En cuanto exista, aparecerá en la página de contacto; mientras tanto, la guía de instalación y las preguntas frecuentes cubren los casos habituales.',
+    en: 'There is no published contact channel yet. As soon as one exists it will appear on the contact page; in the meantime, the install guide and the FAQ cover the common cases.',
   },
 
   /* ----------------------------------------------------------------- Ayuda */
@@ -307,6 +386,88 @@ const dict = {
   },
   'notfound.home': { es: 'Volver al inicio', en: 'Back to home' },
   'notfound.download': { es: 'Ir a descargas', en: 'Go to downloads' },
+
+  'features.spotlight.eyebrow': { es: 'Lo esencial', en: 'The essentials' },
+  'features.spotlight.title': {
+    es: 'Las funciones que se usan todos los días',
+    en: 'The features used every day',
+  },
+
+  /* ------------------------------------------------------------ Métricas */
+  'stats.title': { es: 'Datos del producto', en: 'Product data' },
+  'stats.latestVersion': { es: 'Versión estable actual', en: 'Current stable version' },
+  'stats.publishedOn': { es: 'Publicada el {date}', en: 'Published on {date}' },
+  'stats.stableReleases': {
+    es: 'Versiones publicadas con APK',
+    en: 'Versions published with an APK',
+  },
+  'stats.prereleaseNote': {
+    es: '{count} preliminares aparte',
+    en: '{count} pre-releases on top',
+  },
+  'stats.apkSize': { es: 'Tamaño del APK actual', en: 'Size of the current APK' },
+  'stats.apkSizeNote': {
+    es: 'Archivo único para cualquier dispositivo',
+    en: 'A single file for any device',
+  },
+  'stats.fileDownloads': {
+    es: 'Descargas del archivo en GitHub',
+    en: 'Downloads of the file on GitHub',
+  },
+
+  /* --------------------------------------------------- Recorrido por la app */
+  'tour.title': { es: 'Recorrido por la aplicación', en: 'Tour of the application' },
+  'tour.tabsLabel': {
+    es: 'Pestañas de la aplicación',
+    en: 'Application tabs',
+  },
+
+  /* ------------------------------------------------------------ Comunidad */
+  'community.eyebrow': { es: 'Comunidad', en: 'Community' },
+  'community.title': {
+    es: 'Lo que dice y lo que se puede hacer',
+    en: 'What people say and what you can do',
+  },
+  'community.desc': {
+    es: 'Todavía no hay reseñas verificadas publicadas, así que no inventamos testimonios ni puntuaciones. Mientras tanto, estas son las vías reales para participar.',
+    en: 'There are no verified reviews published yet, so we do not invent testimonials or ratings. In the meantime, these are the real ways to take part.',
+  },
+  'community.empty.title': {
+    es: 'Aún no hay reseñas verificadas',
+    en: 'No verified reviews yet',
+  },
+  'community.empty.text': {
+    es: 'Publicamos opiniones solo cuando vienen de una fuente real y comprobable, con su fecha y su contexto. Rellenar la sección con testimonios inventados no es una opción.',
+    en: 'We publish opinions only when they come from a real, verifiable source, with their date and context. Filling this section with invented testimonials is not an option.',
+  },
+  'community.channels.report.title': {
+    es: 'Informar de un problema',
+    en: 'Report a problem',
+  },
+  'community.channels.report.text': {
+    es: 'Indica la versión, tu modelo de teléfono, tu versión de Android y los pasos para reproducirlo.',
+    en: 'Include the version, your phone model, your Android version and the steps to reproduce it.',
+  },
+  'community.channels.help.title': {
+    es: 'Resolver una duda',
+    en: 'Resolve a question',
+  },
+  'community.channels.help.text': {
+    es: 'La guía de instalación y las preguntas frecuentes cubren los casos más habituales.',
+    en: 'The install guide and the FAQ cover the most common cases.',
+  },
+  'community.channels.rights.title': {
+    es: 'Reportar un uso indebido',
+    en: 'Report misuse',
+  },
+  'community.channels.rights.text': {
+    es: 'VibeGrab es una herramienta y la responsabilidad de lo que se descarga es de quien la usa.',
+    en: 'VibeGrab is a tool and responsibility for what is downloaded belongs to whoever uses it.',
+  },
+  'community.source': {
+    es: 'Opiniones collected from {source}.',
+    en: 'Reviews collected from {source}.',
+  },
 
   /* ------------------------------------------------------ Estados genéricos */
   'common.loading': { es: 'Cargando…', en: 'Loading…' },

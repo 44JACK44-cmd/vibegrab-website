@@ -1,7 +1,64 @@
 {
-  "fetchedAt": "2026-10-18T08:09:48.067Z",
+  "fetchedAt": "2026-10-19T21:54:57.951Z",
   "repo": "44JACK44-cmd/vibeGrab",
   "releases": [
+    {
+      "tag_name": "v1.1.38-43",
+      "name": "v1.1.38-43",
+      "body": "<!-- es -->\n## ✨ Novedades\n- 🎵 **Tus audios ahora son MP3 de verdad** — Al descargar solo el audio, el archivo sale en MP3 reproducible en cualquier reproductor, con el título, el artista y la carátula dentro del propio archivo.\n- 🖼️ **Los posts de fotos de TikTok ya se descargan** — Los enlaces de fotos con música ofrecen lo que de verdad tienen: la música para guardarla como MP3 y la imagen del post. Ya no aparece una opción de vídeo que no existe.\n\n## 🚀 Mejoras\n- ⚡ **La reproducción en Explorer empieza antes** — La dirección del vídeo que vas a reproducir se busca mientras se cierra el anterior, así el primer fotograma llega antes y se evita tocar Play dos veces.\n- 📊 **Análisis de enlaces más completo y más rápido** — El análisis devuelve todas las calidades y pistas de audio disponibles (en algunos vídeos solo aparecía una) y responde antes; repetir el mismo enlace es instantáneo.\n- 💿 **El reproductor enseña la carátula del archivo** — Al reproducir una descarga, el reproductor y la notificación muestran el título, el artista y la carátula que lleva dentro el propio archivo, aunque falten los datos de la descarga.\n- ⚙️ **Ajustes, ordenado por bloques** — Los ajustes están agrupados en bloques con las descargas primero y cada grupo con su título, para encontrar cada opción de un vistazo.\n\n## 🛠️ Correcciones\n- 🎬 **Los vídeos sin audio ya se descargan con sonido** — Las calidades que venían sin pista de audio se unen con la mejor pista disponible antes de guardarse, así el archivo nunca acaba mudo.\n- ✨ **Se acabó el destello blanco al minimizar el vídeo** — Al minimizar el vídeo o redimensionar la ventana flotante ya no aparece un fogonazo blanco: la ventana se pinta en negro mientras se recoloca.\n\n<!-- en -->\n## ✨ What's new\n- 🎵 **Your audio downloads are real MP3 files now** — When you download only the audio, the file comes out as a playable MP3 in any player, with the title, the artist and the cover inside the file itself.\n- 🖼️ **TikTok photo posts can be downloaded now** — Photo links with music offer what they really have: the music to save as an MP3 and the image of the post. A video option that does not exist no longer shows up.\n\n## 🚀 Improvements\n- ⚡ **Explorer playback starts sooner** — The address of the video you are about to play is looked up while the previous one is closing, so the first frame arrives sooner and there is no need to tap Play twice.\n- 📊 **Link analysis is more complete and faster** — The analysis returns every available quality and audio track (on some videos only one used to show up) and answers sooner; repeating the same link is instant.\n- 💿 **The player shows the cover inside the file** — When you play a download, the player and the notification show the title, the artist and the cover the file itself carries, even if the download details are missing.\n- ⚙️ **Settings, ordered in blocks** — Settings are grouped in blocks with downloads first and a title for each group, so every option is easy to find at a glance.\n\n## 🛠️ Fixes\n- 🎬 **Videos without audio download with sound now** — Qualities that came without an audio track are joined with the best available track before saving, so the file never ends up muted.\n- ✨ **No more white flash when minimising the video** — Minimising the video or resizing the floating window no longer shows a white flash: the window is painted black while it is being resized.\n",
+      "draft": false,
+      "prerelease": false,
+      "published_at": "2026-10-19T19:32:14Z",
+      "created_at": "2026-10-19T19:23:05Z",
+      "html_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/tag/v1.1.38-43",
+      "assets": [
+        {
+          "name": "VibeGrab.apk",
+          "size": 66707980,
+          "digest": "sha256:ecb9d60467240133c80f69dae258a69dc487a8000eb7cfc780923a65570e903d",
+          "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.38-43/VibeGrab.apk",
+          "download_count": 5
+        }
+      ]
+    },
+    {
+      "tag_name": "v1.1.37-42",
+      "name": "v1.1.37-42",
+      "body": "<!-- es -->\n## 🚀 Mejoras\n- 🎁 **Las actualizaciones llegan explicadas** — A partir de esta versión, cuando salga una nueva, el aviso te cuenta qué cambia con el mismo formato de novedades en lugar de una lista técnica de cambios.\n\n<!-- en -->\n## 🚀 Improvements\n- 🎁 **Updates arrive explained** — From this version on, when a new one comes out, the prompt tells you what changed in the same what's-new format instead of a technical change list.\n",
+      "draft": false,
+      "prerelease": false,
+      "published_at": "2026-10-19T15:09:46Z",
+      "created_at": "2026-10-19T15:00:30Z",
+      "html_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/tag/v1.1.37-42",
+      "assets": [
+        {
+          "name": "VibeGrab.apk",
+          "size": 66707824,
+          "digest": "sha256:716bc7c5a1262c86c331b52033acc55f3536c82aa45c1a900a6a2ec499a47972",
+          "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.37-42/VibeGrab.apk",
+          "download_count": 1
+        }
+      ]
+    },
+    {
+      "tag_name": "v1.1.36-41",
+      "name": "v1.1.36-41",
+      "body": "<!-- es -->\n## ✨ Novedades\n- 📥 **Sigue tus descargas sin salir de donde estás** — Un panel compacto con el progreso de las descargas en curso, visible desde cualquier pantalla y con acceso directo a la lista.\n\n## 🚀 Mejoras\n- ⚡ **Explorer, Shorts y Descargas abren antes** — La portada ya no espera a tener la lista entera para empezar a reproducir, el feed de Shorts aparece casi al instante y el análisis de un enlace se reutiliza en lugar de repetirse.\n- 🔊 **El sonido no se corta al apagar la pantalla ni al minimizar** — El relevo al audio de fondo se prepara antes de parar el vídeo, así la música sigue sin saltos. Y al volver a la app el vídeo se recupera mientras el audio sigue sonando.\n- 🖼️ **Guarda la miniatura o la imagen del vídeo** — La acción de imagen aparece solo cuando el vídeo la tiene, se guarda con su formato real (PNG o WebP) y acaba en tu galería.\n\n## 🛠️ Correcciones\n- ▶️ **Un toque en reproducir ya basta** — El botón de reproducción ya no se queda mudo si lo pulsas mientras el vídeo todavía se está cargando.\n- 🎬 **Shorts: la pantalla sigue al reproductor** — Cuando un short termina solo o usas los controles de la notificación, el feed se mueve con él en lugar de quedarse en el anterior.\n\n<!-- en -->\n## ✨ What's new\n- 📥 **Track your downloads without leaving what you are doing** — A compact panel with the progress of the ongoing downloads, visible from any screen, with a shortcut to the list.\n\n## 🚀 Improvements\n- ⚡ **Explorer, Shorts and Downloads open sooner** — The home screen no longer waits for the whole list before it can play, the Shorts feed appears almost instantly and analysing a link is reused instead of repeated.\n- 🔊 **The sound no longer cuts out when the screen turns off or you minimise** — The handoff to background audio is prepared before the video stops, so the music continues without gaps. Coming back to the app, the video is restored while the audio keeps playing.\n- 🖼️ **Save the cover or the image of a video** — The image action shows up only when the video has one; it is saved in its real format (PNG or WebP) and ends up in your gallery.\n\n## 🛠️ Fixes\n- ▶️ **One tap on play is enough now** — The play button no longer goes mute if you tap it while the video is still loading.\n- 🎬 **Shorts: the feed follows the player** — When a short ends by itself or you use the notification controls, the feed moves along with it instead of staying on the previous one.\n",
+      "draft": false,
+      "prerelease": false,
+      "published_at": "2026-10-19T14:01:17Z",
+      "created_at": "2026-10-19T13:51:36Z",
+      "html_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/tag/v1.1.36-41",
+      "assets": [
+        {
+          "name": "VibeGrab.apk",
+          "size": 66675045,
+          "digest": "sha256:fd7355cca56dbbda2bb8bf8197da62a122ae7009369d1d74543aea0232222d61",
+          "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.36-41/VibeGrab.apk",
+          "download_count": 2
+        }
+      ]
+    },
     {
       "tag_name": "v1.1.35-40",
       "name": "v1.1.35-40",
@@ -17,7 +74,7 @@
           "size": 66642111,
           "digest": "sha256:a6489f5e44dee1e5c76e026661a8674d421e9cbb0cff6c877f12ff2d4396debd",
           "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.35-40/VibeGrab.apk",
-          "download_count": 36
+          "download_count": 46
         }
       ]
     },

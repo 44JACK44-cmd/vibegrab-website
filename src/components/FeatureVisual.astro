@@ -1,0 +1,656 @@
+---
+/**
+ * Ilustraciones de las funciones de la app.
+ *
+ * Son **diagramas** construidos con CSS que explican cómo funciona cada
+ * función. No son capturas de pantalla de la app:
+ * · No se presentan como imágenes de la aplicación.
+ * · No se inventan datos: muestran la estructura real (formatos, cola,
+ *   controles, biblioteca) que la app ofrece.
+ *
+ * Cuando existan capturas reales, se usan en su lugar (ver
+ * `src/config/screenshots.ts`).
+ */
+import Icon from '@/components/Icon.astro';
+
+export type FeatureVisualKind =
+  | 'formats'
+  | 'queue'
+  | 'share'
+  | 'player'
+  | 'library'
+  | 'explore';
+
+interface Props {
+  variant: FeatureVisualKind;
+  /** Etiqueta accesible que describe el diagrama. */
+  label: string;
+}
+
+const { variant, label } = Astro.props;
+---
+
+<div class="visual" data-variant={variant} role="img" aria-label={label}>
+  {/* ------------------------------------------------- Formatos y calidades */}
+  {
+    variant === 'formats' && (
+      <div class="visual__formats">
+        <div class="visual__url">
+          <Icon name="link" size={14} />
+          <span>enlace.com/video</span>
+        </div>
+        <ul class="visual__rows">
+          <li class="visual__row is-selected">
+            <span class="visual__row-icon"><Icon name="video" size={15} /></span>
+            <span class="visual__row-main">
+              <span class="visual__row-title">1080p · MP4</span>
+              <span class="visual__row-meta">Vídeo + audio · 24 MB</span>
+            </span>
+            <Icon name="download" size={15} />
+          </li>
+          <li class="visual__row">
+            <span class="visual__row-icon"><Icon name="video" size={15} /></span>
+            <span class="visual__row-main">
+              <span class="visual__row-title">720p · MP4</span>
+              <span class="visual__row-meta">Vídeo + audio · 12 MB</span>
+            </span>
+            <Icon name="download" size={15} />
+          </li>
+          <li class="visual__row">
+            <span class="visual__row-icon"><Icon name="music" size={15} /></span>
+            <span class="visual__row-main">
+              <span class="visual__row-title">Audio · MP3</span>
+              <span class="visual__row-meta">Solo audio · 3,1 MB</span>
+            </span>
+            <Icon name="download" size={15} />
+          </li>
+        </ul>
+      </div>
+    )
+  }
+
+  {/* ------------------------------------------------------- Cola de descargas */}
+  {
+    variant === 'queue' && (
+      <div class="visual__queue">
+        <div class="visual__task is-done">
+          <span class="visual__task-icon is-ok"><Icon name="check" size={14} /></span>
+          <div class="visual__task-body">
+            <span class="visual__task-title">Video_1080p.mp4</span>
+            <span class="visual__bar"><span class="visual__bar-fill is-full" /></span>
+          </div>
+          <span class="visual__task-pct">100 %</span>
+        </div>
+        <div class="visual__task is-active">
+          <span class="visual__task-icon"><Icon name="download" size={14} /></span>
+          <div class="visual__task-body">
+            <span class="visual__task-title">Cancion.mp3</span>
+            <span class="visual__bar"><span class="visual__bar-fill" style="width:62%" /></span>
+          </div>
+          <span class="visual__task-pct">62 %</span>
+        </div>
+        <div class="visual__task">
+          <span class="visual__task-icon is-idle"><Icon name="clock" size={14} /></span>
+          <div class="visual__task-body">
+            <span class="visual__task-title">Foto_alta.jpg</span>
+            <span class="visual__bar"><span class="visual__bar-fill is-empty" /></span>
+          </div>
+          <span class="visual__task-pct">En cola</span>
+        </div>
+        <p class="visual__caption">Progreso real y reanudación automática</p>
+      </div>
+    )
+  }
+
+  {/* -------------------------------------------------------- Hoja de compartir */}
+  {
+    variant === 'share' && (
+      <div class="visual__sheet">
+        <span class="visual__sheet-handle" aria-hidden="true" />
+        <p class="visual__sheet-title">Compartir enlace</p>
+        <div class="visual__url">
+          <Icon name="link" size={14} />
+          <span>enlace.com/video</span>
+        </div>
+        <ul class="visual__chips">
+          <li class="visual__chip is-active">Vídeo 1080p</li>
+          <li class="visual__chip">Vídeo 720p</li>
+          <li class="visual__chip">Audio MP3</li>
+        </ul>
+        <span class="visual__sheet-cta">
+          <Icon name="download" size={15} />
+          Descargar
+        </span>
+      </div>
+    )
+  }
+
+  {/* -------------------------------------------------------------- Reproductor */}
+  {
+    variant === 'player' && (
+      <div class="visual__player">
+        <div class="visual__stage">
+          <span class="visual__stage-play"><Icon name="video" size={20} /></span>
+          <span class="visual__stage-label">Picture-in-Picture</span>
+        </div>
+        <div class="visual__track">
+          <span class="visual__track-fill" style="width:38%" />
+        </div>
+        <div class="visual__controls">
+          <Icon name="arrow-left" size={17} />
+          <span class="visual__control-main"><Icon name="video" size={17} /></span>
+          <Icon name="arrow-right" size={17} />
+          <span class="visual__control-spacer" />
+          <Icon name="queue" size={17} />
+        </div>
+      </div>
+    )
+  }
+
+  {/* ---------------------------------------------------------------- Biblioteca */}
+  {
+    variant === 'library' && (
+      <div class="visual__library">
+        <div class="visual__filters">
+          <span class="visual__filter is-active">Todos</span>
+          <span class="visual__filter">Vídeos</span>
+          <span class="visual__filter">Audio</span>
+          <span class="visual__filter">Favoritos</span>
+        </div>
+        <div class="visual__grid">
+          <span class="visual__tile is-a"><Icon name="video" size={16} /></span>
+          <span class="visual__tile is-b"><Icon name="music" size={16} /></span>
+          <span class="visual__tile is-c"><Icon name="image" size={16} /></span>
+          <span class="visual__tile is-d"><Icon name="video" size={16} /></span>
+          <span class="visual__tile is-e"><Icon name="music" size={16} /></span>
+          <span class="visual__tile is-f"><Icon name="video" size={16} /></span>
+        </div>
+        <p class="visual__caption">Ficheros del dispositivo y descargas, juntos</p>
+      </div>
+    )
+  }
+
+  {/* ------------------------------------------------------------------ Explorar */}
+  {
+    variant === 'explore' && (
+      <div class="visual__explore">
+        <div class="visual__search">
+          <Icon name="search" size={14} />
+          <span>Buscar contenido</span>
+        </div>
+        <div class="visual__filters">
+          <span class="visual__filter is-active">Tendencias</span>
+          <span class="visual__filter">Categorías</span>
+        </div>
+        <div class="visual__rail">
+          <span class="visual__rail-card is-a" />
+          <span class="visual__rail-card is-b" />
+          <span class="visual__rail-card is-c" />
+        </div>
+        <div class="visual__rail">
+          <span class="visual__rail-card is-d" />
+          <span class="visual__rail-card is-e" />
+          <span class="visual__rail-card is-f" />
+        </div>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .visual {
+    --visual-line: color-mix(in srgb, var(--brand) 26%, transparent);
+    --visual-bg: color-mix(in srgb, var(--brand) 7%, var(--surface));
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 260px;
+    padding: var(--space-6);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--brand) 10%, transparent), transparent 62%),
+      var(--surface-2);
+    overflow: hidden;
+  }
+
+  .visual__caption {
+    margin: 0;
+    font-size: var(--text-xs);
+    color: var(--muted);
+    text-align: center;
+  }
+
+  /* Formatos ------------------------------------------------------------- */
+  .visual__formats {
+    width: min(300px, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .visual__url {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    font-size: var(--text-xs);
+    color: var(--muted);
+  }
+
+  .visual__url svg {
+    color: var(--brand);
+  }
+
+  .visual__rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .visual__row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    color: var(--muted);
+  }
+
+  .visual__row.is-selected {
+    border-color: var(--visual-line);
+    background: var(--visual-bg);
+    color: var(--brand);
+  }
+
+  .visual__row-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius-sm);
+    background: var(--brand-tint);
+    color: var(--brand);
+    flex-shrink: 0;
+  }
+
+  .visual__row-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .visual__row-title {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .visual__row-meta {
+    font-size: var(--text-xs);
+    color: var(--muted);
+  }
+
+  /* Cola ----------------------------------------------------------------- */
+  .visual__queue {
+    width: min(320px, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .visual__task {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+  }
+
+  .visual__task.is-active {
+    border-color: var(--visual-line);
+  }
+
+  .visual__task-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--brand-tint);
+    color: var(--brand);
+    flex-shrink: 0;
+  }
+
+  .visual__task-icon.is-ok {
+    background: var(--success-tint);
+    color: var(--success);
+  }
+
+  .visual__task-icon.is-idle {
+    background: var(--code-bg);
+    color: var(--muted);
+  }
+
+  .visual__task-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .visual__task-title {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .visual__bar {
+    display: block;
+    height: 5px;
+    border-radius: var(--radius-pill);
+    background: var(--code-bg);
+    overflow: hidden;
+  }
+
+  .visual__bar-fill {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--brand);
+  }
+
+  .visual__bar-fill.is-full {
+    width: 100%;
+    background: var(--success);
+  }
+
+  .visual__bar-fill.is-empty {
+    width: 0;
+  }
+
+  .visual__task-pct {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+
+  /* Hoja de compartir ----------------------------------------------------- */
+  .visual__sheet {
+    width: min(280px, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--surface);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .visual__sheet-handle {
+    width: 38px;
+    height: 4px;
+    margin-inline: auto;
+    border-radius: var(--radius-pill);
+    background: var(--border-strong);
+  }
+
+  .visual__sheet-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .visual__chips {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .visual__chip {
+    padding: 0.3rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-xs);
+    color: var(--muted);
+  }
+
+  .visual__chip.is-active {
+    border-color: transparent;
+    background: var(--brand-tint);
+    color: var(--brand);
+    font-weight: 600;
+  }
+
+  .visual__sheet-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: 0.6rem 1rem;
+    border-radius: var(--radius-pill);
+    background: var(--brand);
+    color: var(--brand-ink);
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+
+  /* Reproductor ------------------------------------------------------------ */
+  .visual__player {
+    width: min(320px, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .visual__stage {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background:
+      radial-gradient(90% 80% at 50% 20%, color-mix(in srgb, var(--brand) 22%, transparent), transparent 70%),
+      var(--surface);
+  }
+
+  .visual__stage-play {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--brand);
+    color: var(--brand-ink);
+  }
+
+  .visual__stage-label {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-pill);
+    background: var(--code-bg);
+    font-size: 0.66rem;
+    color: var(--muted);
+  }
+
+  .visual__track {
+    height: 6px;
+    border-radius: var(--radius-pill);
+    background: var(--code-bg);
+    overflow: hidden;
+  }
+
+  .visual__track-fill {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--brand);
+  }
+
+  .visual__controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    color: var(--muted);
+  }
+
+  .visual__control-main {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--brand);
+    color: var(--brand-ink);
+  }
+
+  .visual__control-spacer {
+    flex: 1;
+  }
+
+  /* Biblioteca -------------------------------------------------------------- */
+  .visual__library {
+    width: min(320px, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .visual__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .visual__filter {
+    padding: 0.25rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-xs);
+    color: var(--muted);
+  }
+
+  .visual__filter.is-active {
+    border-color: transparent;
+    background: var(--brand-tint);
+    color: var(--brand);
+    font-weight: 600;
+  }
+
+  .visual__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
+  }
+
+  .visual__tile {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 3 / 4;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    color: var(--brand);
+  }
+
+  .visual__tile.is-a {
+    background: linear-gradient(150deg, color-mix(in srgb, var(--brand) 30%, transparent), transparent);
+  }
+
+  .visual__tile.is-b {
+    background: linear-gradient(150deg, color-mix(in srgb, var(--brand) 20%, transparent), transparent);
+  }
+
+  .visual__tile.is-c {
+    background: linear-gradient(150deg, color-mix(in srgb, var(--success) 22%, transparent), transparent);
+  }
+
+  .visual__tile.is-d {
+    background: linear-gradient(150deg, color-mix(in srgb, var(--warning) 20%, transparent), transparent);
+  }
+
+  .visual__tile.is-e {
+    background: linear-gradient(150deg, color-mix(in srgb, var(--brand) 14%, transparent), transparent);
+  }
+
+  .visual__tile.is-f {
+    background: linear-gradient(150deg, color-mix(in srgb, var(--brand) 26%, transparent), transparent);
+  }
+
+  /* Explorar ---------------------------------------------------------------- */
+  .visual__explore {
+    width: min(320px, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .visual__search {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    font-size: var(--text-xs);
+    color: var(--muted);
+  }
+
+  .visual__search svg {
+    color: var(--brand);
+  }
+
+  .visual__rail {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
+  }
+
+  .visual__rail-card {
+    aspect-ratio: 3 / 4;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: linear-gradient(150deg, color-mix(in srgb, var(--brand) 22%, transparent), transparent);
+  }
+
+  .visual__rail-card.is-b,
+  .visual__rail-card.is-e {
+    background: linear-gradient(150deg, color-mix(in srgb, var(--brand) 12%, transparent), transparent);
+  }
+
+  .visual__rail-card.is-c,
+  .visual__rail-card.is-f {
+    background: linear-gradient(150deg, color-mix(in srgb, var(--success) 18%, transparent), transparent);
+  }
+
+  .visual__rail-card.is-d {
+    background: linear-gradient(150deg, color-mix(in srgb, var(--warning) 18%, transparent), transparent);
+  }
+</style>

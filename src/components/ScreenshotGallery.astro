@@ -1,0 +1,64 @@
+---
+/**
+ * Galería de capturas reales.
+ *
+ * Cuando existen capturas de la aplicación, se muestran dentro de marcos de
+ * teléfono con pie de foto. Mientras no haya ninguna, la sección no finge:
+ * explica que las capturas están en preparación y ofrece la demostración
+ * funcional de las pantallas reales.
+ */
+import Icon from '@/components/Icon.astro';
+import { screenshots } from '@/config/screenshots';
+import type { Locale } from '@/config/routes';
+import { useTranslations } from '@/i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+{
+  screenshots.length > 0 ? (
+    <div class="shots shots--gallery">
+      {screenshots.map((shot) => (
+        <figure class="shots__item">
+          <div class="shot shot--device">
+            <img
+              src={shot.src}
+              alt={shot.alt[locale]}
+              width={shot.width}
+              height={shot.height}
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+          <figcaption class="shot__caption">{shot.caption[locale]}</figcaption>
+        </figure>
+      ))}
+    </div>
+  ) : (
+    <div class="shots__pending">
+      <div class="shots__pending-mark" aria-hidden="true">
+        <img
+          src="/brand/vibegrab-logo.png"
+          width="72"
+          height="72"
+          alt=""
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <div class="shots__pending-body">
+        <p class="shots__pending-title">{t('home.gallery.pending')}</p>
+        <p class="shots__pending-text">{t('home.gallery.pendingHint')}</p>
+        <p class="shots__pending-note">
+          <Icon name="info" size={15} />
+          <span>{t('home.gallery.diagramNote')}</span>
+        </p>
+      </div>
+    </div>
+  )
+}

@@ -49,9 +49,13 @@ El sitio queda en <http://localhost:4321>.
 | `npm run build:fast` | Build sin `astro check` (más rápido) |
 | `npm run check` | Diagnóstico de TypeScript y plantillas Astro |
 | `npm test` | Pruebas de la integración, la caché y las rutas de descarga |
+| `npm run check:links` | Rastrea las páginas y comprueba que no hay enlaces ni anclas rotas |
 | `npm run preview` | Previsualiza el resultado del build |
 | `npm run snapshot` | Regenera `src/data/releases.snapshot.json` desde GitHub |
 | `npm run assets` | Regenera la imagen Open Graph y los favicons |
+
+> `npm run preview` no funciona con el adaptador de Vercel: para revisar el
+> resultado usa `npm run dev`, o `npm run build:fast` y el despliegue.
 
 ## Estructura
 
@@ -61,12 +65,18 @@ src/
     views/               Composición de cada página
   config/
     site.ts              Producto, Android, repo y contacto
+    site-url.ts          Resolución de la URL canónica (SITE_URL o Vercel)
     routes.ts            Rutas ES/EN, hreflang y URLs absolutas
+    sections.ts          Apartados de la portada (anclas y scroll-spy)
     screenshots.ts       Capturas reales (vacío hasta tenerlas)
   content/
     curated-notes.ts     Novedades bilingües revisadas, por versión
     features.ts          Funcionalidades verificadas de la app
+    app-tour.ts          Pantallas reales de la app (pestañas y vistas)
+    security.ts          Seguridad, procedencia y limitaciones
+    reviews.ts           Reseñas verificadas (vacío: no hay fuente real)
     faq.ts, install.ts   Ayuda e instalación
+    about.ts             Historia y principios del proyecto
     legal.ts             Privacidad y términos
   data/
     releases.snapshot.json   Respaldo estático de GitHub Releases
@@ -75,19 +85,41 @@ src/
   lib/
     releases.ts          Integración con GitHub, caché y validación
     notes.ts             Categorías y orden de las notas
-    format.ts            Fechas, tamaños y hashes
+    stats.ts             Métricas verificables del producto
+    format.ts            Fechas, tamaños, hashes y contadores
   pages/
     api/download.ts      Redirección verificada al APK
     api/verify.ts        Comprobación de disponibilidad (JSON)
     api/releases.ts      Feed JSON con caché
     sitemap-versions.xml.ts
     ...                  Rutas ES y EN
-  styles/                tokens.css, base.css, components.css
+  styles/                tokens.css, base.css, components.css, sections.css
 tests/                   Pruebas con Vitest
-scripts/                 Generadores de snapshot y de imágenes
+scripts/                 Snapshot, imágenes y comprobador de enlaces
 public/                  Logo, favicons, og-image, robots
 vercel.json              Cabeceras de seguridad y caché
 ```
+
+## La portada
+
+La portada es la página principal del producto y se compone así:
+
+1. **Portada**: versión estable real, fecha de publicación y botón de descarga.
+2. **Métricas verificables** (`StatStrip`): versión actual, número de versiones
+   publicadas, tamaño del APK y descargas del archivo en GitHub. El contador de
+   GitHub se etiqueta siempre como *descargas del archivo*, nunca como usuarios.
+3. **Escaparate de funciones** (`FeatureShowcase`): bloques alternos con
+   explicación, beneficio y un diagrama CSS (`FeatureVisual`) que explica la
+   función. No son capturas de pantalla.
+4. **Cómo funciona**: cuatro pasos y la nota de procedencia del APK.
+5. **La aplicación** (`AppTour`): las seis pestañas reales del producto, con
+   navegación por teclado, más la galería de capturas cuando existan.
+6. **Novedades**: notas curadas de la última versión publicada.
+7. **Seguridad y uso responsable**: fuente oficial, integridad, privacidad y
+   las limitaciones reales del producto.
+8. **Comunidad** (`Community`): sin reseñas inventadas. Con reseñas verificadas
+   las muestra; sin ellas, indica que no las hay y ofrece las vías reales.
+9. **Preguntas frecuentes** y llamada a la acción final.
 
 ## Cómo se obtienen las versiones
 
@@ -186,13 +218,42 @@ Están documentadas en `.env.example`. Las importantes:
 
 Nunca pongas secretos en variables `PUBLIC_*`: llegan al navegador.
 
+## Cómo añadir capturas reales
+
+La web **nunca** muestra pantallas ficticias. Para publicar capturas de verdad:
+
+1. Copia las imágenes a `public/screenshots/` (por ejemplo `explore.png`).
+2. Añade una entrada en `src/config/screenshots.ts` con el `id` de la pantalla
+   (`explore`, `browser`, `analyzer`, `downloads`, `library`, `settings`,
+   `shorts`, `video-detail`, `media-player`, `vault`, `trash`), el texto
+   alternativo y el pie de foto en los dos idiomas, más el ancho y el alto
+   reales para evitar saltos de maquetación.
+3. La galería de la portada y las fichas de función las recogen solas.
+
+Los identificadores están en `src/content/app-tour.ts`.
+
+## Reseñas y comunidad
+
+`src/content/reviews.ts` está **vacío a propósito**: no hay reseñas verificadas
+publicadas y no se inventan testimonios ni puntuaciones. La sección de comunidad
+muestra un estado honesto mientras tanto.
+
+Para activarlas hace falta una fuente real (un foro, una tienda de aplicaciones
+o un formulario con almacenamiento real). Cuando exista, define `reviewsSource`
+y añade cada opinión con su texto, autoría, fecha, versión y fuente. La sección
+las mostrará automáticamente.
+
 ## Estado y pendientes
 
-- **Dominio**: no comprado. Se puede desplegar primero en `*.vercel.app`.
+- **Dominio**: no comprado. Se despliega en `https://vibegrab-website.vercel.app`.
 - **Contacto**: sin correo ni canal público todavía; la página lo dice.
 - **Capturas**: no existen capturas reales publicadas. La portada usa una pieza
-  de marca, no una captura falsa, y la galería se oculta hasta que haya
-  imágenes en `src/config/screenshots.ts`.
+  de marca y los diagramas CSS que explican cada función; la galería se muestra
+  en cuanto haya imágenes en `src/config/screenshots.ts`.
+- **Estadísticas de usuarios**: no hay fuente fiable de usuarios únicos ni de
+  instalaciones. La web solo muestra el contador de descargas del archivo que
+  publica GitHub, etiquetado como tal. No se deduce ninguna cifra de usuarios.
+- **Reseñas**: sin fuente real todavía (ver arriba).
 - **Licencia**: la app no tiene licencia publicada; los textos legales no
   afirman lo contrario.
 - **Aviso de `npm audit`**: hay 3 avisos altos en dependencias transitivas de

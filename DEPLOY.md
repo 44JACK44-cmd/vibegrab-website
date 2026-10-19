@@ -110,6 +110,11 @@ curl -sI "https://vibegrab-website.vercel.app/api/download?tag=v9.9.9-99" | find
 curl -s "https://vibegrab-website.vercel.app/api/verify"
 ```
 
+```bash
+# Enlaces y anclas internas rotas (con el servidor de desarrollo en marcha)
+npm run check:links -- http://127.0.0.1:4321
+```
+
 Comprobaciones manuales:
 
 - [ ] El botón principal descarga un `.apk` (no una página HTML).

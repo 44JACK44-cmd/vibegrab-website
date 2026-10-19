@@ -1,15 +1,22 @@
 ---
 /**
- * Sobre nosotros: historia verificable, cronología, objetivos y principios.
+ * Sobre nosotros: qué es VibeGrab, cronología verificable, cómo evoluciona el
+ * proyecto y quién lo desarrolla.
+ *
+ * No se inventan empresa, equipo, ubicación ni fecha de fundación: solo datos
+ * comprobables del repositorio, de la API de GitHub y del propio proyecto.
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Icon from '@/components/Icon.astro';
 import PageHero from '@/components/PageHero.astro';
 import Timeline from '@/components/Timeline.astro';
-import { aboutGoals, aboutIntro, aboutPrinciples, timeline } from '@/content/about';
+import StatStrip from '@/components/StatStrip.astro';
+import { aboutEvolution, aboutGoals, aboutIntro, aboutPrinciples, timeline } from '@/content/about';
 import { formatDate } from '@/lib/format';
+import { collectStats } from '@/lib/stats';
 import type { ReleasesPayload } from '@/lib/releases';
 import { path, type Locale } from '@/config/routes';
+import { siteConfig } from '@/config/site';
 import { useTranslations } from '@/i18n/ui';
 
 interface Props {
@@ -21,7 +28,15 @@ const { locale, payload } = Astro.props;
 const t = useTranslations(locale);
 
 const latest = payload.latest;
-const releaseCount = payload.releases.length;
+const stats = collectStats(payload);
+
+/** La publicación más antigua que la web conoce. */
+const firstRelease = payload.releases.length > 0 ? payload.releases[payload.releases.length - 1] : null;
+
+/** Fecha del primer commit del repositorio (dato verificable del proyecto). */
+const REPO_CREATED = '2026-09-23';
+
+const contactConfigured = siteConfig.contact.email !== '' || siteConfig.contact.supportUrl !== '';
 ---
 
 <BaseLayout
@@ -42,6 +57,12 @@ const releaseCount = payload.releases.length;
 
   <section class="section section--tight">
     <div class="container">
+      <StatStrip stats={stats} locale={locale} />
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container">
       <div class="section-head">
         <p class="eyebrow">{t('about.verified.title')}</p>
       </div>
@@ -51,13 +72,15 @@ const releaseCount = payload.releases.length;
           <span class="card__icon" aria-hidden="true"><Icon name="calendar" size={20} /></span>
           <p class="tiny muted">{t('about.verified.created')}</p>
           <p class="card__title" style="font-size: var(--text-base)">
-            {formatDate('2026-09-23', locale)}
+            {formatDate(REPO_CREATED, locale)}
           </p>
         </div>
         <div class="card">
           <span class="card__icon" aria-hidden="true"><Icon name="package" size={20} /></span>
-          <p class="tiny muted">{t('about.verified.releases')}</p>
-          <p class="card__title" style="font-size: var(--text-base)">{releaseCount}</p>
+          <p class="tiny muted">{t('about.verified.firstRelease')}</p>
+          <p class="card__title" style="font-size: var(--text-base)">
+            {firstRelease ? formatDate(firstRelease.publishedAt, locale) : '—'}
+          </p>
         </div>
         <div class="card">
           <span class="card__icon" aria-hidden="true"><Icon name="chip" size={20} /></span>
@@ -125,10 +148,36 @@ const releaseCount = payload.releases.length;
 
   <section class="section section--soft">
     <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">{t('about.evolution.title')}</p>
+        <h2 style="font-size: var(--text-2xl)">{t('about.evolution.title')}</h2>
+      </div>
+
+      <div class="grid grid--3">
+        {
+          aboutEvolution.map((item) => (
+            <div class="card">
+              <p class="card__text">{item[locale]}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
       <div class="card" style="max-width: 780px; margin-inline: auto">
         <span class="card__icon" aria-hidden="true"><Icon name="lifebuoy" size={20} /></span>
         <h2 class="card__title" style="font-size: var(--text-xl)">{t('about.team.title')}</h2>
         <p class="card__text">{t('about.team.text')}</p>
+        <p class="card__text">
+          {
+            contactConfigured
+              ? t('about.team.contactOk')
+              : t('about.team.contactPending')
+          }
+        </p>
         <div class="card__foot btn-row">
           <a class="btn btn--primary" href={path('download', locale)}>
             <Icon name="download" size={18} />

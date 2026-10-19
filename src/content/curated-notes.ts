@@ -13,6 +13,197 @@
 import type { NoteSection } from '@/lib/releases';
 
 export const curatedNotes: Record<string, NoteSection[]> = {
+  '1.1.38': [
+    {
+      category: 'features',
+      items: [
+        {
+          text: {
+            es: 'Tus audios ahora son MP3 de verdad',
+            en: 'Your audio downloads are real MP3 files now',
+          },
+          detail: {
+            es: 'Al descargar solo el audio, el archivo sale en MP3 reproducible en cualquier reproductor, con el título, el artista y la carátula dentro del propio archivo.',
+            en: 'When you download only the audio, the file comes out as a playable MP3 in any player, with the title, the artist and the cover inside the file itself.',
+          },
+        },
+        {
+          text: {
+            es: 'Los posts de fotos de TikTok ya se descargan',
+            en: 'TikTok photo posts can be downloaded now',
+          },
+          detail: {
+            es: 'Los enlaces de fotos con música ofrecen lo que de verdad tienen: la música para guardarla como MP3 y la imagen del post. Ya no aparece una opción de vídeo que no existe.',
+            en: 'Photo links with music offer what they really have: the music to save as an MP3 and the image of the post. A video option that does not exist no longer shows up.',
+          },
+        },
+      ],
+    },
+    {
+      category: 'improvements',
+      items: [
+        {
+          text: {
+            es: 'La reproducción en Explorer empieza antes',
+            en: 'Explorer playback starts sooner',
+          },
+          detail: {
+            es: 'La dirección del vídeo que vas a reproducir se busca mientras se cierra el anterior, así el primer fotograma llega antes y se evita tocar Play dos veces.',
+            en: 'The address of the video you are about to play is looked up while the previous one is closing, so the first frame arrives sooner and there is no need to tap Play twice.',
+          },
+        },
+        {
+          text: {
+            es: 'Análisis de enlaces más completo y más rápido',
+            en: 'Link analysis is more complete and faster',
+          },
+          detail: {
+            es: 'El análisis devuelve todas las calidades y pistas de audio disponibles (en algunos vídeos solo aparecía una) y responde antes; repetir el mismo enlace es instantáneo.',
+            en: 'The analysis returns every available quality and audio track (on some videos only one used to show up) and answers sooner; repeating the same link is instant.',
+          },
+        },
+        {
+          text: {
+            es: 'El reproductor enseña la carátula del archivo',
+            en: 'The player shows the cover inside the file',
+          },
+          detail: {
+            es: 'Al reproducir una descarga, el reproductor y la notificación muestran el título, el artista y la carátula que lleva dentro el propio archivo, aunque falten los datos de la descarga.',
+            en: 'When you play a download, the player and the notification show the title, the artist and the cover the file itself carries, even if the download details are missing.',
+          },
+        },
+        {
+          text: {
+            es: 'Ajustes, ordenado por bloques',
+            en: 'Settings, ordered in blocks',
+          },
+          detail: {
+            es: 'Los ajustes están agrupados en bloques con las descargas primero y cada grupo con su título, para encontrar cada opción de un vistazo.',
+            en: 'Settings are grouped in blocks with downloads first and a title for each group, so every option is easy to find at a glance.',
+          },
+        },
+      ],
+    },
+    {
+      category: 'fixes',
+      items: [
+        {
+          text: {
+            es: 'Los vídeos sin audio ya se descargan con sonido',
+            en: 'Videos without audio download with sound now',
+          },
+          detail: {
+            es: 'Las calidades que venían sin pista de audio se unen con la mejor pista disponible antes de guardarse, así el archivo nunca acaba mudo.',
+            en: 'Qualities that came without an audio track are joined with the best available track before saving, so the file never ends up muted.',
+          },
+        },
+        {
+          text: {
+            es: 'Se acabó el destello blanco al minimizar el vídeo',
+            en: 'No more white flash when minimising the video',
+          },
+          detail: {
+            es: 'Al minimizar el vídeo o redimensionar la ventana flotante ya no aparece un fogonazo blanco: la ventana se pinta en negro mientras se recoloca.',
+            en: 'Minimising the video or resizing the floating window no longer shows a white flash: the window is painted black while it is being resized.',
+          },
+        },
+      ],
+    },
+  ],
+  '1.1.37': [
+    {
+      category: 'improvements',
+      items: [
+        {
+          text: {
+            es: 'Las actualizaciones llegan explicadas',
+            en: 'Updates arrive explained',
+          },
+          detail: {
+            es: 'A partir de esta versión, cuando salga una nueva, el aviso te cuenta qué cambia con el mismo formato de novedades en lugar de una lista técnica de cambios.',
+            en: 'From this version on, when a new one comes out, the prompt tells you what changed in the same what\u2019s-new format instead of a technical change list.',
+          },
+        },
+      ],
+    },
+  ],
+  '1.1.36': [
+    {
+      category: 'features',
+      items: [
+        {
+          text: {
+            es: 'Sigue tus descargas sin salir de donde estás',
+            en: 'Track your downloads without leaving what you are doing',
+          },
+          detail: {
+            es: 'Un panel compacto con el progreso de las descargas en curso, visible desde cualquier pantalla, con acceso directo a la lista de descargas.',
+            en: 'A compact panel with the progress of the ongoing downloads, visible from any screen, with a shortcut to the download list.',
+          },
+        },
+      ],
+    },
+    {
+      category: 'improvements',
+      items: [
+        {
+          text: {
+            es: 'Explorer, Shorts y Descargas abren antes',
+            en: 'Explorer, Shorts and Downloads open sooner',
+          },
+          detail: {
+            es: 'La portada ya no espera a tener la lista entera para empezar a reproducir, el feed de Shorts aparece casi al instante y el análisis de un enlace se reutiliza en lugar de repetirse.',
+            en: 'The home screen no longer waits for the whole list before it can play, the Shorts feed appears almost instantly and analysing a link is reused instead of repeated.',
+          },
+        },
+        {
+          text: {
+            es: 'El sonido no se corta al apagar la pantalla ni al minimizar',
+            en: 'The sound no longer cuts out when the screen turns off or you minimise',
+          },
+          detail: {
+            es: 'El relevo al audio de fondo se prepara antes de parar el vídeo, así la música sigue sin saltos. Y al volver a la app el vídeo se recupera mientras el audio sigue sonando.',
+            en: 'The handoff to background audio is prepared before the video stops, so the music continues without gaps. Coming back to the app, the video is restored while the audio keeps playing.',
+          },
+        },
+        {
+          text: {
+            es: 'Guarda la miniatura o la imagen del vídeo',
+            en: 'Save the cover or the image of a video',
+          },
+          detail: {
+            es: 'La acción de imagen aparece solo cuando el vídeo la tiene, se guarda con su formato real (PNG o WebP) y acaba en tu galería.',
+            en: 'The image action shows up only when the video has one; it is saved in its real format (PNG or WebP) and ends up in your gallery.',
+          },
+        },
+      ],
+    },
+    {
+      category: 'fixes',
+      items: [
+        {
+          text: {
+            es: 'Un toque en reproducir ya basta',
+            en: 'One tap on play is enough now',
+          },
+          detail: {
+            es: 'El botón de reproducción ya no se queda mudo si lo pulsas mientras el vídeo todavía se está cargando.',
+            en: 'The play button no longer goes mute if you tap it while the video is still loading.',
+          },
+        },
+        {
+          text: {
+            es: 'Shorts: la pantalla sigue al reproductor',
+            en: 'Shorts: the feed follows the player',
+          },
+          detail: {
+            es: 'Cuando un short termina solo o usas los controles de la notificación, el feed se mueve con él en lugar de quedarse en el anterior.',
+            en: 'When a short ends by itself or you use the notification controls, the feed moves along with it instead of staying on the previous one.',
+          },
+        },
+      ],
+    },
+  ],
   '1.1.35': [
     {
       category: 'important',

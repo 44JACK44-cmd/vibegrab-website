@@ -1,0 +1,96 @@
+---
+/**
+ * Navegación por secciones de la portada.
+ *
+ * Barra pegajosa con los apartados de la página. El apartado activo se
+ * resalta al desplazar (scroll-spy) mediante `IntersectionObserver`, con
+ * margen para que no cambie justo al llegar al final de una sección.
+ *
+ * En pantallas estrechas se desplaza horizontalmente en lugar de romper el
+ * diseño.
+ */
+import { homeSections } from '@/config/sections';
+import type { Locale } from '@/config/routes';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<nav class="section-nav" aria-label={locale === 'es' ? 'Secciones de la página' : 'Page sections'}>
+  <div class="container section-nav__inner">
+    <ul class="section-nav__list">
+      {
+        homeSections.map((section, index) => (
+          <li>
+            <a
+              class="section-nav__link"
+              href={`#${section.id}`}
+              data-section-link={section.id}
+              aria-current={index === 0 ? 'true' : undefined}
+            >
+              {section.short?.[locale] ?? section.label[locale]}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</nav>
+
+<script>
+  /**
+   * Resalta el apartado visible. El observador usa un margen para que el
+   * enlace activo cambie con naturalidad.
+   */
+  function initSectionSpy() {
+    const links = Array.from(
+      document.querySelectorAll<HTMLAnchorElement>('[data-section-link]'),
+    );
+    if (links.length === 0) return;
+
+    const sections = links
+      .map((link) => document.getElementById(link.dataset.sectionLink ?? ''))
+      .filter((section): section is HTMLElement => section !== null);
+    if (sections.length === 0) return;
+
+    const setActive = (id: string) => {
+      links.forEach((link) => {
+        const active = link.dataset.sectionLink === id;
+        if (active) link.setAttribute('aria-current', 'true');
+        else link.removeAttribute('aria-current');
+      });
+    };
+
+    const visible = new Map<string, number>();
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) visible.set(entry.target.id, entry.intersectionRatio);
+          else visible.delete(entry.target.id);
+        });
+
+        if (visible.size > 0) {
+          const [first] = [...visible.entries()].sort((a, b) => b[1] - a[1]);
+          setActive(first[0]);
+        }
+      },
+      { rootMargin: '-25% 0px -55% 0px', threshold: [0, 0.15, 0.4, 0.75] },
+    );
+
+    sections.forEach((section) => observer.observe(section));
+
+    // Al pulsar un enlace el navegador desplaza: se marca de inmediato para
+    // que el resaltado no dependa del observer.
+    links.forEach((link) => {
+      link.addEventListener('click', () => {
+        setActive(link.dataset.sectionLink ?? '');
+      });
+    });
+  }
+
+  initSectionSpy();
+</script>

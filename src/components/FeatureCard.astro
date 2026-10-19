@@ -1,4 +1,9 @@
 ---
+/**
+ * Tarjeta compacta de característica.
+ *
+ * Muestra el icono, el título, la explicación y el beneficio para el usuario.
+ */
 import Icon from '@/components/Icon.astro';
 import type { Feature } from '@/content/features';
 import type { Locale } from '@/config/routes';
@@ -6,9 +11,11 @@ import type { Locale } from '@/config/routes';
 interface Props {
   feature: Feature;
   locale: Locale;
+  /** Muestra también el beneficio para el usuario. */
+  showBenefit?: boolean;
 }
 
-const { feature, locale } = Astro.props;
+const { feature, locale, showBenefit = true } = Astro.props;
 ---
 
 <article class="card">
@@ -17,4 +24,12 @@ const { feature, locale } = Astro.props;
   </span>
   <h3 class="card__title">{feature.title[locale]}</h3>
   <p class="card__text">{feature.text[locale]}</p>
+  {
+    showBenefit && (
+      <p class="card__benefit">
+        <Icon name="check-circle" size={16} />
+        <span>{feature.benefit[locale]}</span>
+      </p>
+    )
+  }
 </article>

@@ -23,6 +23,12 @@ export function formatBytes(bytes: number | null | undefined, locale: Locale = '
   })} ${units[unit]}`;
 }
 
+/** Número con separador de miles: `12 480`. */
+export function formatCount(value: number | null | undefined, locale: Locale = 'es'): string {
+  if (value == null || !Number.isFinite(value)) return '—';
+  return value.toLocaleString(LOCALE_TAG[locale]);
+}
+
 /** Fecha larga y legible: «17 de octubre de 2026». */
 export function formatDate(iso: string | null | undefined, locale: Locale = 'es'): string {
   if (!iso) return '—';
@@ -68,8 +74,7 @@ export function formatRelative(iso: string | null | undefined, locale: Locale = 
 }
 
 /** SHA-256 abreviado para listados: `e95993ac…6d81`. */
-export function shortHash(hash: string | null | undefined): string {
-  if (!hash) return '—';
+export function shortHash(hash: string | null | undefined): string {  if (!hash) return '—';
   const clean = hash.replace(/^sha256:/i, '');
   if (clean.length <= 20) return clean;
   return `${clean.slice(0, 10)}…${clean.slice(-4)}`;

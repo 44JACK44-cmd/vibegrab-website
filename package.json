@@ -13,6 +13,7 @@
     "check": "astro check",
     "test": "vitest run",
     "test:watch": "vitest",
+    "check:links": "node scripts/check-links.mjs",
     "snapshot": "node scripts/snapshot-releases.mjs",
     "assets": "node scripts/generate-og.mjs"
   },

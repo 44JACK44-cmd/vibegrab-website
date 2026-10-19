@@ -1,9 +1,17 @@
 ---
+/**
+ * Página de características.
+ *
+ * Primero las funciones destacadas, con composición editorial; después, el
+ * listado completo agrupado por categorías. Todas las entradas existen en el
+ * código de la aplicación.
+ */
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Icon from '@/components/Icon.astro';
 import PageHero from '@/components/PageHero.astro';
 import FeatureCard from '@/components/FeatureCard.astro';
-import { featureGroupLabels, features, type FeatureGroup } from '@/content/features';
+import FeatureShowcase from '@/components/FeatureShowcase.astro';
+import { featureGroupLabels, features, spotlightFeatures } from '@/content/features';
 import { path, type Locale } from '@/config/routes';
 import { useTranslations } from '@/i18n/ui';
 
@@ -14,7 +22,7 @@ interface Props {
 const { locale } = Astro.props;
 const t = useTranslations(locale);
 
-const groups: FeatureGroup[] = ['download', 'play', 'organise', 'discover'];
+const groups = ['download', 'play', 'organise', 'discover', 'tools'] as const;
 ---
 
 <BaseLayout
@@ -31,6 +39,17 @@ const groups: FeatureGroup[] = ['download', 'play', 'organise', 'discover'];
   />
 
   <section class="section section--tight">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">{t('features.spotlight.eyebrow')}</p>
+        <h2 style="font-size: var(--text-2xl)">{t('features.spotlight.title')}</h2>
+      </div>
+
+      <FeatureShowcase features={spotlightFeatures} locale={locale} />
+    </div>
+  </section>
+
+  <section class="section section--soft">
     <div class="container stack stack--lg" style="gap: var(--space-8)">
       {
         groups.map((group) => {
@@ -53,7 +72,7 @@ const groups: FeatureGroup[] = ['download', 'play', 'organise', 'discover'];
     </div>
   </section>
 
-  <section class="section section--soft">
+  <section class="section">
     <div class="container">
       <div class="grid grid--2">
         <div class="card">
@@ -101,6 +120,9 @@ const groups: FeatureGroup[] = ['download', 'play', 'organise', 'discover'];
         <a class="btn btn--primary btn--lg" href={path('download', locale)}>
           <Icon name="download" size={20} />
           {t('home.hero.cta.download')}
+        </a>
+        <a class="btn btn--secondary btn--lg" href={path('features', locale)}>
+          {t('nav.features')}
         </a>
       </div>
     </div>

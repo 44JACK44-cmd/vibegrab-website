@@ -89,6 +89,7 @@
 
   --brand: var(--brand-400);
   --brand-ink: #04202c;
+  --brand-hover: var(--brand-100);
   --brand-tint: rgba(62, 197, 242, 0.12);
   --brand-tint-strong: rgba(62, 197, 242, 0.2);
 
@@ -127,10 +128,13 @@
   --text-soft: #24344a;
   --muted: #5a6b83;
 
-  --brand: #0d84bd;
+  /* Un azul más profundo que en oscuro: sobre fondo claro tiene que llegar a
+     4,5:1 con texto blanco (WCAG AA) tanto en el botón como en los textos. */
+  --brand: #0a6f9e;
   --brand-ink: #ffffff;
-  --brand-tint: rgba(13, 132, 189, 0.1);
-  --brand-tint-strong: rgba(13, 132, 189, 0.16);
+  --brand-hover: #08587f;
+  --brand-tint: rgba(10, 111, 158, 0.1);
+  --brand-tint-strong: rgba(10, 111, 158, 0.18);
 
   --success: #0f9d63;
   --success-tint: rgba(15, 157, 99, 0.1);

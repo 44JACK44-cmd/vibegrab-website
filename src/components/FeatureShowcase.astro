@@ -1,0 +1,65 @@
+---
+/**
+ * Escaparate de características.
+ *
+ * Presenta las funciones principales en bloques horizontales alternos, no en
+ * una rejilla de tarjetas idénticas. Cada bloque combina la explicación, el
+ * beneficio para el usuario y una ilustración.
+ *
+ * Si existe una captura real de la pantalla, se usa; si no, se muestra el
+ * diagrama de la función (`FeatureVisual`).
+ */
+import Icon from '@/components/Icon.astro';
+import FeatureVisual from '@/components/FeatureVisual.astro';
+import { findScreenshot } from '@/config/screenshots';
+import type { Feature } from '@/content/features';
+import type { Locale } from '@/config/routes';
+
+interface Props {
+  features: Feature[];
+  locale: Locale;
+}
+
+const { features, locale } = Astro.props;
+---
+
+<div class="showcase">
+  {
+    features.map((feature, index) => {
+      const shot = feature.media ? findScreenshot(feature.media) : null;
+      return (
+        <article class="showcase__row" data-reverse={String(index % 2 === 1)}>
+          <div class="showcase__copy">
+            <span class="card__icon" aria-hidden="true">
+              <Icon name={feature.icon} size={20} />
+            </span>
+            <h3 class="showcase__title">{feature.title[locale]}</h3>
+            <p class="showcase__text">{feature.text[locale]}</p>
+            <p class="showcase__benefit">
+              <Icon name="check-circle" size={17} />
+              <span>{feature.benefit[locale]}</span>
+            </p>
+          </div>
+
+          <div class="showcase__media">
+            {shot ? (
+              <figure class="showcase__shot">
+                <img
+                  src={shot.src}
+                  alt={shot.alt[locale]}
+                  width={shot.width}
+                  height={shot.height}
+                  loading="lazy"
+                  decoding="async"
+                />
+                <figcaption class="shot__caption">{shot.caption[locale]}</figcaption>
+              </figure>
+            ) : feature.visual ? (
+              <FeatureVisual variant={feature.visual} label={feature.title[locale]} />
+            ) : null}
+          </div>
+        </article>
+      );
+    })
+  }
+</div>
