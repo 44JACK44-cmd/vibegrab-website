@@ -119,7 +119,7 @@ const snapshot = rawSnapshot as unknown as Snapshot;
 
 /* --------------------------------------------------------------- Utilidades */
 
-const TAG_PATTERN = /^v(\d+)\.(\d+)\.(\d+)-(\d+)$/;
+const TAG_PATTERN = /^v(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?-(\d+)$/;
 
 /**
  * Comprueba que un enlace es realmente un asset de una release del repositorio
@@ -145,11 +145,15 @@ export function isDownloadable(release: Release): boolean {
 }
 
 
-/** Igual que en la app: `vX.Y.Z-B` es el único formato válido. */
+/** Acepta `vX.Y.Z-B` y, por compatibilidad, `vX.Y.Z.P-B`. */
 export function parseTag(tag: string): { version: string; build: number } | null {
   const match = TAG_PATTERN.exec(tag.trim());
   if (!match) return null;
-  return { version: `${match[1]}.${match[2]}.${match[3]}`, build: Number(match[4]) };
+  const patch = match[4] ? `.${match[4]}` : '';
+  return {
+    version: `${match[1]}.${match[2]}.${match[3]}${patch}`,
+    build: Number(match[5]),
+  };
 }
 
 function semverParts(version: string): number[] {

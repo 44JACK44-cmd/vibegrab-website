@@ -92,8 +92,9 @@ afterEach(() => {
 });
 
 describe('utilidades de versión', () => {
-  it('acepta solo el formato de etiqueta de la app', () => {
+  it('acepta el formato de etiqueta de la app y el parche de cuatro componentes', () => {
     expect(parseTag('v1.1.35-40')).toEqual({ version: '1.1.35', build: 40 });
+    expect(parseTag('v1.1.40.2-47')).toEqual({ version: '1.1.40.2', build: 47 });
     expect(parseTag('1.1.35-40')).toBeNull();
     expect(parseTag('v1.1-3')).toBeNull();
     expect(parseTag('v1.1.35')).toBeNull();
