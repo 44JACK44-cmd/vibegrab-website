@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Despertar el sitio
         run: |
-          URL="${{ vars.SITE_URL || 'https://vibegrab-website.vercel.app' }}"
+          URL="${{ vars.SITE_URL || 'https://vibegrab-website.onrender.com' }}"
           echo "Despertando $URL"
           curl -sS -o /dev/null -w "HTTP=%{http_code}\n" --max-time 90 "$URL/" || true
           # De paso se refresca la copia de seguridad de las publicaciones.

@@ -58,6 +58,16 @@ const BACKOFF_MS = 5 * 60 * 1000;
  */
 let freshUntil = 0;
 
+/**
+ * Cuánto tiempo se mantiene corto el TTL dentro de esa ventana. GitHub puede
+ * tardar unos segundos en reflejar un issue nuevo, así que hay que releer
+ * varias veces seguidas hasta que aparezca.
+ */
+const FRESH_TTL_MS = 30_000;
+
+/** Cuánto tiempo se mantiene activa la ventana tras un envío. */
+const FRESH_WINDOW_MS = 30 * 60 * 1000;
+
 /** Solo para pruebas: descarta el estado en memoria del módulo. */
 export function resetReviewsCache(): void {
   memo = null;
@@ -190,7 +200,7 @@ export async function submitReview(
 
     // La lista cacheada ya no vale: la opinión nueva debe verse enseguida.
     memo = null;
-    freshUntil = Date.now() + 2 * 60 * 1000;
+    freshUntil = Date.now() + FRESH_WINDOW_MS;
 
     return { ok: true, number: created.number ?? 0, pending };
   } catch (error) {
@@ -230,7 +240,7 @@ export async function getReviews(options: { force?: boolean } = {}): Promise<Rev
     if (payload.ok) {
       // Tras un envío la lista puede tardar unos segundos en reflejar la
       // opinión nueva, así que la copia se caduca antes.
-      const ttl = Date.now() < freshUntil ? 15_000 : CACHE_TTL_MS;
+      const ttl = Date.now() < freshUntil ? FRESH_TTL_MS : CACHE_TTL_MS;
       memo = { payload, expiresAt: Date.now() + ttl };
       backoffUntil = 0;
     } else {
