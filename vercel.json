@@ -1,5 +1,13 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://vibegrab-website.onrender.com/$1",
+      "permanent": true,
+      "has": [{ "type": "host", "value": "vibegrab-website.vercel.app" }]
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
