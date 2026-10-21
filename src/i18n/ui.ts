@@ -210,8 +210,12 @@ const dict = {
     en: 'File available for download',
   },
   'download.availability.unavailable': {
-    es: 'No se ha podido confirmar la disponibilidad del archivo. Inténtalo de nuevo en unos minutos.',
-    en: 'The file availability could not be confirmed. Please try again in a few minutes.',
+    es: 'No se ha podido comprobar si el archivo está disponible. Inténtalo de nuevo en unos minutos.',
+    en: 'The file availability could not be checked. Please try again in a few minutes.',
+  },
+  'download.availability.removed': {
+    es: 'Esta versión ya no está disponible: el archivo se ha retirado.',
+    en: 'This version is no longer available: the file has been withdrawn.',
   },
   'download.availability.retry': { es: 'Volver a comprobar', en: 'Check again' },
   'download.availability.checkedAt': { es: 'Comprobado', en: 'Checked' },
@@ -222,6 +226,19 @@ const dict = {
     en: 'We could not reach this version\u2019s file. You can retry; if the problem persists, check the version history.',
   },
   'download.error.retry': { es: 'Reintentar', en: 'Retry' },
+
+  'download.removed.title': {
+    es: 'Esta versión ya no está disponible',
+    en: 'This version is no longer available',
+  },
+  'download.removed.desc': {
+    es: 'Se ha retirado de las publicaciones oficiales, así que su archivo no se puede descargar. El resto de versiones siguen en el historial.',
+    en: 'It has been withdrawn from the official releases, so its file cannot be downloaded. The other versions are still in the history.',
+  },
+  'download.removed.cta': {
+    es: 'Ver el historial de versiones',
+    en: 'See the version history',
+  },
 
   'download.warning.title': { es: 'Antes de instalar esta versión', en: 'Before installing this version' },
 
@@ -300,6 +317,18 @@ const dict = {
   'versions.notFound.desc': {
     es: 'No existe ninguna versión publicada con esa etiqueta, o ya no está disponible.',
     en: 'No published version matches that tag, or it is no longer available.',
+  },
+  'versions.removed.title': {
+    es: 'Esta versión ya no está disponible',
+    en: 'This version is no longer available',
+  },
+  'versions.removed.desc': {
+    es: 'Se ha retirado de las publicaciones oficiales, así que su página y su archivo ya no existen. El resto de versiones siguen en el historial.',
+    en: 'It has been withdrawn from the official releases, so its page and file no longer exist. The other versions are still in the history.',
+  },
+  'versions.removed.cta': {
+    es: 'Ver el historial de versiones',
+    en: 'See the version history',
   },
 
   /* ----------------------------------------------------------------- Sobre */

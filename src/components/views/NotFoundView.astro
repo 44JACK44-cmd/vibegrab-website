@@ -1,13 +1,26 @@
 ---
+/**
+ * Página de error 404.
+ *
+ * Admite un texto propio para los casos en que el motivo está claro (por
+ * ejemplo, una versión que se ha retirado de las publicaciones).
+ */
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { path, type Locale } from '@/config/routes';
 import { useTranslations } from '@/i18n/ui';
 
 interface Props {
   locale: Locale;
+  /** Título alternativo. Por defecto, el genérico. */
+  title?: string;
+  /** Descripción alternativa. Por defecto, la genérica. */
+  description?: string;
+  /** Enlace principal alternativo. */
+  primaryHref?: string;
+  primaryLabel?: string;
 }
 
-const { locale } = Astro.props;
+const { locale, title, description, primaryHref, primaryLabel } = Astro.props;
 const t = useTranslations(locale);
 ---
 
@@ -15,20 +28,20 @@ const t = useTranslations(locale);
   locale={locale}
   routeKey="home"
   title={`404 — VibeGrab`}
-  description={t('notfound.desc')}
+  description={description ?? t('notfound.desc')}
   noindex
 >
   <section class="container">
     <div class="error-page">
       <p class="error-page__code">404</p>
-      <h1>{t('notfound.title')}</h1>
-      <p class="lede" style="text-align:center">{t('notfound.desc')}</p>
+      <h1>{title ?? t('notfound.title')}</h1>
+      <p class="lede" style="text-align:center">{description ?? t('notfound.desc')}</p>
       <div class="btn-row" style="justify-content:center">
-        <a class="btn btn--primary btn--lg" href={path('home', locale)}>
-          {t('notfound.home')}
+        <a class="btn btn--primary btn--lg" href={primaryHref ?? path('home', locale)}>
+          {primaryLabel ?? t('notfound.home')}
         </a>
-        <a class="btn btn--secondary btn--lg" href={path('download', locale)}>
-          {t('notfound.download')}
+        <a class="btn btn--secondary btn--lg" href={path('versions', locale)}>
+          {t('nav.versions')}
         </a>
       </div>
     </div>

@@ -18,7 +18,10 @@ import { useTranslations } from '@/i18n/ui';
 interface Props {
   locale: Locale;
   payload: ReleasesPayload;
-  /** `no-disponible` cuando la redirección de descarga no pudo completarse. */
+  /**
+   * `retirada` cuando la versión ya no existe o se retiró su archivo.
+   * `no-disponible` cuando solo falló la comprobación y puede reintentarse.
+   */
   estado?: string | null;
 }
 
@@ -27,6 +30,7 @@ const t = useTranslations(locale);
 
 const latest = payload.latest;
 const failed = estado === 'no-disponible';
+const removed = estado === 'retirada';
 ---
 
 <BaseLayout
@@ -50,18 +54,32 @@ const failed = estado === 'no-disponible';
   <section class="section section--tight">
     <div class="container">
       {
-        failed && (
-          <div class="callout callout--danger" style="margin-bottom: var(--space-6)">
+        removed ? (
+          <div class="callout callout--warning" style="margin-bottom: var(--space-6)">
             <Icon name="warning" size={18} />
             <div>
-              <strong>{t('download.error.title')}</strong>
-              <p class="small" style="margin-top: var(--space-1)">{t('download.error.desc')}</p>
-              <a class="link-arrow" href={path('download', locale)} style="margin-top: var(--space-3)">
-                {t('download.error.retry')}
-                <Icon name="refresh" size={16} />
+              <strong>{t('download.removed.title')}</strong>
+              <p class="small" style="margin-top: var(--space-1)">{t('download.removed.desc')}</p>
+              <a class="link-arrow" href={path('versions', locale)} style="margin-top: var(--space-3)">
+                {t('download.removed.cta')}
+                <Icon name="arrow-right" size={16} />
               </a>
             </div>
           </div>
+        ) : (
+          failed && (
+            <div class="callout callout--danger" style="margin-bottom: var(--space-6)">
+              <Icon name="warning" size={18} />
+              <div>
+                <strong>{t('download.error.title')}</strong>
+                <p class="small" style="margin-top: var(--space-1)">{t('download.error.desc')}</p>
+                <a class="link-arrow" href={path('download', locale)} style="margin-top: var(--space-3)">
+                  {t('download.error.retry')}
+                  <Icon name="refresh" size={16} />
+                </a>
+              </div>
+            </div>
+          )
         )
       }
 

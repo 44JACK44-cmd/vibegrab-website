@@ -123,9 +123,16 @@ const androidLabel = `${siteConfig.android.minVersionLabel[locale]} (${siteConfi
       <div class="download-card__actions">
         {
           apk ? (
-            <a class="btn btn--primary btn--lg btn--block" href={downloadHref}>
+            <a
+              class="btn btn--primary btn--lg btn--block"
+              href={downloadHref}
+              data-download-button
+              data-unavailable-label={t('download.button.unavailable')}
+            >
               <Icon name="download" size={20} />
-              {t('download.button.size', { size: formatBytes(apk.sizeBytes, locale) })}
+              <span data-download-label>
+                {t('download.button.size', { size: formatBytes(apk.sizeBytes, locale) })}
+              </span>
             </a>
           ) : (
             <span class="btn btn--secondary btn--lg btn--block btn--disabled" aria-disabled="true">
@@ -143,6 +150,7 @@ const androidLabel = `${siteConfig.android.minVersionLabel[locale]} (${siteConfi
           data-checking={t('download.availability.checking')}
           data-available={t('download.availability.available')}
           data-unavailable={t('download.availability.unavailable')}
+          data-removed={t('download.availability.removed')}
           data-checked-at={t('download.availability.checkedAt')}
         >
           {t('download.availability.checking')}
@@ -222,17 +230,19 @@ const androidLabel = `${siteConfig.android.minVersionLabel[locale]} (${siteConfi
 
   /**
    * Comprobación informativa de disponibilidad del archivo.
-   * No bloquea nunca el botón: solo informa.
+   * No bloquea nunca el botón: solo informa. Si el archivo ya no existe, la
+   * versión está retirada y el botón se desactiva para no llevar a un error.
    */
   document.querySelectorAll<HTMLElement>('[data-availability]').forEach(async (node) => {
     const tag = node.dataset.tag;
     if (!tag) return;
 
     const lang = node.dataset.lang ?? 'es';
-    const set = (text: string, state: 'ok' | 'warn') => {
+    const set = (text: string, state: 'ok' | 'warn' | 'gone') => {
       node.textContent = text;
       node.dataset.state = state;
-      node.style.color = state === 'ok' ? 'var(--success)' : 'var(--warning)';
+      node.style.color =
+        state === 'ok' ? 'var(--success)' : state === 'gone' ? 'var(--warning)' : 'var(--warning)';
     };
 
     try {
@@ -241,11 +251,30 @@ const androidLabel = `${siteConfig.android.minVersionLabel[locale]} (${siteConfi
         { headers: { Accept: 'application/json' } },
       );
       if (!response.ok) throw new Error(String(response.status));
-      const data = (await response.json()) as { available: boolean };
-      set(
-        data.available ? node.dataset.available ?? '' : node.dataset.unavailable ?? '',
-        data.available ? 'ok' : 'warn',
-      );
+      const data = (await response.json()) as { available: boolean; reason?: string };
+
+      if (data.available) {
+        set(node.dataset.available ?? '', 'ok');
+        return;
+      }
+
+      if (data.reason === 'not-found') {
+        // El archivo ya no está: la versión se ha retirado.
+        set(node.dataset.removed ?? '', 'gone');
+        const button = document.querySelector<HTMLAnchorElement>('[data-download-button]');
+        const label = button?.querySelector<HTMLElement>('[data-download-label]');
+        if (button) {
+          button.removeAttribute('href');
+          button.setAttribute('aria-disabled', 'true');
+          button.classList.add('btn--disabled');
+        }
+        if (label && button?.dataset.unavailableLabel) {
+          label.textContent = button.dataset.unavailableLabel;
+        }
+        return;
+      }
+
+      set(node.dataset.unavailable ?? '', 'warn');
     } catch {
       set(node.dataset.unavailable ?? '', 'warn');
     }

@@ -20,16 +20,23 @@ export const GET: APIRoute = async ({ url }) => {
   const release = tag ? payload.releases.find((item) => item.tag === tag) : payload.latest;
 
   const failureUrl = new URL(downloadPage, url.origin);
-  failureUrl.searchParams.set('estado', 'no-disponible');
 
   // El tag solicitado debe existir, estar publicado y tener un APK cuyo enlace
   // pertenezca a los assets de este repositorio. Nada de URLs externas.
   if (!release || !isDownloadable(release) || !release.apk) {
+    // La versión no existe o se retiró: no es un problema temporal.
+    failureUrl.searchParams.set('estado', 'retirada');
     return Response.redirect(failureUrl.href, 302);
   }
 
   const check = await checkAssetAvailability(release.apk.downloadUrl);
   if (!check.available) {
+    // Si el archivo ya no existe, la versión está retirada; si solo falló la
+    // comprobación, puede volver a funcionar en unos minutos.
+    failureUrl.searchParams.set(
+      'estado',
+      check.reason === 'not-found' ? 'retirada' : 'no-disponible',
+    );
     return Response.redirect(failureUrl.href, 302);
   }
 

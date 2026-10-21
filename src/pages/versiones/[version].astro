@@ -1,14 +1,20 @@
 ---
 /**
  * Detalle de una versión concreta (etiqueta `vX.Y.Z-B`).
+ *
+ * Si la versión ya no existe (porque se retiró de las publicaciones), se
+ * responde con un 404 explicando que se retiró, no con un error genérico.
  */
 import VersionDetailView from '@/components/views/VersionDetailView.astro';
 import NotFoundView from '@/components/views/NotFoundView.astro';
 import { getReleaseByTag, getReleases } from '@/lib/releases';
+import { path } from '@/config/routes';
+import { useTranslations } from '@/i18n/ui';
 
 const tag = Astro.params.version ?? '';
 const payload = await getReleases();
 const release = await getReleaseByTag(tag);
+const t = useTranslations('es');
 
 if (!release) {
   Astro.response.status = 404;
@@ -19,6 +25,12 @@ if (!release) {
   release ? (
     <VersionDetailView locale="es" release={release} payload={payload} />
   ) : (
-    <NotFoundView locale="es" />
+    <NotFoundView
+      locale="es"
+      title={t('versions.removed.title')}
+      description={t('versions.removed.desc')}
+      primaryHref={path('versions', 'es')}
+      primaryLabel={t('versions.removed.cta')}
+    />
   )
 }

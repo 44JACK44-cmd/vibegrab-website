@@ -94,7 +94,7 @@ describe('/api/download', () => {
     expect(response.headers.get('location')).toBe(ASSET);
   });
 
-  it('vuelve a la página con aviso si la etiqueta no existe', async () => {
+  it('vuelve a la página indicando que la versión se retiró si la etiqueta no existe', async () => {
     stubFetch();
 
     const response = await downloadRoute(
@@ -104,10 +104,10 @@ describe('/api/download', () => {
 
     expect(response.status).toBe(302);
     expect(location.pathname).toBe('/descargar/');
-    expect(location.searchParams.get('estado')).toBe('no-disponible');
+    expect(location.searchParams.get('estado')).toBe('retirada');
   });
 
-  it('vuelve con aviso si el archivo ya no responde', async () => {
+  it('indica que se retiró si el archivo ya no existe', async () => {
     stubFetch({ assetStatus: 404 });
 
     const response = await downloadRoute(
@@ -116,6 +116,17 @@ describe('/api/download', () => {
     const location = new URL(response.headers.get('location') ?? '');
 
     expect(location.pathname).toBe('/descargar/');
+    expect(location.searchParams.get('estado')).toBe('retirada');
+  });
+
+  it('indica un fallo temporal si la comprobación no se puede hacer', async () => {
+    stubFetch({ assetStatus: 500 });
+
+    const response = await downloadRoute(
+      routeContext('https://vibegrab.example/api/download?tag=' + TAG),
+    );
+    const location = new URL(response.headers.get('location') ?? '');
+
     expect(location.searchParams.get('estado')).toBe('no-disponible');
   });
 
@@ -131,7 +142,8 @@ describe('/api/download', () => {
   });
 });
 
-describe('/api/verify', () => {  it('informa de que el APK está disponible', async () => {
+describe('/api/verify', () => {
+  it('informa de que el APK está disponible', async () => {
     stubFetch();
 
     const response = await verifyRoute(routeContext(`https://vibegrab.example/api/verify?tag=${TAG}`));
@@ -142,7 +154,7 @@ describe('/api/verify', () => {  it('informa de que el APK está disponible', as
     expect(data.sizeBytes).toBe(66642111);
   });
 
-  it('informa de que no hay APK para la etiqueta pedida', async () => {
+  it('distingue una versión retirada de un fallo de comprobación', async () => {
     stubFetch();
 
     const response = await verifyRoute(
@@ -151,6 +163,33 @@ describe('/api/verify', () => {  it('informa de que el APK está disponible', as
     const data = (await response.json()) as { available: boolean; reason: string };
 
     expect(data.available).toBe(false);
-    expect(data.reason).toBe('no-apk');
+    expect(data.reason).toBe('not-found');
+  });
+
+  it('informa "not-found" cuando el archivo ya no existe', async () => {
+    stubFetch({ assetStatus: 404 });
+
+    const response = await verifyRoute(
+      routeContext(`https://vibegrab.example/api/verify?tag=${TAG}`),
+    );
+    const data = (await response.json()) as { available: boolean; reason: string };
+
+    expect(data.available).toBe(false);
+    expect(data.reason).toBe('not-found');
+  });
+
+  it('informa "error" cuando la comprobación falla por red', async () => {
+    stubFetch();
+    globalThis.fetch = vi.fn(async () => {
+      throw new Error('network down');
+    }) as unknown as typeof fetch;
+
+    const response = await verifyRoute(
+      routeContext(`https://vibegrab.example/api/verify?tag=${TAG}`),
+    );
+    const data = (await response.json()) as { available: boolean; reason: string };
+
+    expect(data.available).toBe(false);
+    expect(data.reason).toBe('error');
   });
 });

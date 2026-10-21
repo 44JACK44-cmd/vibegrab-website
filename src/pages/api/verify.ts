@@ -17,8 +17,10 @@ export const GET: APIRoute = async ({ url }) => {
     : payload.latest;
 
   if (!release || !isDownloadable(release) || !release.apk) {
+    // La versión no existe o ya no tiene archivo: está retirada, no es un fallo
+    // temporal de comprobación.
     return new Response(
-      JSON.stringify({ available: false, reason: 'no-apk', tag: tag ?? null }),
+      JSON.stringify({ available: false, reason: 'not-found', tag: tag ?? null }),
       {
         status: 200,
         headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' },

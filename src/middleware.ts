@@ -26,8 +26,14 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   const response = await next();
 
-  for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
-    response.headers.set(key, value);
+  try {
+    for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
+      response.headers.set(key, value);
+    }
+  } catch {
+    // Las respuestas de redirección (302) tienen las cabeceras inmutables a
+    // partir de Node 24. Se devuelven tal cual: no son páginas y no necesitan
+    // estas cabeceras. Si se modificaran a la fuerza, se rompería la descarga.
   }
 
   return response;

@@ -619,7 +619,18 @@ export interface AssetCheck {
   available: boolean;
   sizeBytes: number | null;
   checkedAt: string;
-  reason?: string;
+  /**
+   * Motivo por el que el archivo no está disponible:
+   *
+   *  · `not-found`: el archivo **ya no existe** (se retiró la versión o se
+   *    borró el APK). No es un problema temporal: la versión debe desaparecer
+   *    del catálogo.
+   *  · `error`: no se pudo comprobar (red, límite de peticiones). La versión
+   *    sigue existiendo y puede volver a funcionar en unos minutos.
+   */
+  reason?: 'not-found' | 'error';
+  /** Detalle técnico, solo para depurar. */
+  detail?: string;
 }
 
 /**
@@ -640,11 +651,15 @@ export async function checkAssetAvailability(url: string): Promise<AssetCheck> {
     });
 
     if (!response.ok && response.status !== 206) {
+      // 404 y 410 significan que el archivo ya no está: no es un fallo
+      // temporal y hay que decirlo con claridad.
+      const gone = response.status === 404 || response.status === 410;
       return {
         available: false,
         sizeBytes: null,
         checkedAt,
-        reason: `HTTP ${response.status}`,
+        reason: gone ? 'not-found' : 'error',
+        detail: `HTTP ${response.status}`,
       };
     }
 
@@ -664,7 +679,8 @@ export async function checkAssetAvailability(url: string): Promise<AssetCheck> {
       available: false,
       sizeBytes: null,
       checkedAt,
-      reason: error instanceof Error ? error.message : 'Error desconocido',
+      reason: 'error',
+      detail: error instanceof Error ? error.message : 'Error desconocido',
     };
   } finally {
     clearTimeout(timeout);
