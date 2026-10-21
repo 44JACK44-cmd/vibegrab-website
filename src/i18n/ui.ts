@@ -313,6 +313,21 @@ const dict = {
   'versions.status.stable': { es: 'Estable', en: 'Stable' },
   'versions.empty': { es: 'No hay versiones disponibles.', en: 'No versions available.' },
   'versions.detailTitle': { es: 'Detalles de la versión', en: 'Version details' },
+  'versions.tile.downloads': { es: '{count} descargas', en: '{count} downloads' },
+  'versions.tile.details': { es: 'Ver detalles', en: 'See details' },
+  'versions.tile.total': {
+    es: 'Total de todas las versiones: {count}',
+    en: 'Total across all versions: {count}',
+  },
+  'versions.tile.totalNote': {
+    es: 'descargas del archivo, no usuarios únicos',
+    en: 'file downloads, not unique users',
+  },
+  'versions.dialog.close': { es: 'Cerrar', en: 'Close' },
+  'versions.dialog.downloads': {
+    es: 'descargas de esta versión',
+    en: 'downloads of this version',
+  },
   'versions.notFound.title': { es: 'Versión no encontrada', en: 'Version not found' },
   'versions.notFound.desc': {
     es: 'No existe ninguna versión publicada con esa etiqueta, o ya no está disponible.',

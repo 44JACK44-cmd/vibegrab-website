@@ -1,0 +1,212 @@
+---
+/**
+ * Cartel de una versión publicada.
+ *
+ * Cada versión ocupa un cartel compacto en una rejilla, así el historial no
+ * crece de forma lineal conforme se publican versiones. Al pulsar el cartel se
+ * abre un diálogo con la información completa: novedades, descargas, tamaño,
+ * huella y botón de descarga.
+ *
+ * Sin JavaScript, el enlace del cartel lleva a la ficha permanente de la
+ * versión (`/versiones/<tag>/`), que contiene lo mismo.
+ */
+import Icon from '@/components/Icon.astro';
+import ReleaseNotes from '@/components/ReleaseNotes.astro';
+import { formatBytes, formatDate } from '@/lib/format';
+import { pickImportant, withoutImportant } from '@/lib/notes';
+import { shortHash } from '@/lib/format';
+import type { Release } from '@/lib/releases';
+import { versionPath, type Locale } from '@/config/routes';
+import { siteConfig } from '@/config/site';
+import { useTranslations } from '@/i18n/ui';
+
+interface Props {
+  release: Release;
+  locale: Locale;
+  /** Descargas acumuladas de todas las versiones (para el resumen). */
+  totalDownloads: number;
+}
+
+const { release, locale, totalDownloads } = Astro.props;
+const t = useTranslations(locale);
+
+const important = pickImportant(release.notes, locale);
+const mainSections = withoutImportant(release.notes, locale);
+const downloadHref = `/api/download?tag=${encodeURIComponent(release.tag)}&lang=${locale}`;
+const detailsHref = versionPath(release.tag, locale);
+const androidLabel = `${siteConfig.android.minVersionLabel[locale]}+`;
+const dialogId = `release-${release.tag.replace(/[^a-zA-Z0-9-]/g, '')}`;
+const downloads = release.apk?.downloadCount ?? 0;
+---
+
+<article class="release-tile" id={release.tag}>
+  <div class="release-tile__top">
+    <span class="release-tile__version">v{release.version}</span>
+    <div class="release-tile__badges">
+      {
+        release.isLatestStable && (
+          <span class="badge badge--success">
+            <span class="badge__dot" />
+            {t('versions.latest')}
+          </span>
+        )
+      }
+      {release.prerelease && <span class="badge badge--warning">{t('versions.prerelease')}</span>}
+      {!release.apk && <span class="badge badge--danger">{t('versions.noApk')}</span>}
+    </div>
+  </div>
+
+  <div class="release-tile__meta">
+    <span>
+      <Icon name="calendar" size={13} />
+      <time datetime={release.publishedAt}>{formatDate(release.publishedAt, locale)}</time>
+    </span>
+    {
+      release.apk && (
+        <span>
+          <Icon name="package" size={13} />
+          {formatBytes(release.apk.sizeBytes, locale)}
+        </span>
+      )
+    }
+    {
+      downloads > 0 && (
+        <span class="release-tile__downloads">
+          <Icon name="download" size={13} />
+          {t('versions.tile.downloads', { count: downloads })}
+        </span>
+      )
+    }
+  </div>
+
+  <div class="release-tile__actions">
+    {
+      release.apk && (
+        <a class="btn btn--primary btn--sm" href={downloadHref}>
+          <Icon name="download" size={16} />
+          {t('versions.download')}
+        </a>
+      )
+    }
+    <a class="btn btn--secondary btn--sm" href={detailsHref} data-dialog-open={dialogId}>
+      {t('versions.tile.details')}
+      <Icon name="arrow-right" size={15} />
+    </a>
+  </div>
+</article>
+
+<dialog class="release-dialog" id={dialogId} aria-labelledby={`${dialogId}-title`}>
+  <div class="release-dialog__inner">
+    <div class="release-dialog__head">
+      <div>
+        <p class="release-dialog__eyebrow">{t('versions.detailTitle')}</p>
+        <h2 class="release-dialog__title" id={`${dialogId}-title`}>v{release.version}</h2>
+      </div>
+      <form method="dialog">
+        <button class="icon-btn" type="submit" aria-label={t('versions.dialog.close')}>
+          <Icon name="close" size={18} />
+        </button>
+      </form>
+    </div>
+
+    <div class="release-dialog__meta">
+      <span>
+        <Icon name="calendar" size={14} />
+        <time datetime={release.publishedAt}>{formatDate(release.publishedAt, locale)}</time>
+      </span>
+      {
+        release.build !== null && (
+          <span>
+            <Icon name="chip" size={14} />
+            {t('download.spec.build')} {release.build}
+          </span>
+        )
+      }
+      {
+        release.apk && (
+          <span>
+            <Icon name="package" size={14} />
+            {formatBytes(release.apk.sizeBytes, locale)}
+          </span>
+        )
+      }
+      <span>
+        <Icon name="smartphone" size={14} />
+        {androidLabel}
+      </span>
+    </div>
+
+    {
+      downloads > 0 && (
+        <div class="release-dialog__downloads">
+          <span class="release-dialog__downloads-value">{downloads}</span>
+          <span>
+            {t('versions.dialog.downloads')}
+            <br />
+            <span class="tiny muted">
+              {t('versions.tile.total', { count: totalDownloads })}
+            </span>
+          </span>
+        </div>
+      )
+    }
+
+    {
+      release.higherSemverThanStable && (
+        <p class="callout callout--warning">
+          <Icon name="info" size={16} />
+          <span>{t('versions.higherNumberNote')}</span>
+        </p>
+      )
+    }
+
+    {
+      important && (
+        <p class="callout callout--warning">
+          <Icon name="warning" size={16} />
+          <span>
+            {important.items
+              .map((item) => [item.text[locale], item.detail?.[locale]].filter(Boolean).join(' '))
+              .join(' ')}
+          </span>
+        </p>
+      )
+    }
+
+    {
+      mainSections.length > 0 ? (
+        <ReleaseNotes
+          sections={mainSections}
+          locale={locale}
+          raw={release.notesSource === 'release-notes'}
+          headingLevel="h4"
+        />
+      ) : (
+        <p class="small muted">{t('versions.noNotes')}</p>
+      )
+    }
+
+    {
+      release.apk?.sha256 && (
+        <div class="hash-row">
+          <code>{shortHash(release.apk.sha256)}</code>
+        </div>
+      )
+    }
+
+    <div class="release-dialog__actions">
+      {
+        release.apk && (
+          <a class="btn btn--primary" href={downloadHref}>
+            <Icon name="download" size={17} />
+            {t('download.button.size', { size: formatBytes(release.apk.sizeBytes, locale) })}
+          </a>
+        )
+      }
+      <a class="btn btn--secondary" href={detailsHref}>
+        {t('versions.details')}
+        <Icon name="arrow-right" size={16} />
+      </a>
+    </div>
+  </div>
+</dialog>

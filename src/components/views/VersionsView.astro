@@ -1,12 +1,16 @@
 ---
 /**
- * Historial de versiones: todas las publicaciones oficiales, ordenadas por
- * fecha real de publicación (no por número de versión).
+ * Historial de versiones: todas las publicaciones oficiales en una rejilla de
+ * carteles, ordenadas por fecha real de publicación (no por número de versión).
+ *
+ * Cada cartel es compacto y muestra solo lo esencial. El resto de la
+ * información (novedades, descargas, huella) aparece al pulsarlo, así el
+ * historial no crece de forma lineal cada vez que se publica una versión.
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Icon from '@/components/Icon.astro';
 import PageHero from '@/components/PageHero.astro';
-import ReleaseCard from '@/components/ReleaseCard.astro';
+import ReleaseTile from '@/components/ReleaseTile.astro';
 import DataStatus from '@/components/DataStatus.astro';
 import type { ReleasesPayload } from '@/lib/releases';
 import { path, type Locale } from '@/config/routes';
@@ -24,6 +28,11 @@ const stable = payload.releases.filter((release) => !release.prerelease && relea
 const prereleases = payload.releases.filter((release) => release.prerelease);
 const withoutApk = payload.releases.filter((release) => !release.apk && !release.prerelease);
 const hasReleases = stable.length > 0 || prereleases.length > 0 || withoutApk.length > 0;
+
+const totalDownloads = payload.releases.reduce(
+  (total, release) => total + (release.apk?.downloadCount ?? 0),
+  0,
+);
 ---
 
 <BaseLayout
@@ -46,18 +55,27 @@ const hasReleases = stable.length > 0 || prereleases.length > 0 || withoutApk.le
 
   <section class="section section--tight">
     <div class="container">
-      <p class="callout callout--info" style="margin-bottom: var(--space-7)">
+      <p class="callout callout--info" style="margin-bottom: var(--space-6)">
         <Icon name="info" size={18} />
         <span>{t('versions.orderNote')}</span>
       </p>
 
       {
         stable.length > 0 ? (
-          <div class="release-list">
-            {stable.map((release) => (
-              <ReleaseCard release={release} locale={locale} />
-            ))}
-          </div>
+          <>
+            <div class="release-grid">
+              {stable.map((release) => (
+                <ReleaseTile release={release} locale={locale} totalDownloads={totalDownloads} />
+              ))}
+            </div>
+            {totalDownloads > 0 && (
+              <p class="release-grid__total">
+                <Icon name="download" size={15} />
+                {t('versions.tile.total', { count: totalDownloads })}
+                <span class="tiny muted"> · {t('versions.tile.totalNote')}</span>
+              </p>
+            )}
+          </>
         ) : hasReleases ? null : (
           <div class="pending-card">
             <Icon name="info" size={18} />
@@ -80,9 +98,9 @@ const hasReleases = stable.length > 0 || prereleases.length > 0 || withoutApk.le
             <p class="small muted" style="margin: var(--space-4) 0">
               {t('versions.prereleases.note')}
             </p>
-            <div class="release-list">
+            <div class="release-grid">
               {prereleases.map((release) => (
-                <ReleaseCard release={release} locale={locale} />
+                <ReleaseTile release={release} locale={locale} totalDownloads={totalDownloads} />
               ))}
             </div>
           </details>
@@ -95,9 +113,9 @@ const hasReleases = stable.length > 0 || prereleases.length > 0 || withoutApk.le
             <h2 class="section-head" style="margin-bottom: var(--space-5); font-size: var(--text-2xl)">
               {t('versions.noApk')}
             </h2>
-            <div class="release-list">
+            <div class="release-grid">
               {withoutApk.map((release) => (
-                <ReleaseCard release={release} locale={locale} />
+                <ReleaseTile release={release} locale={locale} totalDownloads={totalDownloads} />
               ))}
             </div>
           </div>
@@ -113,3 +131,33 @@ const hasReleases = stable.length > 0 || prereleases.length > 0 || withoutApk.le
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  /**
+   * Abre el diálogo de detalles de una versión.
+   *
+   * Si el navegador no soporta `<dialog>` o no hay JavaScript, el enlace
+   * lleva a la ficha permanente de la versión: nunca se queda sin salida.
+   */
+  function initReleaseDialogs() {
+    document.querySelectorAll<HTMLAnchorElement>('[data-dialog-open]').forEach((link) => {
+      link.addEventListener('click', (event) => {
+        const dialog = document.getElementById(link.dataset.dialogOpen ?? '') as
+          | HTMLDialogElement
+          | null;
+        if (!dialog || typeof dialog.showModal !== 'function') return;
+        event.preventDefault();
+        dialog.showModal();
+      });
+    });
+
+    // Un clic fuera del contenido cierra el diálogo.
+    document.querySelectorAll<HTMLDialogElement>('.release-dialog').forEach((dialog) => {
+      dialog.addEventListener('click', (event) => {
+        if (event.target === dialog) dialog.close();
+      });
+    });
+  }
+
+  initReleaseDialogs();
+</script>

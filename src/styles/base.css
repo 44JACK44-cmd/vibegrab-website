@@ -322,6 +322,12 @@ code {
   font-size: var(--text-base);
 }
 
+.btn--sm {
+  padding: 0.5rem 0.9rem;
+  font-size: var(--text-xs);
+  gap: var(--space-1);
+}
+
 .btn--block {
   width: 100%;
 }
