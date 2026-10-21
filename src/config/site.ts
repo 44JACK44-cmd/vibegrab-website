@@ -9,6 +9,25 @@ import { publicEnv, serverEnv } from '@/lib/env';
 
 const REPO_FALLBACK = '44JACK44-cmd/vibeGrab';
 
+/**
+ * Canales de contacto publicados por el responsable del proyecto.
+ *
+ * Son datos reales facilitados por el desarrollador. Se pueden sobrescribir
+ * con variables de entorno (`CONTACT_PHONE`, `CONTACT_PHONE_E164`,
+ * `CONTACT_FACEBOOK`, `CONTACT_TIKTOK`) sin tocar el código.
+ */
+const CONTACT_FALLBACK = {
+  /** Teléfono tal como se publica. */
+  phone: '944834202',
+  /**
+   * Formato internacional para el enlace `tel:`. Vacío hasta confirmar el
+   * prefijo del país: sin él el número se muestra pero no se puede marcar.
+   */
+  phoneE164: '',
+  facebook: 'https://www.facebook.com/amilcar.aymaraenciso.1',
+  tiktok: 'https://www.tiktok.com/@4_jck_6',
+} as const;
+
 /** Datos técnicos comprobados en el propio proyecto Flutter. */
 export const android = {
   /** `android:minSdkVersion` del manifiesto combinado del APK. */
@@ -50,13 +69,52 @@ export const siteConfig = {
   repo: serverEnv('GITHUB_REPO') ?? REPO_FALLBACK,
 
   /**
-   * Canales de contacto. Vacíos a propósito: no inventamos correos ni foros.
-   * Rellena `CONTACT_EMAIL` / `SUPPORT_URL` cuando existan de verdad.
+   * Canales de contacto. El correo sigue vacío porque no hay ninguna
+   * dirección de correo publicada: no se inventa ninguna.
    */
   contact: {
     email: publicEnv('CONTACT_EMAIL') ?? serverEnv('CONTACT_EMAIL') ?? '',
     supportUrl: publicEnv('SUPPORT_URL') ?? serverEnv('SUPPORT_URL') ?? '',
+    phone:
+      publicEnv('CONTACT_PHONE') ?? serverEnv('CONTACT_PHONE') ?? CONTACT_FALLBACK.phone,
+    phoneE164:
+      publicEnv('CONTACT_PHONE_E164') ??
+      serverEnv('CONTACT_PHONE_E164') ??
+      CONTACT_FALLBACK.phoneE164,
+    facebook:
+      publicEnv('CONTACT_FACEBOOK') ??
+      serverEnv('CONTACT_FACEBOOK') ??
+      CONTACT_FALLBACK.facebook,
+    tiktok:
+      publicEnv('CONTACT_TIKTOK') ??
+      serverEnv('CONTACT_TIKTOK') ??
+      CONTACT_FALLBACK.tiktok,
   },
+
+  /**
+   * Redes sociales oficiales del proyecto. Solo se publica lo que está
+   * configurado de verdad.
+   */
+  social: [
+    {
+      id: 'facebook',
+      label: { es: 'Facebook', en: 'Facebook' },
+      url:
+        publicEnv('CONTACT_FACEBOOK') ??
+        serverEnv('CONTACT_FACEBOOK') ??
+        CONTACT_FALLBACK.facebook,
+      icon: 'globe',
+    },
+    {
+      id: 'tiktok',
+      label: { es: 'TikTok', en: 'TikTok' },
+      url:
+        publicEnv('CONTACT_TIKTOK') ??
+        serverEnv('CONTACT_TIKTOK') ??
+        CONTACT_FALLBACK.tiktok,
+      icon: 'music',
+    },
+  ].filter((link) => link.url !== ''),
 
   /** Metadatos SEO por defecto. */
   seo: {
@@ -68,7 +126,10 @@ export const siteConfig = {
 } as const;
 
 export const isContactConfigured = (): boolean =>
-  siteConfig.contact.email !== '' || siteConfig.contact.supportUrl !== '';
+  siteConfig.contact.email !== '' ||
+  siteConfig.contact.supportUrl !== '' ||
+  siteConfig.contact.phone !== '' ||
+  siteConfig.social.length > 0;
 
 /** Aviso en consola durante el desarrollo si falta configuración de negocio. */
 let warnedAboutPendingConfig = false;

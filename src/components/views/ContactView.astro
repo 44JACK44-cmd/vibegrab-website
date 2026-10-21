@@ -2,8 +2,8 @@
 /**
  * Contacto y soporte.
  *
- * No se inventan correos ni formularios: si no hay un canal configurado, se
- * dice de forma explícita y se ofrecen los recursos que sí existen.
+ * Solo se muestran vías que existen de verdad. Si no hay ninguna configurada,
+ * se dice de forma explícita y se ofrecen los recursos que sí hay.
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Icon from '@/components/Icon.astro';
@@ -19,9 +19,10 @@ interface Props {
 const { locale } = Astro.props;
 const t = useTranslations(locale);
 
-const email = siteConfig.contact.email;
-const supportUrl = siteConfig.contact.supportUrl;
-const configured = email !== '' || supportUrl !== '';
+const { email, supportUrl, phone, phoneE164 } = siteConfig.contact;
+const social = siteConfig.social;
+const configured =
+  email !== '' || supportUrl !== '' || phone !== '' || social.length > 0;
 ---
 
 <BaseLayout
@@ -42,6 +43,39 @@ const configured = email !== '' || supportUrl !== '';
       {
         configured ? (
           <div class="grid grid--2">
+            {phone && (
+              phoneE164 ? (
+                <a class="card card--link" href={`tel:${phoneE164}`}>
+                  <span class="card__icon" aria-hidden="true">
+                    <Icon name="smartphone" size={20} />
+                  </span>
+                  <h2 class="card__title" style="font-size: var(--text-lg)">
+                    {t('contact.phone.label')}
+                  </h2>
+                  <p class="card__text">{phone}</p>
+                  <div class="card__foot">
+                    <span class="link-arrow">
+                      {t('contact.phone.call')}
+                      <Icon name="arrow-up-right" size={16} />
+                    </span>
+                  </div>
+                </a>
+              ) : (
+                <div class="card">
+                  <span class="card__icon" aria-hidden="true">
+                    <Icon name="smartphone" size={20} />
+                  </span>
+                  <h2 class="card__title" style="font-size: var(--text-lg)">
+                    {t('contact.phone.label')}
+                  </h2>
+                  <p class="card__text">{phone}</p>
+                  <div class="card__foot">
+                    <span class="small muted">{t('contact.phone.hint')}</span>
+                  </div>
+                </div>
+              )
+            )}
+
             {email && (
               <a class="card card--link" href={`mailto:${email}`}>
                 <span class="card__icon" aria-hidden="true">
@@ -59,6 +93,7 @@ const configured = email !== '' || supportUrl !== '';
                 </div>
               </a>
             )}
+
             {supportUrl && (
               <a class="card card--link" href={supportUrl} rel="noopener noreferrer">
                 <span class="card__icon" aria-hidden="true">
@@ -76,6 +111,24 @@ const configured = email !== '' || supportUrl !== '';
                 </div>
               </a>
             )}
+
+            {social.map((link) => (
+              <a class="card card--link" href={link.url} rel="noopener noreferrer">
+                <span class="card__icon" aria-hidden="true">
+                  <Icon name={link.icon} size={20} />
+                </span>
+                <h2 class="card__title" style="font-size: var(--text-lg)">
+                  {link.label[locale]}
+                </h2>
+                <p class="card__text">{link.url.replace(/^https?:\/\//, '')}</p>
+                <div class="card__foot">
+                  <span class="link-arrow">
+                    {locale === 'es' ? 'Abrir' : 'Open'}
+                    <Icon name="arrow-up-right" size={16} />
+                  </span>
+                </div>
+              </a>
+            ))}
           </div>
         ) : (
           <div class="pending-card">
@@ -91,6 +144,7 @@ const configured = email !== '' || supportUrl !== '';
                   {t('nav.help')}
                 </a>
                 <a class="btn btn--ghost" href={path('download', locale)}>
+                  <Icon name="download" size={17} />
                   {t('nav.download')}
                 </a>
               </div>

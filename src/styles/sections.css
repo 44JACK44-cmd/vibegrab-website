@@ -693,6 +693,27 @@
   flex-shrink: 0;
 }
 
+.review__avatar--generic {
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  background: var(--code-bg);
+}
+
+.review__badge {
+  padding: 0.1rem 0.4rem;
+  border-radius: var(--radius-xs);
+  background: var(--code-bg);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.review__badge.is-verified {
+  background: var(--success-tint);
+  color: var(--success);
+}
+
 .review__who {
   flex: 1;
   min-width: 0;
@@ -838,7 +859,8 @@
 }
 
 .review-form__textarea,
-.review-form__select {
+.review-form__select,
+.review-form__input {
   width: 100%;
   padding: var(--space-3) var(--space-4);
   border: 1px solid var(--border-strong);
@@ -851,15 +873,46 @@
   transition: border-color var(--duration-fast) var(--ease-out);
 }
 
+.review-form__input,
+.review-form__select {
+  resize: none;
+}
+
 .review-form__textarea::placeholder {
   color: var(--muted);
 }
 
 .review-form__textarea:focus,
-.review-form__select:focus {
+.review-form__select:focus,
+.review-form__input:focus {
   outline: none;
   border-color: var(--brand);
   box-shadow: 0 0 0 3px var(--brand-tint);
+}
+
+.review-form__hint {
+  margin: var(--space-2) 0 0;
+  line-height: 1.5;
+}
+
+.review-form__status {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
+.review-form__status[data-kind='ok'] {
+  border: 1px solid color-mix(in srgb, var(--success) 30%, transparent);
+  background: var(--success-tint);
+  color: var(--success);
+}
+
+.review-form__status[data-kind='error'] {
+  border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
+  background: var(--danger-tint);
+  color: var(--danger);
 }
 
 .review-form__counter {

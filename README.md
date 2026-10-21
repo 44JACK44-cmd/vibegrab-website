@@ -236,23 +236,34 @@ Los identificadores están en `src/content/app-tour.ts`.
 
 ## Reseñas y comunidad
 
-Las opiniones se guardan como **issues públicos** del repositorio de la web
-(`44JACK44-cmd/vibegrab-website`) y se leen de la API pública de GitHub.
+Las opiniones se guardan como **issues del repositorio de la web**
+(`44JACK44-cmd/vibegrab-website`) y se leen de la API de GitHub.
 
-El flujo es real y sin intermediarios:
+El flujo es real y **no exige ninguna cuenta al usuario**:
 
-1. La persona rellena la puntuación (1–5) y la opinión.
-2. El formulario abre el compositor de issues de GitHub con el texto ya
-   escrito y una marca con los datos estructurados:
-   `<!-- vibegrab-review {"rating":5,"version":"1.1.38","lang":"es"} -->`
-3. Inicia sesión en GitHub y publica. La opinión queda **firmada por su
-   cuenta**, que es la única forma de que un testimonio sea atribuible.
-4. La web la recoge en el siguiente `npm run snapshot`-like refresh (la caché
-   dura `REVIEWS_CACHE_MINUTES`, 10 minutos por defecto).
+1. La persona rellena la puntuación (1–5), el alias opcional y el comentario.
+2. El formulario hace `POST /api/reviews`.
+3. El servidor valida, aplica el límite anti-spam y **crea el issue** con su
+   propio token. Ese token nunca sale del servidor.
+4. La opinión aparece en la web en la siguiente lectura (la caché dura
+   `REVIEWS_CACHE_MINUTES`, 10 minutos, y se acorta tras un envío).
 
 Moderación: **cerrar el issue retira la opinión** de la lista, sin tocar
-código. Solo se aceptan issues con la marca válida, puntuación entre 1 y 5 y
-texto entre 20 y 800 caracteres.
+código. Con `REVIEWS_REQUIRE_MODERATION=1` las opiniones se crean ya cerradas
+y hay que abrirlas para publicarlas.
+
+Anti-spam: cuenta no necesaria, pero sí validación estricta (20–800 caracteres,
+puntuación 1–5), trampa para bots, límite de envíos por IP
+(`REVIEWS_MAX_PER_HOUR`) y detección de duplicados.
+
+Identidad: cada opinión muestra el alias que escribió su autor o, si no puso
+ninguno, «Usuario de la comunidad». Solo se marcan como **cuenta verificada**
+las que se publicaron con una cuenta de GitHub identificable. Nunca se inventan
+nombres ni fotografías.
+
+> **Requiere `GITHUB_TOKEN` con permiso de escritura (`public_repo`).** Sin él,
+> el formulario no se muestra: es preferible a un botón que no pueda guardar
+> nada.
 
 Si algún día se quiere cambiar de almacén (por ejemplo a una base de datos),
 el punto de conexión es `src/lib/reviews-server.ts`; la interfaz y el
@@ -261,7 +272,11 @@ formulario no cambian.
 ## Estado y pendientes
 
 - **Dominio**: no comprado. Se despliega en `https://vibegrab-website.vercel.app`.
-- **Contacto**: sin correo ni canal público todavía; la página lo dice.
+- **Contacto**: ya se publican el teléfono y los perfiles de Facebook y TikTok
+  del responsable del proyecto (configurables con `CONTACT_PHONE`,
+  `CONTACT_PHONE_E164`, `CONTACT_FACEBOOK` y `CONTACT_TIKTOK`). **No hay
+  dirección de correo**: la web lo dice en lugar de inventar una. Con
+  `CONTACT_PHONE_E164` el número se vuelve marcable con un clic.
 - **Capturas**: no existen capturas reales publicadas. La portada usa una pieza
   de marca y los diagramas CSS que explican cada función; la galería se muestra
   en cuanto haya imágenes en `src/config/screenshots.ts`.

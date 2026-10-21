@@ -2,14 +2,14 @@
  * Pruebas del sistema de opiniones de la comunidad.
  *
  * Comprueban que solo se acepten los issues que son opiniones reales, que se
- * descarten los que no cumplen las reglas y que el resumen (media y media
- * por nota) sale de los datos, nunca de un número inventado.
+ * descarten los que no cumplen las reglas, que el resumen (media y media por
+ * nota) sale de los datos y que el envío se valida antes de tocar la red.
  */
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import {
   averageRating,
   buildReviewBody,
-  buildReviewIssueUrl,
+  buildReviewTitle,
   parseReviewIssue,
   ratingBreakdown,
   REVIEW_MARKER,
@@ -17,6 +17,7 @@ import {
   REVIEW_MIN_LENGTH,
   type Review,
 } from '@/lib/reviews';
+import { resetReviewsCache, submitReview } from '@/lib/reviews-server';
 
 function issue(overrides: Record<string, unknown> = {}) {
   return {
@@ -33,16 +34,35 @@ function issue(overrides: Record<string, unknown> = {}) {
 }
 
 describe('parseReviewIssue', () => {
-  it('convierte un issue marcado en una opinión', () => {
+  it('convierte un issue publicado con una cuenta en una opinión verificada', () => {
     const review = parseReviewIssue(issue());
 
     expect(review).not.toBeNull();
     expect(review?.author).toBe('usuario-real');
+    expect(review?.verified).toBe(true);
+    expect(review?.authorUrl).toContain('github.com');
     expect(review?.rating).toBe(5);
     expect(review?.version).toBe('1.1.38');
     expect(review?.lang).toBe('es');
     expect(review?.text).toContain('Muy buena app');
     expect(review?.text).not.toContain(REVIEW_MARKER);
+  });
+
+  it('una opinión del formulario usa el alias y no se marca como verificada', () => {
+    const body = `<!-- ${REVIEW_MARKER} {"rating":4,"version":"1.1.38","lang":"es","alias":"Ana","via":"form"} -->\n\nLa uso a diario y me funciona muy bien, el reproductor va fluido.`;
+    const review = parseReviewIssue(issue({ body }));
+
+    expect(review?.author).toBe('Ana');
+    expect(review?.verified).toBe(false);
+    expect(review?.authorUrl).toBe('');
+  });
+
+  it('sin alias y sin cuenta se muestra con el nombre genérico', () => {
+    const body = `<!-- ${REVIEW_MARKER} {"rating":4,"lang":"es","via":"form"} -->\n\nLa uso a diario y me funciona muy bien, el reproductor va fluido.`;
+    const review = parseReviewIssue(issue({ body }));
+
+    expect(review?.author).toBe('');
+    expect(review?.verified).toBe(false);
   });
 
   it('descarta un issue sin la marca', () => {
@@ -68,10 +88,6 @@ describe('parseReviewIssue', () => {
     expect(parseReviewIssue(issue({ body }))).toBeNull();
   });
 
-  it('descarta un issue sin autor', () => {
-    expect(parseReviewIssue(issue({ user: undefined }))).toBeNull();
-  });
-
   it('descarta una marca con JSON inválido', () => {
     const body = `<!-- ${REVIEW_MARKER} {rating:5} -->\n\nTexto suficientemente largo para pasar la validación.`;
     expect(parseReviewIssue(issue({ body }))).toBeNull();
@@ -80,9 +96,9 @@ describe('parseReviewIssue', () => {
 
 describe('resumen', () => {
   const reviews: Review[] = [
-    { id: '1', number: 1, author: 'a', authorUrl: '', date: '2026-10-19', rating: 5, lang: 'es', text: 'x', source: 'GitHub', sourceUrl: '' },
-    { id: '2', number: 2, author: 'b', authorUrl: '', date: '2026-10-19', rating: 4, lang: 'es', text: 'x', source: 'GitHub', sourceUrl: '' },
-    { id: '3', number: 3, author: 'c', authorUrl: '', date: '2026-10-19', rating: 4, lang: 'en', text: 'x', source: 'GitHub', sourceUrl: '' },
+    { id: '1', number: 1, author: 'a', authorUrl: '', verified: false, date: '2026-10-19', rating: 5, lang: 'es', text: 'x', source: 'GitHub', sourceUrl: '' },
+    { id: '2', number: 2, author: 'b', authorUrl: '', verified: false, date: '2026-10-19', rating: 4, lang: 'es', text: 'x', source: 'GitHub', sourceUrl: '' },
+    { id: '3', number: 3, author: 'c', authorUrl: '', verified: true, date: '2026-10-19', rating: 4, lang: 'en', text: 'x', source: 'GitHub', sourceUrl: '' },
   ];
 
   it('calcula la media real', () => {
@@ -104,40 +120,67 @@ describe('resumen', () => {
   });
 });
 
-describe('envío de la opinión', () => {
-  it('el cuerpo incluye la marca y el texto', () => {
-    const body = buildReviewBody({ text: '  Hola  ', rating: 4, version: '1.1.38', lang: 'es' });
+describe('preparación del envío', () => {
+  it('el cuerpo incluye la marca, el alias y el texto', () => {
+    const body = buildReviewBody({
+      text: '  Hola  ',
+      rating: 4,
+      version: '1.1.38',
+      lang: 'es',
+      alias: 'Ana',
+    });
 
     expect(body).toContain(REVIEW_MARKER);
     expect(body).toContain('"rating":4');
-    expect(body).toContain('Hola');
+    expect(body).toContain('"alias":"Ana"');
+    expect(body).toContain('"via":"form"');
     expect(body.endsWith('Hola')).toBe(true);
   });
 
-  it('el enlace apunta al compositor de issues con el contenido relleno', () => {
-    const url = new URL(
-      buildReviewIssueUrl({ text: 'Mi opinión sobre la app', rating: 5, version: '1.1.38', lang: 'es' }),
+  it('el título lleva la puntuación y la versión', () => {
+    expect(buildReviewTitle({ rating: 5, version: '1.1.38', lang: 'es' })).toBe(
+      '[Reseña] 5/5 · v1.1.38',
     );
-
-    expect(url.origin + url.pathname).toBe(
-      'https://github.com/44JACK44-cmd/vibegrab-website/issues/new',
-    );
-    expect(url.searchParams.get('title')).toContain('5/5');
-    expect(url.searchParams.get('body')).toContain(REVIEW_MARKER);
-    expect(url.searchParams.get('body')).toContain('Mi opinión sobre la app');
-  });
-
-  it('usa el prefijo en inglés cuando el idioma es inglés', () => {
-    const url = new URL(
-      buildReviewIssueUrl({ text: 'My honest opinion about the app', rating: 3, lang: 'en' }),
-    );
-
-    expect(url.searchParams.get('title')).toContain('[Review]');
+    expect(buildReviewTitle({ rating: 3, lang: 'en' })).toBe('[Review] 3/5');
   });
 
   it('acepta un texto en el límite mínimo', () => {
     const text = 'a'.repeat(REVIEW_MIN_LENGTH);
     expect(text.length).toBeGreaterThanOrEqual(REVIEW_MIN_LENGTH);
     expect(buildReviewBody({ text, rating: 3, lang: 'es' })).toContain(text);
+  });
+});
+
+describe('envío de la opinión', () => {
+  afterEach(() => {
+    resetReviewsCache();
+  });
+
+  it('rechaza un texto demasiado corto sin tocar la red', async () => {
+    const result = await submitReview({ text: 'corto', rating: 4, lang: 'es', ip: '1.1.1.1' });
+    expect(result).toEqual({ ok: false, reason: 'invalid' });
+  });
+
+  it('rechaza una puntuación inválida', async () => {
+    const result = await submitReview({
+      text: 'Un texto suficientemente largo para pasar la validación.',
+      rating: 9,
+      lang: 'es',
+      ip: '1.1.1.2',
+    });
+    expect(result).toEqual({ ok: false, reason: 'invalid' });
+  });
+
+  it('sin token configurado el canal no está disponible', async () => {
+    const result = await submitReview({
+      text: 'Un texto suficientemente largo para pasar la validación.',
+      rating: 4,
+      lang: 'es',
+      ip: '1.1.1.3',
+    });
+    // En las pruebas no hay token, así que el canal se declara no disponible
+    // en vez de fingir que la opinión se ha guardado.
+    expect(result.ok).toBe(false);
+    expect(result.ok === false && result.reason).toBe('unavailable');
   });
 });

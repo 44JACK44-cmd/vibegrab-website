@@ -2,19 +2,18 @@
 /**
  * Comunidad: opiniones reales y formulario para dejar la propia.
  *
- * No hay testimonios inventados. Las opiniones se leen de los issues
- * públicos del repositorio (ver `src/lib/reviews.ts`), firmadas por cuentas
- * reales. Si todavía no hay ninguna, la sección lo dice con claridad en lugar
- * de rellenar con reseñas de mentira.
+ * No hay testimonios inventados. Las opiniones se leen de los issues del
+ * repositorio (ver `src/lib/reviews.ts`) y las publica el servidor, así que
+ * cualquiera puede opinar **sin crear ninguna cuenta**.
  *
- * El formulario lleva la opinión al compositor de issues de GitHub: la
- * publica la persona con su cuenta, así la atribución es verificable y el
- * moderador puede cerrar el issue para retirarla.
+ * Cada opinión indica si viene de una cuenta de GitHub identificable
+ * (`verificada`) o de un alias escrito en el formulario (`sin verificar`).
+ * Nunca se inventan nombres ni fotografías de personas.
  */
 import Icon from '@/components/Icon.astro';
 import ReviewForm from '@/components/ReviewForm.astro';
 import { communityCopy } from '@/lib/reviews';
-import { getReviews } from '@/lib/reviews-server';
+import { getReviews, reviewsChannelAvailable } from '@/lib/reviews-server';
 import { formatDate } from '@/lib/format';
 import { useTranslations } from '@/i18n/ui';
 import type { Locale } from '@/config/routes';
@@ -33,8 +32,10 @@ const payload = await getReviews();
 const reviews = payload.reviews;
 const average = payload.average;
 const hasReviews = reviews.length > 0;
+const available = reviewsChannelAvailable();
 
 const fullStars = average === null ? 0 : Math.round(average);
+const verifiedCount = reviews.filter((review) => review.verified).length;
 ---
 
 <section class="section section--soft" id="comunidad">
@@ -57,7 +58,7 @@ const fullStars = average === null ? 0 : Math.round(average);
           </div>
         </div>
 
-        <ReviewForm locale={locale} versions={versions} />
+        <ReviewForm locale={locale} versions={versions} available={available} />
       </div>
 
       <div class="community__reviews">
@@ -82,6 +83,13 @@ const fullStars = average === null ? 0 : Math.round(average);
                   {copy.summaryAverage[locale].replace('{value}', average.toFixed(1))}
                   {' · '}
                   {copy.summaryCount[locale].replace('{count}', String(reviews.length))}
+                  {verifiedCount > 0 && (
+                    <span class="community__summary-note">
+                      {' · '}
+                      {verifiedCount}{' '}
+                      {locale === 'es' ? 'con cuenta verificada' : 'with a verified account'}
+                    </span>
+                  )}
                 </p>
               </div>
             </div>
@@ -103,22 +111,40 @@ const fullStars = average === null ? 0 : Math.round(average);
               {reviews.map((review) => (
                 <li class="review">
                   <div class="review__head">
-                    <img
-                      class="review__avatar"
-                      src={`https://github.com/${review.author}.png?size=72`}
-                      width="36"
-                      height="36"
-                      alt=""
-                      loading="lazy"
-                      decoding="async"
-                    />
+                    {review.verified && review.authorUrl ? (
+                      <img
+                        class="review__avatar"
+                        src={`https://github.com/${review.author}.png?size=72`}
+                        width="36"
+                        height="36"
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : (
+                      <span class="review__avatar review__avatar--generic" aria-hidden="true">
+                        <Icon name="user" size={18} />
+                      </span>
+                    )}
                     <div class="review__who">
-                      <a class="review__author" href={review.authorUrl} rel="noopener nofollow" target="_blank">
-                        {review.author}
-                      </a>
+                      {review.verified && review.authorUrl ? (
+                        <a
+                          class="review__author"
+                          href={review.authorUrl}
+                          rel="noopener nofollow"
+                          target="_blank"
+                        >
+                          {review.author}
+                        </a>
+                      ) : (
+                        <p class="review__author">
+                          {review.author || copy.reviewAnonymous[locale]}
+                        </p>
+                      )}
                       <p class="review__meta">
                         <time datetime={review.date}>{formatDate(review.date, locale)}</time>
-                        {review.version && ` · ${copy.reviewVersion[locale].replace('{version}', review.version)}`}
+                        {review.version &&
+                          ` · ${copy.reviewVersion[locale].replace('{version}', review.version)}`}
                       </p>
                     </div>
                     <div class="review__rating" aria-label={`${review.rating} de 5`}>
@@ -141,7 +167,14 @@ const fullStars = average === null ? 0 : Math.round(average);
                     <a href={review.sourceUrl} rel="noopener nofollow" target="_blank">
                       {copy.reviewSource[locale]}
                     </a>
-                    {review.lang !== locale && <span class="review__lang">{review.lang.toUpperCase()}</span>}
+                    <span class:list={['review__badge', { 'is-verified': review.verified }]}>
+                      {review.verified
+                        ? copy.reviewVerified[locale]
+                        : copy.reviewAlias[locale]}
+                    </span>
+                    {review.lang !== locale && (
+                      <span class="review__lang">{review.lang.toUpperCase()}</span>
+                    )}
                   </p>
                 </li>
               ))}

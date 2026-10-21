@@ -36,18 +36,27 @@ En **Project → Settings → Environment Variables** (Production y Preview):
 | --- | --- | --- |
 | `SITE_URL` | Dominio propio, solo si ya lo has registrado | No |
 | `GITHUB_REPO` | `44JACK44-cmd/vibeGrab` | No (ya es el valor por defecto) |
-| `GITHUB_TOKEN` | Token de solo lectura de GitHub | No |
+| `GITHUB_TOKEN` | Token de GitHub con permiso `public_repo` | Sí, para publicar opiniones |
 | `RELEASES_CACHE_MINUTES` | `10` | No |
-| `REVIEWS_CACHE_MINUTES` | `10` | No |
 | `RELEASES_RETRY_SECONDS` | `60` | No |
+| `REVIEWS_CACHE_MINUTES` | `10` | No |
+| `REVIEWS_REQUIRE_MODERATION` | `0` | No (`1` = revisión previa) |
+| `REVIEWS_MAX_PER_HOUR` | `5` | No |
 | `CONTACT_EMAIL` | Correo real de soporte | No |
 | `SUPPORT_URL` | Foro o formulario de soporte | No |
+| `CONTACT_PHONE` | `944834202` | No (ya está en el código) |
+| `CONTACT_PHONE_E164` | Formato internacional, p. ej. `+34600000000` | No |
+| `CONTACT_FACEBOOK` | Perfil de Facebook | No (ya está en el código) |
+| `CONTACT_TIKTOK` | Perfil de TikTok | No (ya está en el código) |
 | `PUBLIC_ANALYTICS_DOMAIN` | Dominio de Plausible | No |
 
-`GITHUB_TOKEN` es opcional: sin él hay 60 peticiones/hora por IP de salida; con
-la caché y el respaldo es suficiente para un sitio pequeño. Si lo configuras,
-usa un token clásico **sin permisos** (los repositorios públicos se leen igual)
-o `public_repo`. No lo marques como `PUBLIC_`.
+`GITHUB_TOKEN` es opcional: sin él la web funciona igual, gracias a la caché y
+al respaldo estático. Si lo configuras, usa un token clásico **sin permisos
+administrativos** o `public_repo` y **no lo marques como `PUBLIC_`**.
+
+> **El canal de opiniones necesita que el token pueda escribir.** Sin
+> `GITHUB_TOKEN` (o sin permiso `public_repo`) el formulario de opiniones no se
+> muestra: es preferible a un botón que no pueda guardar nada.
 
 Después de cambiar variables hay que **redesplegar** para que las funciones las
 reciban.

@@ -48,6 +48,7 @@ const dict = {
     en: 'All rights reserved.',
   },
   'footer.updated': { es: 'Sitio actualizado', en: 'Site updated' },
+  'footer.social': { es: 'Síguenos', en: 'Follow us' },
 
   /* -------------------------------------------------------------- Portada */
   'home.hero.tagline': {
@@ -354,6 +355,12 @@ const dict = {
   },
   'contact.email.label': { es: 'Correo electrónico', en: 'Email' },
   'contact.support.label': { es: 'Centro de soporte', en: 'Support centre' },
+  'contact.phone.label': { es: 'Teléfono', en: 'Phone' },
+  'contact.phone.call': { es: 'Llamar', en: 'Call' },
+  'contact.phone.hint': {
+    es: 'Marca este número para comunicarte con el responsable del proyecto.',
+    en: 'Dial this number to reach the person behind the project.',
+  },
   'contact.pending': {
     es: 'El canal de contacto todavía no se ha publicado.',
     en: 'The contact channel has not been published yet.',

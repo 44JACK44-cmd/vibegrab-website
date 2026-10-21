@@ -65,6 +65,29 @@ const contactConfigured = siteConfig.contact.email !== '' || siteConfig.contact.
           </span>
         </a>
         <p class="small muted" style="line-height: 1.7">{t('footer.tagline')}</p>
+
+        {
+          siteConfig.social.length > 0 && (
+            <div class="footer__social">
+              <p class="footer__social-label">{t('footer.social')}</p>
+              <ul class="footer__social-list">
+                {siteConfig.social.map((link) => (
+                  <li>
+                    <a
+                      class="footer__social-link"
+                      href={link.url}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      <Icon name={link.icon} size={16} />
+                      <span>{link.label[locale]}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
+        }
       </div>
 
       <nav class="footer__col" aria-label={t('footer.product')}>

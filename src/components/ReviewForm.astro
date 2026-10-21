@@ -2,127 +2,208 @@
 /**
  * Formulario de opinión de la comunidad.
  *
- * Recoge la puntuación y el comentario y abre el compositor de issues de
- * GitHub con el texto ya escrito. La publicación la confirma la persona con
- * su cuenta de GitHub, así la opinión queda atribuida a alguien real y el
- * moderador puede cerrar el issue si procede.
+ * Recoge la puntuación, el alias opcional y el comentario, y lo envía al
+ * servidor, que lo guarda y lo publica. **La persona no necesita ninguna
+ * cuenta**: no hay ningún paso de registro ni de inicio de sesión.
  *
- * El envío es real: no hay un "enviar" que aparente guardar algo y no lo
- * guarde. Si el texto no cumple las reglas mínimas, se avisa en el propio
- * formulario y no se abre nada.
+ * El botón solo se muestra si el canal está disponible. Si el servidor no
+ * tiene configurado el almacenamiento, la sección explica la situación en vez
+ * de ofrecer un botón que no puede funcionar.
  */
 import Icon from '@/components/Icon.astro';
-import { communityCopy, REVIEW_MAX_LENGTH, REVIEW_MIN_LENGTH } from '@/lib/reviews';
+import { communityCopy, REVIEW_ALIAS_MAX_LENGTH, REVIEW_MAX_LENGTH, REVIEW_MIN_LENGTH } from '@/lib/reviews';
 import type { Locale } from '@/config/routes';
 
 interface Props {
   locale: Locale;
   /** Versiones publicadas, para que la persona elija la que usa. */
   versions?: string[];
+  /** Si el canal de envío está disponible en el servidor. */
+  available: boolean;
 }
 
-const { locale, versions = [] } = Astro.props;
+const { locale, versions = [], available } = Astro.props;
 const copy = communityCopy;
 const stars = [5, 4, 3, 2, 1];
 ---
 
-<form class="review-form" data-review-form data-locale={locale} novalidate>
-  <fieldset class="review-form__rating">
-    <legend class="review-form__label">{copy.formRating[locale]}</legend>
-    <div class="review-form__stars" role="radiogroup" aria-label={copy.formRating[locale]}>
-      {
-        stars.map((value) => (
-          <label class="review-form__star" data-value={value}>
-            <input
-              type="radio"
-              name="rating"
-              value={value}
-              checked={value === 5}
-              required
-            />
-            <span class="review-form__star-icon" aria-hidden="true">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                <path d="m12 3.6 2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8L3.6 9.7l5.8-.8z" />
-              </svg>
-            </span>
-            <span class="visually-hidden">{value} / 5</span>
-          </label>
-        ))
-      }
-    </div>
-    <p class="review-form__error" data-error="rating" role="alert" hidden>
-      {copy.formErrorRating[locale]}
-    </p>
-  </fieldset>
-
-  <div class="review-form__field">
-    <label class="review-form__label" for="review-text">{copy.formText[locale]}</label>
-    <textarea
-      id="review-text"
-      name="text"
-      class="review-form__textarea"
-      rows="5"
-      minlength={REVIEW_MIN_LENGTH}
-      maxlength={REVIEW_MAX_LENGTH}
-      placeholder={copy.formTextPlaceholder[locale]}
-      required
-    ></textarea>
-    <p class="review-form__counter tiny muted" data-counter aria-live="polite"></p>
-    <p class="review-form__error" data-error="text" role="alert" hidden>
-      {copy.formErrorShort[locale]}
-    </p>
-  </div>
-
-  {
-    versions.length > 0 && (
-      <div class="review-form__field">
-        <label class="review-form__label" for="review-version">
-          {copy.formVersion[locale]}
-        </label>
-        <select id="review-version" name="version" class="review-form__select">
-          <option value="">—</option>
-          {versions.map((version) => (
-            <option value={version}>v{version}</option>
+{
+  available ? (
+    <form class="review-form" data-review-form data-locale={locale} novalidate>
+      <fieldset class="review-form__rating">
+        <legend class="review-form__label">{copy.formRating[locale]}</legend>
+        <div class="review-form__stars" role="radiogroup" aria-label={copy.formRating[locale]}>
+          {stars.map((value) => (
+            <label class="review-form__star" data-value={value}>
+              <input type="radio" name="rating" value={value} checked={value === 5} required />
+              <span class="review-form__star-icon" aria-hidden="true">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                  <path d="m12 3.6 2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8L3.6 9.7l5.8-.8z" />
+                </svg>
+              </span>
+              <span class="visually-hidden">{value} / 5</span>
+            </label>
           ))}
-        </select>
+        </div>
+        <p class="review-form__error" data-error="rating" role="alert" hidden>
+          {copy.formErrorRating[locale]}
+        </p>
+      </fieldset>
+
+      <div class="review-form__field">
+        <label class="review-form__label" for="review-text">
+          {copy.formText[locale]}
+        </label>
+        <textarea
+          id="review-text"
+          name="text"
+          class="review-form__textarea"
+          rows="5"
+          minlength={REVIEW_MIN_LENGTH}
+          maxlength={REVIEW_MAX_LENGTH}
+          placeholder={copy.formTextPlaceholder[locale]}
+          required
+        ></textarea>
+        <p class="review-form__counter tiny muted" data-counter aria-live="polite"></p>
+        <p class="review-form__error" data-error="text" role="alert" hidden>
+          {copy.formErrorShort[locale]}
+        </p>
       </div>
-    )
-  }
 
-  {/* Trampa para bots: no se muestra y no se envía si viene rellena. */}
-  <div class="review-form__honeypot" aria-hidden="true">
-    <label for="review-website">Website</label>
-    <input id="review-website" name="website" type="text" tabindex="-1" autocomplete="off" />
-  </div>
+      <div class="review-form__field">
+        <label class="review-form__label" for="review-alias">
+          {copy.formAlias[locale]}
+        </label>
+        <input
+          id="review-alias"
+          name="alias"
+          type="text"
+          class="review-form__input"
+          maxlength={REVIEW_ALIAS_MAX_LENGTH}
+          placeholder={copy.formAliasPlaceholder[locale]}
+          autocomplete="nickname"
+        />
+        <p class="tiny muted review-form__hint">{copy.formAliasNote[locale]}</p>
+      </div>
 
-  <button class="btn btn--primary review-form__submit" type="submit">
-    <Icon name="message" size={18} />
-    {copy.formSubmit[locale]}
-  </button>
+      {versions.length > 0 && (
+        <div class="review-form__field">
+          <label class="review-form__label" for="review-version">
+            {copy.formVersion[locale]}
+          </label>
+          <select id="review-version" name="version" class="review-form__select">
+            <option value="">—</option>
+            {versions.map((version) => (
+              <option value={version}>v{version}</option>
+            ))}
+          </select>
+        </div>
+      )}
 
-  <p class="review-form__note tiny muted">{copy.formNote[locale]}</p>
-</form>
+      {/* Trampa para bots: no se muestra y se descarta si viene rellena. */}
+      <div class="review-form__honeypot" aria-hidden="true">
+        <label for="review-website">Website</label>
+        <input id="review-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <button class="btn btn--primary review-form__submit" type="submit" data-submit>
+        <Icon name="message" size={18} />
+        <span data-submit-label>{copy.formSubmit[locale]}</span>
+      </button>
+
+      <p class="review-form__status" data-status role="status" hidden></p>
+      <p class="review-form__note tiny muted">{copy.formNote[locale]}</p>
+    </form>
+  ) : (
+    <div class="pending-card">
+      <Icon name="info" size={20} />
+      <p class="small">
+        {locale === 'es'
+          ? 'El canal para publicar opiniones no está disponible ahora mismo.'
+          : 'The channel to publish opinions is not available right now.'}
+      </p>
+    </div>
+  )
+}
 
 <script>
-  import { buildReviewIssueUrl, REVIEW_MAX_LENGTH, REVIEW_MIN_LENGTH } from '@/lib/reviews';
+  import { REVIEW_MAX_LENGTH, REVIEW_MIN_LENGTH } from '@/lib/reviews';
 
   /**
-   * Envío de la opinión: valida y abre el compositor de GitHub.
+   * Espera a que la opinión recién publicada aparezca en la lista.
+   * La API de GitHub puede tardar unos segundos en reflejarla.
+   */
+  async function waitForReview(number: number): Promise<void> {
+    for (let attempt = 0; attempt < 8; attempt += 1) {
+      await new Promise((resolve) => window.setTimeout(resolve, 2000));
+      try {
+        const response = await fetch('/api/reviews', {
+          headers: { Accept: 'application/json' },
+          cache: 'no-store',
+        });
+        if (!response.ok) continue;
+        const data = (await response.json()) as { reviews?: Array<{ number?: number }> };
+        if ((data.reviews ?? []).some((review) => review.number === number)) return;
+      } catch {
+        /* se sigue esperando */
+      }
+    }
+  }
+
+  /**
+   * Envío de la opinión: valida en el navegador y pide al servidor que la
+   * publique. El servidor es el que filtra el spam y decide.
    */
   function initReviewForm() {
     document.querySelectorAll<HTMLFormElement>('[data-review-form]').forEach((form) => {
       const locale = form.dataset.locale === 'en' ? 'en' : 'es';
       const text = form.querySelector<HTMLTextAreaElement>('#review-text');
+      const alias = form.querySelector<HTMLInputElement>('#review-alias');
       const version = form.querySelector<HTMLSelectElement>('#review-version');
       const honeypot = form.querySelector<HTMLInputElement>('#review-website');
       const counter = form.querySelector<HTMLElement>('[data-counter]');
+      const submit = form.querySelector<HTMLButtonElement>('[data-submit]');
+      const submitLabel = form.querySelector<HTMLElement>('[data-submit-label]');
+      const status = form.querySelector<HTMLElement>('[data-status]');
       const errors = {
         rating: form.querySelector<HTMLElement>('[data-error="rating"]'),
         text: form.querySelector<HTMLElement>('[data-error="text"]'),
       };
 
+      const copy = {
+        es: {
+          sending: 'Publicando…',
+          submit: 'Publicar mi opinión',
+          errorShort: 'Escribe un poco más para que la opinión sea útil (mínimo 20 caracteres).',
+          errorRating: 'Elige una puntuación del 1 al 5.',
+          errorServer: 'No hemos podido publicar la opinión. Inténtalo de nuevo en unos minutos.',
+          errorRate: 'Has enviado demasiadas opiniones seguidas. Inténtalo más tarde.',
+          errorDuplicate: 'Esa opinión ya se ha enviado. No la repitas.',
+          success: '¡Gracias! Tu opinión ya está publicada.',
+          successPending: '¡Gracias! Tu opinión se publicará en cuanto sea revisada.',
+        },
+        en: {
+          sending: 'Publishing…',
+          submit: 'Publish my opinion',
+          errorShort: 'Write a little more so the opinion is useful (at least 20 characters).',
+          errorRating: 'Choose a rating from 1 to 5.',
+          errorServer: 'We could not publish the opinion. Please try again in a few minutes.',
+          errorRate: 'You have sent too many opinions in a row. Please try again later.',
+          errorDuplicate: 'That opinion has already been sent. Please do not repeat it.',
+          success: 'Thank you! Your opinion has been published.',
+          successPending: 'Thank you! Your opinion will be published once it has been reviewed.',
+        },
+      }[locale];
+
       const show = (key: 'rating' | 'text', visible: boolean) => {
         if (errors[key]) errors[key]!.hidden = !visible;
+      };
+
+      const setStatus = (message: string, kind: 'ok' | 'error') => {
+        if (!status) return;
+        status.hidden = false;
+        status.textContent = message;
+        status.dataset.kind = kind;
       };
 
       const updateCounter = () => {
@@ -141,7 +222,9 @@ const stars = [5, 4, 3, 2, 1];
       // Pintado de las estrellas al elegir
       const stars = Array.from(form.querySelectorAll<HTMLElement>('.review-form__star'));
       const paint = () => {
-        const chosen = Number(form.querySelector<HTMLInputElement>('input[name="rating"]:checked')?.value ?? 0);
+        const chosen = Number(
+          form.querySelector<HTMLInputElement>('input[name="rating"]:checked')?.value ?? 0,
+        );
         stars.forEach((star) => {
           star.classList.toggle('is-active', Number(star.dataset.value) <= chosen);
         });
@@ -154,14 +237,16 @@ const stars = [5, 4, 3, 2, 1];
       });
       paint();
 
-      form.addEventListener('submit', (event) => {
+      form.addEventListener('submit', async (event) => {
         event.preventDefault();
 
-        // Trampa para bots: si viene rellena, no se hace nada.
+        // Trampa para bots: si viene rellena, no se envía nada.
         if (honeypot && honeypot.value.trim() !== '') return;
 
         const value = text?.value.trim() ?? '';
-        const rating = Number(form.querySelector<HTMLInputElement>('input[name="rating"]:checked')?.value ?? 0);
+        const rating = Number(
+          form.querySelector<HTMLInputElement>('input[name="rating"]:checked')?.value ?? 0,
+        );
 
         let valid = true;
         if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
@@ -174,14 +259,61 @@ const stars = [5, 4, 3, 2, 1];
         }
         if (!valid) return;
 
-        const url = buildReviewIssueUrl({
-          text: value,
-          rating,
-          version: version?.value || undefined,
-          lang: locale,
-        });
+        if (submit) {
+          submit.disabled = true;
+          if (submitLabel) submitLabel.textContent = copy.sending;
+        }
+        if (status) status.hidden = true;
 
-        window.open(url, '_blank', 'noopener,noreferrer');
+        try {
+          const response = await fetch('/api/reviews', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({
+              text: value,
+              rating,
+              version: version?.value || undefined,
+              alias: alias?.value.trim() || undefined,
+              lang: locale,
+            }),
+          });
+
+          const data = (await response.json().catch(() => ({}))) as {
+            ok?: boolean;
+            reason?: string;
+            pending?: boolean;
+            number?: number;
+          };
+
+          if (response.ok && data.ok) {
+            setStatus(data.pending ? copy.successPending : copy.success, 'ok');
+            form.reset();
+            updateCounter();
+            paint();
+            // La API de GitHub puede tardar unos segundos en reflejar la
+            // opinión nueva. Se espera a que aparezca y se recarga la página.
+            await waitForReview(data.number ?? 0);
+            window.location.reload();
+            return;
+          }
+
+          const message =
+            data.reason === 'rate'
+              ? copy.errorRate
+              : data.reason === 'duplicate'
+                ? copy.errorDuplicate
+                : data.reason === 'invalid'
+                  ? copy.errorShort
+                  : copy.errorServer;
+          setStatus(message, 'error');
+        } catch {
+          setStatus(copy.errorServer, 'error');
+        } finally {
+          if (submit) {
+            submit.disabled = false;
+            if (submitLabel) submitLabel.textContent = copy.submit;
+          }
+        }
       });
     });
   }

@@ -177,6 +177,23 @@ export const privacyPolicy: LegalDocument = {
       ],
     },
     {
+      id: 'contacto-publicado',
+      heading: {
+        es: 'Datos de contacto publicados',
+        en: 'Published contact details',
+      },
+      paragraphs: [
+        {
+          es: 'Esta web publica los datos de contacto de la persona que mantiene el proyecto (teléfono y perfiles de Facebook y TikTok) para que puedas comunicarte con quien lo desarrolla. Son datos que el propio proyecto decide publicar de forma pública.',
+          en: 'This website publishes the contact details of the person who maintains the project (phone number and Facebook and TikTok profiles) so you can reach the developer. These are details the project itself chooses to publish publicly.',
+        },
+        {
+          es: 'La web no registra quién contacta con esos canales ni los usa para crear perfiles. No hay analítica, ni cookies, niBoletín de suscripción.',
+          en: 'The site does not record who reaches out through those channels nor uses them to build profiles. There is no analytics, no cookies and no mailing list.',
+        },
+      ],
+    },
+    {
       id: 'alojamiento',
       heading: { es: 'Alojamiento y registros técnicos', en: 'Hosting and technical logs' },
       paragraphs: [
