@@ -1,7 +1,45 @@
 {
-  "fetchedAt": "2026-10-20T08:41:44.482Z",
+  "fetchedAt": "2026-10-21T08:42:24.171Z",
   "repo": "44JACK44-cmd/vibeGrab",
   "releases": [
+    {
+      "tag_name": "v1.1.40.2-47",
+      "name": "v1.1.40.2-47",
+      "body": "<!-- es -->\n## 🛠️ Correcciones\n- 🎵 **MP3 con fuente garantizada** — La opción MP3 usa la pista de audio que el teléfono ya tiene firmada, sin pedir el manifiesto por segunda vez. Cuando solo existe una pista combinada, se descarga y se convierte en un MP3 real en el servidor.\n- 🧹 **Una descarga, un archivo** — Las pistas temporales de conversión y unión viven en la caché privada, no en tu carpeta de descargas. Tocar dos veces el mismo formato tampoco encola el trabajo dos veces.\n- 📜 **Aviso de novedades con scroll** — La cabecera y las tarjetas se desplazan juntas cuando el texto no cabe, también con letra grande.\n\n<!-- en -->\n## 🛠️ Fixes\n- 🎵 **MP3 always gets a source** — The MP3 option now uses the audio track your phone already has signed, without asking for the manifest a second time. When only a combined track exists, it is downloaded and turned into a real MP3 on the server.\n- 🧹 **One download, one file** — Temporary conversion and muxing tracks live in the private cache, not in your downloads folder. Double-tapping the same format no longer queues the job twice.\n- 📜 **Scrollable update announcement** — The header and cards scroll together when the text does not fit, including with large fonts.\n",
+      "draft": false,
+      "prerelease": false,
+      "published_at": "2026-10-21T07:04:21Z",
+      "created_at": "2026-10-21T06:54:09Z",
+      "html_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/tag/v1.1.40.2-47",
+      "assets": [
+        {
+          "name": "VibeGrab.apk",
+          "size": 67382398,
+          "digest": "sha256:22e498a065bb22f0c841e88d49f90847a32b3dee6d8929003a753c70e11e3845",
+          "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.40.2-47/VibeGrab.apk",
+          "download_count": 1
+        }
+      ]
+    },
+    {
+      "tag_name": "v1.1.40-45",
+      "name": "v1.1.40-45",
+      "body": "<!-- es -->\n## ✨ Novedades\n- 🌐 **Navegador integrado** — Abre páginas dentro de VibeGrab, vuelve atrás, detén o recarga, cambia a vista de escritorio, borra los datos de navegación y descarga los archivos que encuentres. Solo carga páginas web y no concede permisos del dispositivo a los sitios.\n- 🗑️ **Papelera con restauración** — Los archivos borrados conservan su carátula y sus datos. Puedes restaurarlos en su carpeta original o borrarlos definitivamente, con confirmación y aviso si algo falla.\n- 💬 **Estados de WhatsApp** — La app muestra los estados realmente guardados en el teléfono y permite guardarlos en la galería o compartirlos. Si Android bloquea la carpeta, lo explica y pide el permiso correspondiente; no inventa estados ni muestra contenido inaccesible.\n\n## 🚀 Mejoras\n- 🩺 **Diagnóstico de red y DNS más claro** — Cada prueba indica la operación, la etapa, el código HTTP y el tipo de error, sin enlaces firmados ni datos privados. El panel de DNS muestra el modo real del sistema y aclara su alcance: no cambia el DNS de otras aplicaciones ni del navegador interno.\n\n## 🛠️ Correcciones\n- 🎵 **MP3 real también cuando la fuente es vídeo** — El audio se extrae de la pista real y se convierte a MP3; el archivo se comprueba antes de marcarlo como completado, así que nunca se guarda un vídeo renombrado como MP3.\n- 📥 **Descargas del navegador e integridad** — Las descargas directas conservan su extensión real, los archivos incompletos se eliminan y las descargas que fallan ya no dejan restos en la carpeta.\n\n<!-- en -->\n## ✨ What's new\n- 🌐 **Built-in browser** — Open pages inside VibeGrab, go back, stop or reload, switch to desktop view, clear browsing data and download the files you find. It only loads web pages and never grants device permissions to sites.\n- 🗑️ **Trash with restore** — Deleted files keep their artwork and details. You can restore them to their original folder or delete them permanently, with confirmation and a clear message if something fails.\n- 💬 **WhatsApp statuses** — The app shows the statuses actually stored on the phone and lets you save them to the gallery or share them. If Android blocks the folder it explains why and requests the right permission; it never invents statuses or shows inaccessible content.\n\n## 🚀 Improvements\n- 🩺 **Clearer network and DNS diagnostics** — Each check reports the operation, stage, HTTP status and error type, without signed links or private data. The DNS panel shows the system's real mode and states its scope: it does not change the DNS of other apps or the built-in browser.\n\n## 🛠️ Fixes\n- 🎵 **Real MP3 even when the source is video** — Audio is extracted from the real track and converted to MP3; the file is verified before it is marked complete, so a video renamed as MP3 is never saved.\n- 📥 **Browser downloads and integrity** — Direct downloads keep their real extension, incomplete files are deleted and failed downloads no longer leave leftovers in the folder.\n",
+      "draft": false,
+      "prerelease": false,
+      "published_at": "2026-10-21T06:09:08Z",
+      "created_at": "2026-10-21T05:59:10Z",
+      "html_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/tag/v1.1.40-45",
+      "assets": [
+        {
+          "name": "VibeGrab.apk",
+          "size": 67185781,
+          "digest": "sha256:5d62b86a0fec47fc2a3b800d6041136f62353b936d9fdfc12eee57cf88648c4c",
+          "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.40-45/VibeGrab.apk",
+          "download_count": 6
+        }
+      ]
+    },
     {
       "tag_name": "v1.1.39-44",
       "name": "v1.1.39-44",
@@ -17,7 +55,7 @@
           "size": 66888436,
           "digest": "sha256:a2aebd3db62e946422df7f700b0efd4d1521e3123c49e2a9f21bc7d27aa5905c",
           "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.39-44/VibeGrab.apk",
-          "download_count": 1
+          "download_count": 21
         }
       ]
     },
@@ -74,7 +112,7 @@
           "size": 66675045,
           "digest": "sha256:fd7355cca56dbbda2bb8bf8197da62a122ae7009369d1d74543aea0232222d61",
           "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.36-41/VibeGrab.apk",
-          "download_count": 2
+          "download_count": 4
         }
       ]
     },
@@ -150,7 +188,7 @@
           "size": 64285178,
           "digest": "sha256:a4ef8427ce8f757ea03b266ca7d2576cff7f41ae93ff1374f954d6cd25a5dbd4",
           "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.1-4/VibeGrab.apk",
-          "download_count": 3
+          "download_count": 5
         }
       ]
     },
@@ -188,7 +226,7 @@
           "size": 64186682,
           "digest": "sha256:4dd01fd4bb889183f9efe476ee00b8d86b2cc8cd635c82735d855fb51fc21e3b",
           "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.0-2/VibeGrab.apk",
-          "download_count": 1
+          "download_count": 2
         }
       ]
     }
