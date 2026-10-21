@@ -23,7 +23,7 @@ export interface ReviewsPayload {
   average: number | null;
   count: number;
   breakdown: Array<{ rating: number; count: number }>;
-  source: 'github-issues' | 'none';
+  source: 'issues' | 'none';
   error?: string;
 }
 
@@ -164,12 +164,13 @@ export async function submitReview(
   const pending = requiresModeration();
   const body = buildReviewBody({ ...input, text, via: 'form' });
   const title = buildReviewTitle(input);
+  const repo = serverEnv('REVIEWS_REPO') ?? reviewsConfig.repo;
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10000);
 
   try {
-    const response = await fetch(`https://api.github.com/repos/${reviewsConfig.repo}/issues`, {
+    const response = await fetch(`https://api.github.com/repos/${repo}/issues`, {
       method: 'POST',
       headers: {
         Accept: 'application/vnd.github+json',
@@ -258,18 +259,24 @@ export async function getReviews(options: { force?: boolean } = {}): Promise<Rev
 }
 
 async function fetchReviews(): Promise<ReviewsPayload> {
-  const url = `https://api.github.com/repos/${reviewsConfig.repo}/issues?state=open&per_page=100`;
+  const repo = serverEnv('REVIEWS_REPO') ?? reviewsConfig.repo;
+  const url = `https://api.github.com/repos/${repo}/issues?state=open&per_page=100`;
+
+  // Si hay token, también sirve para leer repositorios privados.
+  const token = serverEnv('GITHUB_TOKEN');
+  const headers: Record<string, string> = {
+    Accept: 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+    'User-Agent': 'VibeGrab-Website',
+  };
+  if (token) headers.Authorization = `Bearer ${token}`;
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
 
   try {
     const response = await fetch(url, {
-      headers: {
-        Accept: 'application/vnd.github+json',
-        'X-GitHub-Api-Version': '2022-11-28',
-        'User-Agent': 'VibeGrab-Website',
-      },
+      headers,
       signal: controller.signal,
       cache: 'no-store',
     });
@@ -292,7 +299,7 @@ async function fetchReviews(): Promise<ReviewsPayload> {
       average: averageRating(reviews),
       count: reviews.length,
       breakdown: ratingBreakdown(reviews),
-      source: 'github-issues',
+      source: 'issues',
     };
   } catch (error) {
     return {

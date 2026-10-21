@@ -53,6 +53,13 @@ export interface Review {
   sourceUrl: string;
 }
 
+/**
+ * Opinión sin los datos internos del almacén (enlace al issue de origen y
+ * nombre de la plataforma). Es lo que se devuelve al público: la web no
+ * expone sus repositorios.
+ */
+export type PublicReview = Omit<Review, 'sourceUrl' | 'source'>;
+
 /** Marca que identifica un issue como opinión de la comunidad. */
 export const REVIEW_MARKER = 'vibegrab-review';
 
@@ -65,7 +72,11 @@ export const REVIEW_ALIAS_MAX_LENGTH = 40;
 
 /** Configuración del almacén de opiniones. */
 export const reviewsConfig = {
-  /** Repositorio donde se publican las opiniones. */
+  /**
+   * Repositorio donde se publican las opiniones. Se puede cambiar con
+   * `REVIEWS_REPO` para usar un repositorio **privado**: en ese caso las
+   * opiniones dejan de ser públicas y la web las lee con su propio token.
+   */
   repo: '44JACK44-cmd/vibegrab-website',
   /** Prefijo del título del issue, para reconocerlos de un vistazo. */
   titlePrefix: '[Reseña]',
@@ -258,14 +269,14 @@ export const communityCopy = {
     en: 'There are no published opinions yet. As soon as the first one exists it will appear here with its rating and date.',
   },
   summaryCount: { es: '{count} opiniones', en: '{count} opinions' },
+  summaryCountOne: { es: '1 opinión', en: '1 opinion' },
   summaryAverage: { es: 'media de {value} sobre 5', en: '{value} average out of 5' },
   reviewAnonymous: { es: 'Usuario de la comunidad', en: 'Community member' },
   reviewVerified: { es: 'cuenta verificada', en: 'verified account' },
   reviewAlias: { es: 'alias sin verificar', en: 'unverified alias' },
   reviewVersion: { es: 'usaba la v{version}', en: 'using v{version}' },
-  reviewSource: { es: 'publicada en GitHub', en: 'published on GitHub' },
   sourceNote: {
-    es: 'Las opiniones se guardan como issues públicos del repositorio del proyecto. Cerrar un issue retira la opinión de esta lista.',
-    en: 'Opinions are stored as public issues in the project repository. Closing an issue removes the opinion from this list.',
+    es: 'Las opiniones se revisan y se pueden retirar en cualquier momento.',
+    en: 'Opinions are reviewed and can be withdrawn at any time.',
   },
 } satisfies Record<string, LocalizedText>;

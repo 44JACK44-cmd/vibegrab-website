@@ -29,7 +29,12 @@ function json(payload: unknown, status = 200, seconds = 300): Response {
 
 export async function GET(): Promise<Response> {
   const payload = await getReviews();
-  return json(payload);
+
+  // La respuesta pública no incluye el enlace al issue de origen ni el nombre
+  // de la plataforma: la web no expone sus repositorios.
+  const reviews = payload.reviews.map(({ sourceUrl, source, ...review }) => review);
+
+  return json({ ...payload, reviews });
 }
 
 export async function POST({ request }: { request: Request }): Promise<Response> {

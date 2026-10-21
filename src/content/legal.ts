@@ -147,8 +147,8 @@ export const privacyPolicy: LegalDocument = {
       heading: { es: 'Comprobación de actualizaciones', en: 'Update checks' },
       paragraphs: [
         {
-          es: 'La aplicación consulta la API pública de GitHub para saber si existe una versión más reciente. Esa consulta no incluye datos personales: es una petición anónima al listado público de publicaciones. Si descargas la actualización, el archivo se obtiene desde el mismo sitio de publicación.',
-          en: 'The app queries the public GitHub API to find out whether a more recent version exists. That query carries no personal data: it is an anonymous request to the public list of releases. If you download the update, the file comes from the same publishing site.',
+          es: 'La aplicación consulta un servicio público de publicación de versiones para saber si existe una versión más reciente. Esa consulta no incluye datos personales: es una petición anónima al listado público de publicaciones. Si descargas la actualización, el archivo se obtiene desde el mismo sitio de publicación.',
+          en: 'The app queries a public release-publishing service to find out whether a more recent version exists. That query carries no personal data: it is an anonymous request to the public list of releases. If you download the update, the file comes from the same publishing site.',
         },
       ],
     },
@@ -208,8 +208,8 @@ export const privacyPolicy: LegalDocument = {
       heading: { es: 'Servicios de terceros', en: 'Third-party services' },
       bullets: [
         {
-          es: 'GitHub: la web y la aplicación leen de la API pública de GitHub la lista de versiones y descargan el APK desde sus servidores. Se rige por la política de privacidad de GitHub.',
-          en: 'GitHub: the website and the app read the release list from the public GitHub API and download the APK from its servers. GitHub\u2019s own privacy policy applies.',
+          es: 'El servicio de publicación de versiones: la web y la aplicación leen de su API pública la lista de versiones y descargan el APK desde sus servidores. Se rige por su propia política de privacidad.',
+          en: 'The release-publishing service: the website and the app read the release list from its public API and download the APK from its servers. Its own privacy policy applies.',
         },
         {
           es: 'lrclib.net: si activas la letra sincronizada, la aplicación consulta ese servicio público con el título y el artista de la pista. Si no lo activas, no se consulta.',

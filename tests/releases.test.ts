@@ -154,7 +154,7 @@ describe('selección de la versión estable', () => {
     const payload = await getReleases();
 
     expect(payload.latest?.tag).toBe('v1.1.35-40');
-    expect(payload.source).toBe('github');
+    expect(payload.source).toBe('releases');
     expect(payload.releases[0].tag).toBe('v1.1.35-40');
     const older = payload.releases.find((item) => item.tag === 'v1.2.0-3');
     expect(older?.higherSemverThanStable).toBe(true);

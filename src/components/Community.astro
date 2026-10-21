@@ -82,7 +82,9 @@ const verifiedCount = reviews.filter((review) => review.verified).length;
                 <p class="community__summary-text">
                   {copy.summaryAverage[locale].replace('{value}', average.toFixed(1))}
                   {' · '}
-                  {copy.summaryCount[locale].replace('{count}', String(reviews.length))}
+                  {reviews.length === 1
+                    ? copy.summaryCountOne[locale]
+                    : copy.summaryCount[locale].replace('{count}', String(reviews.length))}
                   {verifiedCount > 0 && (
                     <span class="community__summary-note">
                       {' · '}
@@ -111,21 +113,9 @@ const verifiedCount = reviews.filter((review) => review.verified).length;
               {reviews.map((review) => (
                 <li class="review">
                   <div class="review__head">
-                    {review.verified && review.authorUrl ? (
-                      <img
-                        class="review__avatar"
-                        src={`https://github.com/${review.author}.png?size=72`}
-                        width="36"
-                        height="36"
-                        alt=""
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    ) : (
-                      <span class="review__avatar review__avatar--generic" aria-hidden="true">
-                        <Icon name="user" size={18} />
-                      </span>
-                    )}
+                    <span class="review__avatar review__avatar--generic" aria-hidden="true">
+                      <Icon name="user" size={18} />
+                    </span>
                     <div class="review__who">
                       {review.verified && review.authorUrl ? (
                         <a
@@ -163,10 +153,6 @@ const verifiedCount = reviews.filter((review) => review.verified).length;
                   <p class="review__text">{review.text}</p>
 
                   <p class="review__source">
-                    <Icon name="code" size={13} />
-                    <a href={review.sourceUrl} rel="noopener nofollow" target="_blank">
-                      {copy.reviewSource[locale]}
-                    </a>
                     <span class:list={['review__badge', { 'is-verified': review.verified }]}>
                       {review.verified
                         ? copy.reviewVerified[locale]

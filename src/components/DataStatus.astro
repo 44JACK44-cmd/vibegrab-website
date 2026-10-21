@@ -21,7 +21,7 @@ const t = useTranslations(locale);
 const sourceLabel = buildSourceLabel();
 
 function buildSourceLabel(): string {
-  if (payload.source === 'github') return t('download.data.source.github');
+  if (payload.source === 'releases') return t('download.data.source.live');
   if (payload.source === 'cache') return t('download.data.source.cache');
   return t('download.data.source.snapshot');
 }

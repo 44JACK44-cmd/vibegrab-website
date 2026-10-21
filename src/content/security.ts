@@ -23,8 +23,8 @@ export const securityPoints: SecurityPoint[] = [
     icon: 'shield',
     title: { es: 'Una única fuente oficial', en: 'A single official source' },
     text: {
-      es: 'Los APK se publican como archivos adjuntos de las versiones oficiales de GitHub y esta web los enlaza sin intermediarios. Cada botón apunta al archivo real, no a una copia.',
-      en: 'The APKs are published as assets of the official GitHub releases and this site links to them without intermediaries. Every button points at the real file, not at a copy.',
+      es: 'Los APK se publican como archivos adjuntos de las versiones oficiales del proyecto y esta web los enlaza sin intermediarios. Cada botón apunta al archivo real, no a una copia.',
+      en: 'The APKs are published as assets of the project’s official releases and this site links to them without intermediaries. Every button points at the real file, not at a copy.',
     },
     link: { key: 'download', label: { es: 'Ver la descarga', en: 'See the download' } },
   },

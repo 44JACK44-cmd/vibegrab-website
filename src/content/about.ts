@@ -114,8 +114,8 @@ export const timeline: TimelineItem[] = [
     date: '2026-09-24',
     title: { es: 'Repositorio publicado', en: 'Repository published' },
     text: {
-      es: 'Se crea el repositorio en GitHub, que desde entonces centraliza el desarrollo y la publicación de versiones.',
-      en: 'The GitHub repository is created, and from then on centralises development and release publishing.',
+      es: 'Se crea el repositorio del proyecto, que desde entonces centraliza el desarrollo y la publicación de versiones.',
+      en: 'The project repository is created, and from then on centralises development and release publishing.',
     },
   },
   {

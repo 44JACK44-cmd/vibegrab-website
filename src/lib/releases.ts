@@ -74,7 +74,7 @@ export interface Release {
 export interface ReleasesPayload {
   ok: boolean;
   stale: boolean;
-  source: 'github' | 'cache' | 'snapshot';
+  source: 'releases' | 'cache' | 'snapshot';
   fetchedAt: string;
   lastSuccessfulAt: string | null;
   latest: Release | null;
@@ -173,6 +173,26 @@ function parseTimestamp(value: string | null | undefined): number {
 export function releasesCacheHeaders(seconds = 900): Record<string, string> {
   return {
     'Cache-Control': `public, max-age=0, s-maxage=${seconds}, stale-while-revalidate=86400, stale-if-error=604800`,
+  };
+}
+
+/**
+ * Versión sin los datos internos del repositorio: ni enlace a la publicación
+ * ni URL directa del archivo. Es lo que se publica en la API: la web no expone
+ * sus repositorios. Para descargar, el usuario pasa por `/api/download`.
+ */
+export function toPublicRelease(release: Release) {
+  const { htmlUrl, rawBody, apk, ...rest } = release;
+  return {
+    ...rest,
+    apk: apk
+      ? {
+          name: apk.name,
+          sizeBytes: apk.sizeBytes,
+          sha256: apk.sha256,
+          downloadCount: apk.downloadCount,
+        }
+      : null,
   };
 }
 
@@ -488,7 +508,7 @@ async function fetchFromGitHub(): Promise<FetchResult> {
       payload: {
         ok: releases.length > 0,
         stale: false,
-        source: 'github',
+        source: 'releases',
         fetchedAt: now,
         lastSuccessfulAt: now,
         latest: releases.find((release) => release.isLatestStable) ?? null,

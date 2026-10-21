@@ -225,12 +225,15 @@ const dict = {
 
   'download.warning.title': { es: 'Antes de instalar esta versión', en: 'Before installing this version' },
 
-  'download.data.updated': { es: 'Datos de GitHub actualizados', en: 'GitHub data updated' },
+  'download.data.updated': {
+    es: 'Datos de las publicaciones actualizados',
+    en: 'Release data updated',
+  },
   'download.data.stale': {
     es: 'Mostrando la última información disponible',
     en: 'Showing the last available information',
   },
-  'download.data.source.github': { es: 'en directo', en: 'live' },
+  'download.data.source.live': { es: 'en directo', en: 'live' },
   'download.data.source.cache': { es: 'desde caché', en: 'from cache' },
   'download.data.source.snapshot': { es: 'desde copia local', en: 'from local copy' },
 
@@ -315,8 +318,8 @@ const dict = {
   'about.verified.releases': { es: 'Versiones publicadas', en: 'Releases published' },
   'about.verified.latest': { es: 'Última versión estable', en: 'Latest stable version' },
   'about.verified.note': {
-    es: 'Estos datos proceden del propio proyecto y de la API pública de GitHub. No se ha inventado ninguna cifra.',
-    en: 'This data comes from the project itself and the public GitHub API. No figure has been invented.',
+    es: 'Estos datos proceden del propio proyecto y de su API pública de publicaciones. No se ha inventado ninguna cifra.',
+    en: 'This data comes from the project itself and its public release API. No figure has been invented.',
   },
   'about.team.title': { es: 'Quién lo desarrolla', en: 'Who builds it' },
   'about.team.text': {
@@ -418,8 +421,8 @@ const dict = {
     en: 'A single file for any device',
   },
   'stats.fileDownloads': {
-    es: 'Descargas del archivo en GitHub',
-    en: 'Downloads of the file on GitHub',
+    es: 'Descargas del archivo',
+    en: 'Downloads of the file',
   },
 
   /* --------------------------------------------------- Recorrido por la app */

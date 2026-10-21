@@ -64,10 +64,12 @@ export function collectStats(payload: ReleasesPayload): ProductStats {
 }
 
 /**
- * Explica qué significa (y qué no) el contador de descargas de GitHub.
+ * Explica qué significa (y qué no) el contador de descargas del archivo.
  * Se muestra junto a la cifra para que nadie lo lea como número de usuarios.
+ * No se menciona dónde se alojan los archivos: la web no expone sus
+ * repositories.
  */
 export const downloadCountCaveat = {
-  es: 'Descargas del archivo en GitHub. No equivalen a usuarios: una misma persona puede descargar el APK más de una vez.',
-  en: 'Downloads of the file on GitHub. They are not users: the same person can download the APK more than once.',
+  es: 'Descargas del archivo. No equivalen a usuarios: una misma persona puede descargar el APK más de una vez.',
+  en: 'Downloads of the file. They are not users: the same person can download the APK more than once.',
 } as const;
