@@ -43,6 +43,12 @@ export interface NoteItem {
 export interface NoteSection {
   category: NoteCategory;
   items: NoteItem[];
+  /**
+   * Idioma de la sección, cuando la publicación separa el texto español y el
+   * inglés con marcas `<!-- es -->` / `<!-- en -->`. Si no hay marcas, la
+   * sección vale para los dos idiomas.
+   */
+  lang?: 'es' | 'en';
 }
 
 export interface ApkAsset {
@@ -233,6 +239,7 @@ function stripMarkdownHeading(line: string): { heading: string; recognized: bool
 
 function cleanupInline(text: string): string {
   return text
+    .replace(/<!--[\s\S]*?-->/g, '')
     .replace(/^\s*[-*+]\s+/, '')
     .replace(/\s+$/, '')
     .trim();
@@ -241,6 +248,11 @@ function cleanupInline(text: string): string {
 /**
  * Convierte el cuerpo Markdown de una publicación en secciones con categoría.
  * El texto se conserva tal cual (solo se quitan viñetas y separadores).
+ *
+ * Las publicaciones del proyecto pueden traer el texto en dos idiomas
+ * separados por las marcas `<!-- es -->` y `<!-- en -->`. En ese caso cada
+ * sección queda etiquetada con su idioma y la web muestra solo el que
+ * corresponde a la página.
  */
 export function parseReleaseNotes(body: string | null | undefined): {
   sections: NoteSection[];
@@ -252,12 +264,13 @@ export function parseReleaseNotes(body: string | null | undefined): {
   const sections: NoteSection[] = [];
   let current: NoteSection | null = null;
   let sawRecognizedHeading = false;
+  let currentLang: 'es' | 'en' | undefined;
 
   const pushItem = (raw: string) => {
     const item = cleanupInline(raw);
     if (!item || /^-{3,}$/.test(item)) return;
     if (!current) {
-      current = { category: 'changes', items: [] };
+      current = { category: 'changes', items: [], lang: currentLang };
       sections.push(current);
     }
     current.items.push({ text: { es: item, en: item } });
@@ -267,11 +280,18 @@ export function parseReleaseNotes(body: string | null | undefined): {
     const trimmed = line.trim();
     if (!trimmed || /^-{3,}$/.test(trimmed)) continue;
 
+    // Marca de idioma: `<!-- es -->` o `<!-- en -->`.
+    const langMarker = /^<!--\s*(es|en)\s*-->$/i.exec(trimmed);
+    if (langMarker) {
+      currentLang = langMarker[1].toLowerCase() as 'es' | 'en';
+      continue;
+    }
+
     const heading = stripMarkdownHeading(trimmed);
     if (heading) {
       const category = classifyHeading(heading.heading) ?? 'changes';
       if (category !== 'changes') sawRecognizedHeading = true;
-      current = { category, items: [] };
+      current = { category, items: [], lang: currentLang };
       sections.push(current);
       continue;
     }

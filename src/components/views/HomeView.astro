@@ -45,8 +45,8 @@ const t = useTranslations(locale);
 
 const latest = payload.latest;
 const stats = collectStats(payload);
-const important = latest ? pickImportant(latest.notes) : null;
-const latestNotes = latest ? withoutImportant(latest.notes) : [];
+const important = latest ? pickImportant(latest.notes, locale) : null;
+const latestNotes = latest ? withoutImportant(latest.notes, locale) : [];
 const faqPreview = faq.slice(0, 6);
 
 const description = t('home.hero.desc');

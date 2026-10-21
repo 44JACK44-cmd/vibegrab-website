@@ -14,6 +14,7 @@ import {
   resetReleasesCache,
   compareVersions,
 } from '@/lib/releases';
+import { sectionsForLocale } from '@/lib/notes';
 
 const REPO = '44JACK44-cmd/vibeGrab';
 const API = `https://api.github.com/repos/${REPO}/releases?per_page=100`;
@@ -140,6 +141,53 @@ describe('notas de versión', () => {
     expect(parsed.sections).toHaveLength(1);
     expect(parsed.sections[0].category).toBe('changes');
     expect(parsed.sections[0].items).toHaveLength(2);
+  });
+
+  describe('notas con dos idiomas', () => {
+    const body = [
+      '<!-- es -->',
+      '## Nuevas funciones',
+      '- Un navegador integrado',
+      '<!-- en -->',
+      '## New features',
+      '- A built-in browser',
+    ].join('\n');
+
+    it('etiqueta cada sección con su idioma', () => {
+      const { sections } = parseReleaseNotes(body);
+
+      expect(sections).toHaveLength(2);
+      expect(sections[0].lang).toBe('es');
+      expect(sections[1].lang).toBe('en');
+    });
+
+    it('no muestra las marcas de idioma como texto', () => {
+      const { sections } = parseReleaseNotes(body);
+      const texts = sections.flatMap((section) => section.items.map((item) => item.text.es));
+
+      expect(texts.join(' ')).not.toContain('<!--');
+    });
+
+    it('cada idioma ve solo sus secciones', () => {
+      const { sections } = parseReleaseNotes(body);
+
+      expect(sectionsForLocale(sections, 'es')).toHaveLength(1);
+      expect(sectionsForLocale(sections, 'es')[0].items[0].text.es).toBe('Un navegador integrado');
+      expect(sectionsForLocale(sections, 'en')[0].items[0].text.en).toBe('A built-in browser');
+    });
+
+    it('si no hay nada en ese idioma, muestra todas las secciones', () => {
+      const { sections } = parseReleaseNotes('## Mejoras\n- Sin idioma marcado');
+
+      expect(sectionsForLocale(sections, 'en')).toHaveLength(1);
+    });
+
+    it('las notas sin idioma se muestran en los dos idiomas', () => {
+      const { sections } = parseReleaseNotes('## Mejoras\n- Una mejora');
+
+      expect(sectionsForLocale(sections, 'es')).toHaveLength(1);
+      expect(sectionsForLocale(sections, 'en')).toHaveLength(1);
+    });
   });
 });
 

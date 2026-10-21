@@ -19,8 +19,8 @@ interface Props {
 const { release, locale } = Astro.props;
 const t = useTranslations(locale);
 
-const important = pickImportant(release.notes);
-const mainSections = withoutImportant(release.notes);
+const important = pickImportant(release.notes, locale);
+const mainSections = withoutImportant(release.notes, locale);
 const downloadHref = `/api/download?tag=${encodeURIComponent(release.tag)}&lang=${locale}`;
 const detailsHref = versionPath(release.tag, locale);
 const androidLabel = `${siteConfig.android.minVersionLabel[locale]}+`;

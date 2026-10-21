@@ -50,13 +50,40 @@ export function sortedSections(sections: NoteSection[]): NoteSection[] {
 }
 
 /** Devuelve la sección de avisos importantes, si existe. */
-export function pickImportant(sections: NoteSection[]): NoteSection | null {
-  return sections.find((section) => section.category === 'important') ?? null;
+export function pickImportant(
+  sections: NoteSection[],
+  locale?: 'es' | 'en',
+): NoteSection | null {
+  const pool = locale ? sectionsForLocale(sections, locale) : sections;
+  return pool.find((section) => section.category === 'important') ?? null;
 }
 
 /** Secciones sin los avisos importantes (que se muestran aparte). */
-export function withoutImportant(sections: NoteSection[]): NoteSection[] {
-  return sections.filter((section) => section.category !== 'important');
+export function withoutImportant(
+  sections: NoteSection[],
+  locale?: 'es' | 'en',
+): NoteSection[] {
+  const pool = locale ? sectionsForLocale(sections, locale) : sections;
+  return pool.filter((section) => section.category !== 'important');
+}
+
+/**
+ * Secciones que corresponden al idioma de la página.
+ *
+ * Las publicaciones que traen el texto en dos idiomas lo marcan con
+ * `<!-- es -->` y `<!-- en -->`; cada sección queda etiquetada y aquí se
+ * filtra por el idioma de la página. Las secciones sin idioma (notas curadas
+ * o publicaciones de un solo idioma) se muestran siempre.
+ *
+ * Si la publicación no tiene nada en el idioma pedido, se muestran todas:
+ * es preferible a una ficha sin novedades.
+ */
+export function sectionsForLocale(
+  sections: NoteSection[],
+  locale: 'es' | 'en',
+): NoteSection[] {
+  const matching = sections.filter((section) => !section.lang || section.lang === locale);
+  return matching.length > 0 ? matching : sections;
 }
 
 /**

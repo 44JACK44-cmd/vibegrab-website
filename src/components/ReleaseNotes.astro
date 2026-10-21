@@ -3,7 +3,7 @@
  * Notas de versión agrupadas por categoría.
  */
 import Icon from '@/components/Icon.astro';
-import { categoryMeta, renderInline, sortedSections } from '@/lib/notes';
+import { categoryMeta, renderInline, sectionsForLocale, sortedSections } from '@/lib/notes';
 import type { NoteSection } from '@/lib/releases';
 import type { Locale } from '@/config/routes';
 
@@ -16,7 +16,7 @@ interface Props {
 }
 
 const { sections, locale, raw = false, headingLevel = 'h3' } = Astro.props;
-const ordered = sortedSections(sections);
+const ordered = sortedSections(sectionsForLocale(sections, locale));
 const Heading = headingLevel;
 ---
 
