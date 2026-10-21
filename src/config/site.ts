@@ -18,12 +18,12 @@ const REPO_FALLBACK = '44JACK44-cmd/vibeGrab';
  */
 const CONTACT_FALLBACK = {
   /** Teléfono tal como se publica. */
-  phone: '944834202',
+  phone: '944 834 202',
   /**
-   * Formato internacional para el enlace `tel:`. Vacío hasta confirmar el
-   * prefijo del país: sin él el número se muestra pero no se puede marcar.
+   * Formato internacional para el enlace `tel:`. Permite marcar el número con
+   * un clic desde el móvil.
    */
-  phoneE164: '',
+  phoneE164: '+51944834202',
   facebook: 'https://www.facebook.com/amilcar.aymaraenciso.1',
   tiktok: 'https://www.tiktok.com/@4_jck_6',
 } as const;
