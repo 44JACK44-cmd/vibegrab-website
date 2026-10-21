@@ -54,6 +54,7 @@ El sitio queda en <http://localhost:4321>.
 | `npm run check:links` | Rastrea las páginas y comprueba que no hay enlaces ni anclas rotas |
 | `npm run snapshot` | Regenera `src/data/releases.snapshot.json` desde GitHub |
 | `npm run assets` | Regenera la imagen Open Graph y los favicons |
+| `npm run assets:logo` | Regenera los derivados optimizados del logotipo |
 
 > `npm run preview` no funciona con el adaptador de Vercel: para revisar el
 > resultado usa `npm run dev`, o `npm run build:fast` y el despliegue.
@@ -86,6 +87,7 @@ src/
     releases.ts          Integración con GitHub, caché y validación
     reviews.ts           Marca, validación y formato de las opiniones
     reviews-server.ts    Lectura de las opiniones desde GitHub (solo servidor)
+    canonical-host.ts    Redirección 301 al dominio canónico
     notes.ts             Categorías y orden de las notas
     stats.ts             Métricas verificables del producto
     format.ts            Fechas, tamaños, hashes y contadores
@@ -98,11 +100,33 @@ src/
     ...                  Rutas ES y EN
   styles/                tokens.css, base.css, components.css, sections.css
 tests/                   Pruebas con Vitest
-scripts/                 Snapshot, imágenes y comprobador de enlaces
+scripts/                 Snapshot, imágenes, logotipo y comprobador de enlaces
 public/                  Logo, favicons, og-image, robots
 vercel.json              Cabeceras de seguridad y caché (Vercel)
 render.yaml              Blueprint de despliegue en Render
 ```
+
+## SEO técnico
+
+- **Un solo dominio**: el canónico se define con `SITE_URL`. Si un despliegue
+  recibe peticiones en otro host, responde con un 301 al canónico
+  (`src/lib/canonical-host.ts`), de modo que nunca hay dos copias del sitio
+  indexándose.
+- **Metadatos por página**: título y descripción propios y distintos en cada
+  ruta, con `canonical` y `hreflang` absolutos.
+- **Datos estructurados**: un `@graph` con `WebSite`, `SoftwareApplication` y
+  `WebPage`, sin reseñas, puntuaciones, perfiles sociales ni datos de empresa
+  que no existan.
+- **Mapas**: `sitemap-index.xml` (páginas) y `sitemap-versions.xml` (fichas de
+  versión, que se generan en el servidor). `robots.txt` los declara y bloquea
+  solo `/api/`.
+- **Variantes con parámetros** (`?estado=…`, `?utm_…`): se canonicizan y se
+  marcan `noindex, follow`.
+- **Sin JavaScript obligatorio**: todo el contenido principal se genera en el
+  servidor, así que Googlebot recibe el mismo HTML que un navegador.
+- **Imágenes**: el logotipo se sirve en derivados de 192 px (WebP y PNG) en lugar
+  del original de 424 px, con `width`/`height` declarados para evitar saltos de
+  maquetación.
 
 ## La portada
 

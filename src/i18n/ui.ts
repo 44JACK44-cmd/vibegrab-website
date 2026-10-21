@@ -51,6 +51,14 @@ const dict = {
   'footer.social': { es: 'Síguenos', en: 'Follow us' },
 
   /* -------------------------------------------------------------- Portada */
+  'home.seo.title': {
+    es: 'VibeGrab — Descarga y reproduce contenido multimedia en Android',
+    en: 'VibeGrab — Download and play media on Android',
+  },
+  'home.seo.description': {
+    es: 'VibeGrab es un descargador y reproductor multimedia para Android. Descarga vídeo y audio, reproduce con ecualizador y letra sincronizada, y organiza tu biblioteca en el propio teléfono. Gratis, sin cuentas y con actualización automática.',
+    en: 'VibeGrab is a media downloader and player for Android. Download video and audio, play with equalizer and synced lyrics, and keep your library on your own phone. Free, no accounts, with automatic updates.',
+  },
   'home.hero.tagline': {
     es: 'Tu contenido. Tu experiencia multimedia.',
     en: 'Your content. Your media experience.',
@@ -430,6 +438,44 @@ const dict = {
   'legal.reviewNote': {
     es: 'Este documento describe el funcionamiento real de la aplicación y de la web en la fecha indicada. Debe revisarse cada vez que cambie lo que hace la app o el sitio.',
     en: 'This document describes the actual behaviour of the application and the website as of the date shown. It must be reviewed whenever the app or the site changes.',
+  },
+
+  /* ------------------------------------------------- Descripciones de página */
+  'features.seo.description': {
+    es: 'Todas las funciones de VibeGrab: descarga de vídeo y audio, reproductor con ecualizador y letra sincronizada, biblioteca local, descargas en segundo plano, bóveda con PIN y actualización automática.',
+    en: 'Every VibeGrab feature: video and audio downloading, a player with equalizer and synced lyrics, a local library, background downloads, a PIN-protected vault and automatic updates.',
+  },
+  'help.seo.description': {
+    es: 'Centro de ayuda de VibeGrab: guía de instalación del APK en Android, requisitos, solución de problemas paso a paso y las preguntas frecuentes del proyecto.',
+    en: 'VibeGrab help centre: a step-by-step guide to installing the APK on Android, requirements, troubleshooting and the project’s most frequent questions.',
+  },
+  'contact.seo.description': {
+    es: 'Cómo comunicarte con el responsable de VibeGrab: teléfono, Facebook y TikTok, y qué datos conviene incluir al informar de un problema o de un fallo.',
+    en: 'How to reach the person behind VibeGrab: phone, Facebook and TikTok, plus what to include when reporting a problem or a bug.',
+  },
+  'versions.seo.description': {
+    es: 'Historial completo de versiones publicadas de VibeGrab para Android, con fecha, tamaño del APK, descargas y las novedades de cada una, ordenadas por fecha real.',
+    en: 'The full release history of VibeGrab for Android, with date, APK size, downloads and the changes in each version, ordered by real publication date.',
+  },
+  'download.seo.description': {
+    es: 'Descarga oficial de VibeGrab para Android: el APK de la última versión estable, con su tamaño, su huella SHA-256 y los requisitos para instalarlo.',
+    en: 'Official VibeGrab download for Android: the APK of the latest stable release, with its size, its SHA-256 fingerprint and the requirements to install it.',
+  },
+  'about.seo.description': {
+    es: 'Qué es VibeGrab, por qué existe, cómo evoluciona el proyecto y quién lo mantiene. Un proyecto de software independiente para Android, sin cuentas ni nube.',
+    en: 'What VibeGrab is, why it exists, how the project evolves and who maintains it. An independent software project for Android, with no accounts and no cloud.',
+  },
+  'version.seo.description': {
+    es: 'VibeGrab {version}: novedades, fecha de publicación, tamaño del APK, huella SHA-256 y descarga directa del archivo.',
+    en: 'VibeGrab {version}: what changed, publication date, APK size, SHA-256 fingerprint and a direct download of the file.',
+  },
+  'legal.seo.description': {
+    es: 'Política de privacidad de VibeGrab: qué datos guarda la aplicación en tu teléfono, qué servicios consulta y qué recoge esta web.',
+    en: 'VibeGrab privacy policy: what data the app keeps on your phone, which services it contacts and what this website collects.',
+  },
+  'terms.seo.description': {
+    es: 'Términos de uso de VibeGrab: condiciones de uso de la aplicación y de esta web, distribución del software y responsabilidad sobre el contenido descargado.',
+    en: 'VibeGrab terms of use: the conditions for using the app and this website, software distribution and responsibility for downloaded content.',
   },
 
   /* ------------------------------------------------------------------ 404 */

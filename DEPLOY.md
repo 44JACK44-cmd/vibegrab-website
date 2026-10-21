@@ -115,13 +115,52 @@ No hace falta configurar nada. La URL canónica se resuelve en
 `src/config/site-url.ts` con este orden de prioridad:
 
 1. `SITE_URL`, si está definida.
-2. `VERCEL_PROJECT_PRODUCTION_URL`, que Vercel inyecta por su cuenta en cada
+2. `RENDER_EXTERNAL_URL`, que Render inyecta con la URL pública del servicio.
+3. `VERCEL_PROJECT_PRODUCTION_URL`, que Vercel inyecta por su cuenta en cada
    build y en cada función, con el dominio de producción del proyecto
    (`https://<proyecto>.vercel.app`).
-3. El respaldo del proyecto, para desarrollo local sin `.env`.
+4. El respaldo del proyecto, para desarrollo local sin `.env`.
 
-Al desplegar en Vercel, `canonical`, `hreflang`, Open Graph, `robots.txt` y los
-dos sitemaps apuntan solos a `https://<proyecto>.vercel.app`.
+Al desplegar, `canonical`, `hreflang`, Open Graph, `robots.txt`, los dos sitemaps
+y los datos estructurados apuntan solos al dominio del despliegue.
+
+### Una sola web, un solo dominio
+
+**El sitio debe vivir en un único dominio.** Si la misma web está publicada en
+dos sitios (por ejemplo, un dominio propio y una URL de despliegue), Google
+indexa dos copias de cada página, las señales se reparten entre las dos y
+ninguna se posiciona.
+
+Para evitarlo:
+
+1. Elige el dominio canónico (el que se quiera posicionar).
+2. Define `SITE_URL` con ese dominio **en el despliegue principal**.
+3. En cualquier otro despliegue del mismo proyecto, define también `SITE_URL`
+   con el dominio canónico. El servidor responde entonces con un **301** a la
+   URL canónica, conservando la ruta y los parámetros, y ese despliegue deja de
+   ser una copia: pasa a ser una redirección.
+
+La redirección solo se aplica cuando `SITE_URL` está escrita a mano, así que
+las previsualizaciones de cada `push` (que no la tienen) siguen funcionando en su
+propio host. La lógica está en `src/lib/canonical-host.ts` y tiene pruebas.
+
+### Mapa del sitio para el buscador
+
+| URL | Qué es | ¿Se indexa? |
+| --- | --- | --- |
+| `/` | Portada | Sí |
+| `/caracteristicas/` | Funciones | Sí |
+| `/descargar/` | Descarga oficial | Sí |
+| `/versiones/` | Historial | Sí |
+| `/versiones/<etiqueta>/` | Ficha de versión | Sí (en `sitemap-versions.xml`) |
+| `/ayuda/` | Ayuda y preguntas frecuentes | Sí |
+| `/sobre/` | Qué es VibeGrab | Sí |
+| `/contacto/` | Contacto | Sí |
+| `/privacidad/`, `/terminos/` | Textos legales | Sí |
+| `/en/…` | Las mismas páginas en inglés | Sí, con `hreflang` |
+| `/api/*` | API interna | No (`robots.txt` la bloquea) |
+| `?estado=…`, `?utm_…` | Variantes de una página | No (`noindex` + canonical) |
+| 404 | Página inexistente | No (`noindex`) |
 
 Cuando registres un dominio propio (paso 4), define `SITE_URL` con ese dominio y
 redespliega.

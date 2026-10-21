@@ -8,6 +8,7 @@
  * repositorio de desarrollo.
  */
 import Icon from '@/components/Icon.astro';
+import BrandLogo from '@/components/BrandLogo.astro';
 import ReleaseNotes from '@/components/ReleaseNotes.astro';
 import ReleaseWarning from '@/components/ReleaseWarning.astro';
 import { pickImportant, withoutImportant } from '@/lib/notes';
@@ -42,15 +43,7 @@ const androidLabel = `${siteConfig.android.minVersionLabel[locale]} (${siteConfi
 
     <div class="download-card">
       <div class="download-card__head">
-        <img
-          class="download-card__logo"
-          src="/brand/vibegrab-logo.png"
-          width="62"
-          height="62"
-          alt=""
-          loading="eager"
-          decoding="async"
-        />
+        <BrandLogo class="download-card__logo" size={62} />
         <div>
           <p class="download-card__name">VibeGrab</p>
           <p class="download-card__deliver">{t('download.eyebrow')}</p>

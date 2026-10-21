@@ -7,6 +7,7 @@
  * se muestra en su lugar.
  */
 import Icon from '@/components/Icon.astro';
+import BrandLogo from '@/components/BrandLogo.astro';
 import type { Release } from '@/lib/releases';
 import { formatDate } from '@/lib/format';
 import type { Locale } from '@/config/routes';
@@ -36,27 +37,12 @@ const features = [
       ) : (
         <div class="device__poster">
           <div class="device__top">
-            <img
-              src="/brand/vibegrab-logo.png"
-              width="26"
-              height="26"
-              alt=""
-              loading="eager"
-              decoding="async"
-            />
+            <BrandLogo size={26} />
             <span>VibeGrab</span>
           </div>
 
           <div class="device__hero">
-            <img
-              class="device__logo"
-              src="/brand/vibegrab-logo.png"
-              width="92"
-              height="92"
-              alt=""
-              loading="eager"
-              decoding="async"
-            />
+            <BrandLogo class="device__logo" size={92} />
             <p class="device__tagline">{t('home.hero.tagline')}</p>
           </div>
 

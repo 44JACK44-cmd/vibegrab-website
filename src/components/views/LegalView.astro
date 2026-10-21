@@ -16,9 +16,11 @@ interface Props {
   document: LegalDocument;
   titleKey: StringKey;
   icon: string;
+  /** Clave de la descripción en el diccionario. */
+  descriptionKey: StringKey;
 }
 
-const { locale, routeKey, document, titleKey, icon } = Astro.props;
+const { locale, routeKey, document, titleKey, icon, descriptionKey } = Astro.props;
 const t = useTranslations(locale);
 const title = t(titleKey);
 ---
@@ -27,7 +29,7 @@ const title = t(titleKey);
   locale={locale}
   routeKey={routeKey}
   title={`${title} — VibeGrab`}
-  description={`${title} de VibeGrab. ${t('legal.reviewNote')}`}
+  description={t(descriptionKey)}
 >
   <PageHero eyebrow={t('footer.legal')} title={title} icon={icon}>
     <p class="badge" style="margin-top: var(--space-4)">

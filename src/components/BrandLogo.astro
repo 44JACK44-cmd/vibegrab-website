@@ -1,0 +1,30 @@
+---
+/**
+ * Logotipo de VibeGrab.
+ *
+ * Usa los derivados optimizados (192 px en WebP y PNG) en lugar del original
+ * de 424 px: en la web el logotipo se muestra a 26–92 px y cargar 47 KB para
+ * eso penaliza cada visita. El original se reserva para las imágenes sociales.
+ */
+interface Props {
+  /** Lado en píxeles del tamaño mostrado. */
+  size?: number;
+  class?: string;
+  loading?: 'eager' | 'lazy';
+}
+
+const { size = 34, class: className = '', loading = 'eager' } = Astro.props;
+---
+
+<picture>
+  <source srcset="/brand/vibegrab-logo-192.webp" type="image/webp" />
+  <img
+    src="/brand/vibegrab-logo-192.png"
+    width={size}
+    height={size}
+    alt=""
+    loading={loading}
+    decoding="async"
+    class={className}
+  />
+</picture>

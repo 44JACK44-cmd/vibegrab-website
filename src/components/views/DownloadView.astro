@@ -37,13 +37,13 @@ const removed = estado === 'retirada';
   locale={locale}
   routeKey="download"
   title={`${t('download.title')}${latest ? ` — v${latest.version}` : ''}`}
-  description={t('download.desc')}
+  description={t('download.seo.description')}
   softwareVersion={latest?.version}
 >
   <PageHero
     eyebrow={t('download.eyebrow')}
     title={t('download.title')}
-    description={t('download.desc')}
+    description={t('download.seo.description')}
     icon="download"
   >
     <div style="margin-top: var(--space-5)">

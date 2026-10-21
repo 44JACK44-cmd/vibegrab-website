@@ -50,6 +50,19 @@ export const product = {
     es: 'Tu contenido. Tu experiencia multimedia.',
     en: 'Your content. Your media experience.',
   },
+  /**
+   * Descripción de la marca. Es la que se usa en el nodo `WebSite` del
+   * JSON-LD y como base de las descripciones de las páginas.
+   */
+  description: {
+    es: 'VibeGrab es un descargador y reproductor multimedia para Android: descarga vídeo y audio, reproduce con ecualizador y letra sincronizada, y organiza tu biblioteca en el propio teléfono, sin cuentas ni nube.',
+    en: 'VibeGrab is a media downloader and player for Android: download video and audio, play with equalizer and synced lyrics, and keep your library on your own phone, with no accounts and no cloud.',
+  },
+  /** Claim principal, el que identifica la app junto a su nombre. */
+  claim: {
+    es: 'Descargador y reproductor multimedia para Android',
+    en: 'Media downloader and player for Android',
+  },
 } as const;
 
 export const siteConfig = {

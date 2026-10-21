@@ -15,7 +15,8 @@
     "test:watch": "vitest",
     "check:links": "node scripts/check-links.mjs",
     "snapshot": "node scripts/snapshot-releases.mjs",
-    "assets": "node scripts/generate-og.mjs"
+    "assets": "node scripts/generate-og.mjs",
+    "assets:logo": "node scripts/optimize-logo.mjs"
   },
   "engines": {
     "node": "22.x"

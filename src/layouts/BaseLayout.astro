@@ -74,30 +74,74 @@ const xDefault = alternatePaths
   ? new URL(alternatePaths[defaultLocale] ?? path(routeKey, defaultLocale), siteConfig.url).href
   : absoluteUrl(routeKey, defaultLocale);
 const ogImageUrl = new URL(ogImage, siteConfig.url).href;
+/** ¿La URL lleva parámetros? Entonces es una variante de la misma página. */
+const hasQuery = Astro.url.search !== '';
 
 const analyticsDomain = import.meta.env.PUBLIC_ANALYTICS_DOMAIN as string | undefined;
 const analyticsSrc =
   (import.meta.env.PUBLIC_ANALYTICS_SRC as string | undefined) ||
   'https://plausible.io/js/script.js';
 
-const softwareJsonLd = softwareVersion
-  ? {
-      '@context': 'https://schema.org',
+const siteUrl = siteConfig.url.replace(/\/+$/, '');
+const siteLocale = locale === 'es' ? 'es-ES' : 'en-GB';
+
+/**
+ * Datos estructurados.
+ *
+ * Se usan en un `@graph` para que las entidades queden conectadas:
+ *
+ *  · `WebSite`: la web de la marca, con su nombre, su URL y sus idiomas.
+ *  · `SoftwareApplication`: la aplicación Android, con lo que ofrece.
+ *  · `WebPage`: la página concreta, enlazada con la web y con la app.
+ *
+ * No se declaran datos que no existan: sin reseñas, sin puntuaciones, sin
+ * perfiles sociales y sin datos de empresa o de contacto.
+ */
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': `${siteUrl}/#website`,
+      url: `${siteUrl}/`,
+      name: siteConfig.product.name,
+      description: siteConfig.product.description[locale],
+      inLanguage: siteLocale,
+      publisher: { '@id': `${siteUrl}/#app` },
+    },
+    {
       '@type': 'SoftwareApplication',
+      '@id': `${siteUrl}/#app`,
       name: siteConfig.product.name,
       applicationCategory: 'MultimediaApplication',
       applicationSubCategory: 'Downloader',
-      operatingSystem: siteConfig.android.minVersionLabel.en,
-      softwareVersion,
-      url: canonical,
-      downloadUrl: `${siteConfig.url}/api/download`,
-      inLanguage: ['es', 'en'],
+      operatingSystem: `${siteConfig.android.minVersionLabel.en}+`,
+      description: siteConfig.product.description[locale],
+      url: `${siteUrl}/`,
+      downloadUrl: `${siteUrl}/api/download`,
+      image: ogImageUrl,
+      inLanguage: siteLocale,
+      ...(softwareVersion ? { softwareVersion } : {}),
       offers: {
         '@type': 'Offer',
         price: '0',
+        priceCurrency: 'EUR',
       },
-    }
-  : null;
+    },
+    {
+      '@type': 'WebPage',
+      '@id': `${canonical}#webpage`,
+      url: canonical,
+      name: title,
+      description,
+      isPartOf: { '@id': `${siteUrl}/#website` },
+      about: { '@id': `${siteUrl}/#app` },
+      inLanguage: siteLocale,
+      primaryImageOfPage: { '@id': `${canonical}#primaryimage` },
+      image: { '@id': `${canonical}#primaryimage`, url: ogImageUrl },
+    },
+  ],
+};
 ---
 
 <!doctype html>
@@ -124,6 +168,12 @@ const softwareJsonLd = softwareVersion
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, follow" />}
+    {
+      // Las variantes con parámetros (?estado=…, ?utm_…) no son páginas
+      // distintas: se canonicizan a la versión sin parámetros y además se
+      // marcan para que no se indexen por separado.
+      hasQuery && !noindex && <meta name="robots" content="noindex, follow" />
+    }
 
     <!-- Idiomas -->
     {
@@ -159,8 +209,7 @@ const softwareJsonLd = softwareVersion
 
     <link rel="sitemap" href="/sitemap-index.xml" />
 
-    {softwareJsonLd && <script type="application/ld+json" set:html={JSON.stringify(softwareJsonLd)} />}
-
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     {analyticsDomain && (
       <script
         is:inline

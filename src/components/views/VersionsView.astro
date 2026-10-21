@@ -39,13 +39,12 @@ const totalDownloads = payload.releases.reduce(
   locale={locale}
   routeKey="versions"
   title={`${t('versions.title')} — VibeGrab`}
-  description={t('versions.desc')}
-  softwareVersion={payload.latest?.version}
+  description={t('versions.seo.description')}
 >
   <PageHero
     eyebrow={t('versions.eyebrow')}
     title={t('versions.title')}
-    description={t('versions.desc')}
+    description={t('versions.seo.description')}
     icon="history"
   >
     <div style="margin-top: var(--space-5)">

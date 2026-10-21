@@ -4,6 +4,7 @@
  * advertencia de no afiliación con las plataformas.
  */
 import Icon from '@/components/Icon.astro';
+import BrandLogo from '@/components/BrandLogo.astro';
 import { path, type Locale, type RouteKey } from '@/config/routes';
 import { siteConfig } from '@/config/site';
 import { useTranslations } from '@/i18n/ui';
@@ -50,15 +51,7 @@ const contactConfigured = siteConfig.contact.email !== '' || siteConfig.contact.
     <div class="footer__grid">
       <div class="footer__brand">
         <a class="brand" href={path('home', locale)}>
-          <img
-            class="brand__mark"
-            src="/brand/vibegrab-logo.png"
-            width="34"
-            height="34"
-            alt=""
-            loading="lazy"
-            decoding="async"
-          />
+          <BrandLogo class="brand__mark" size={34} loading="lazy" />
           <span class="brand__text">
             <span class="brand__name">VibeGrab</span>
             <span class="brand__sub">{t('header.brandSub')}</span>

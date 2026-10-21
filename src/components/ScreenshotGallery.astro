@@ -8,6 +8,7 @@
  * funcional de las pantallas reales.
  */
 import Icon from '@/components/Icon.astro';
+import BrandLogo from '@/components/BrandLogo.astro';
 import { screenshots } from '@/config/screenshots';
 import type { Locale } from '@/config/routes';
 import { useTranslations } from '@/i18n/ui';
@@ -42,14 +43,7 @@ const t = useTranslations(locale);
   ) : (
     <div class="shots__pending">
       <div class="shots__pending-mark" aria-hidden="true">
-        <img
-          src="/brand/vibegrab-logo.png"
-          width="72"
-          height="72"
-          alt=""
-          loading="lazy"
-          decoding="async"
-        />
+        <BrandLogo size={72} loading="lazy" />
       </div>
       <div class="shots__pending-body">
         <p class="shots__pending-title">{t('home.gallery.pending')}</p>

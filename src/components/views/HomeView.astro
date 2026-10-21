@@ -49,7 +49,7 @@ const important = latest ? pickImportant(latest.notes, locale) : null;
 const latestNotes = latest ? withoutImportant(latest.notes, locale) : [];
 const faqPreview = faq.slice(0, 6);
 
-const description = t('home.hero.desc');
+const description = t('home.seo.description');
 const sizeLabel = latest?.apk ? formatBytes(latest.apk.sizeBytes, locale) : null;
 const downloadHref = latest?.apk
   ? `/api/download?tag=${encodeURIComponent(latest.tag)}&lang=${locale}`
@@ -59,7 +59,7 @@ const downloadHref = latest?.apk
 <BaseLayout
   locale={locale}
   routeKey="home"
-  title={`VibeGrab — ${t('home.hero.tagline')}`}
+  title={t('home.seo.title')}
   description={description}
   softwareVersion={latest?.version}
 >
@@ -79,7 +79,11 @@ const downloadHref = latest?.apk
         }
 
         <div class="hero__title">
-          <h1>VibeGrab</h1>
+          <h1>
+            VibeGrab
+            {/* El H1 identifica la app y dice qué es, sin alterar el diseño. */}
+            <span class="visually-hidden">: {siteConfig.product.claim[locale]}</span>
+          </h1>
           <p class="hero__tagline">{t('home.hero.tagline')}</p>
         </div>
 

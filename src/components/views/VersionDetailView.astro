@@ -25,7 +25,10 @@ const t = useTranslations(locale);
   locale={locale}
   routeKey="versions"
   title={`VibeGrab v${release.version}${release.build !== null ? ` (build ${release.build})` : ''} — ${t('versions.detailTitle')}`}
-  description={`${t('versions.detailTitle')}: v${release.version} · ${formatDate(release.publishedAt, locale)}`}
+  description={t('version.seo.description', {
+    version: `v${release.version}`,
+    date: formatDate(release.publishedAt, locale),
+  })}
   softwareVersion={release.version}
   canonicalPath={versionPath(release.tag, locale)}
   alternatePaths={{

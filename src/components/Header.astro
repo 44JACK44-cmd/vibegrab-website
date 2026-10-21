@@ -4,6 +4,7 @@
  * directo a la descarga. Menú desplegable en móvil.
  */
 import Icon from '@/components/Icon.astro';
+import BrandLogo from '@/components/BrandLogo.astro';
 import { path, type Locale, type RouteKey, locales } from '@/config/routes';
 import { useTranslations } from '@/i18n/ui';
 
@@ -40,15 +41,7 @@ const links: NavLink[] = [
 <header class="site-header" data-scrolled="false">
   <div class="container site-header__inner">
     <a class="brand" href={path('home', locale)}>
-      <img
-        class="brand__mark"
-        src="/brand/vibegrab-logo.png"
-        width="34"
-        height="34"
-        alt=""
-        loading="eager"
-        decoding="async"
-      />
+      <BrandLogo class="brand__mark" size={34} />
       <span class="brand__text">
         <span class="brand__name">VibeGrab</span>
         <span class="brand__sub">{t('header.brandSub')}</span>
