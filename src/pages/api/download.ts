@@ -10,6 +10,7 @@
  */
 import type { APIRoute } from 'astro';
 import { checkAssetAvailability, getReleases, isDownloadable } from '@/lib/releases';
+import { siteConfig } from '@/config/site';
 
 export const GET: APIRoute = async ({ url }) => {
   const tag = url.searchParams.get('tag');
@@ -19,7 +20,9 @@ export const GET: APIRoute = async ({ url }) => {
   const payload = await getReleases();
   const release = tag ? payload.releases.find((item) => item.tag === tag) : payload.latest;
 
-  const failureUrl = new URL(downloadPage, url.origin);
+  // La redirección usa el dominio público del sitio, no el del host interno:
+  // detrás de un proxy (Render, Vercel) `url.origin` puede ser `localhost`.
+  const failureUrl = new URL(downloadPage, siteConfig.url);
 
   // El tag solicitado debe existir, estar publicado y tener un APK cuyo enlace
   // pertenezca a los assets de este repositorio. Nada de URLs externas.

@@ -130,6 +130,20 @@ describe('/api/download', () => {
     expect(location.searchParams.get('estado')).toBe('no-disponible');
   });
 
+  it('redirige al dominio público del sitio, no al host interno', async () => {
+    stubFetch();
+
+    const response = await downloadRoute(
+      routeContext('https://vibegrab.example/api/download?tag=v9.9.9-99'),
+    );
+    const location = new URL(response.headers.get('location') ?? '');
+
+    // El host interno (por ejemplo `localhost:10000` detrás de un proxy)
+    // nunca debe aparecer en una redirección para el usuario.
+    expect(location.hostname).not.toBe('localhost');
+    expect(location.hostname).toBe('vibegrab-website.vercel.app');
+  });
+
   it('usa la ruta inglesa cuando lang=en', async () => {
     stubFetch();
 
