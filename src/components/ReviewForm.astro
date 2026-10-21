@@ -24,7 +24,9 @@ interface Props {
 
 const { locale, versions = [], available } = Astro.props;
 const copy = communityCopy;
-const stars = [5, 4, 3, 2, 1];
+// De izquierda a derecha: 1 estrella a la izquierda, 5 a la derecha, y se
+// van rellenando hacia la derecha como en el resto de sitios de valoración.
+const stars = [1, 2, 3, 4, 5];
 ---
 
 {
@@ -35,16 +37,21 @@ const stars = [5, 4, 3, 2, 1];
         <div class="review-form__stars" role="radiogroup" aria-label={copy.formRating[locale]}>
           {stars.map((value) => (
             <label class="review-form__star" data-value={value}>
-              <input type="radio" name="rating" value={value} checked={value === 5} required />
+              <input type="radio" name="rating" value={value} required />
               <span class="review-form__star-icon" aria-hidden="true">
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" stroke="none">
                   <path d="m12 3.6 2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8L3.6 9.7l5.8-.8z" />
                 </svg>
               </span>
-              <span class="visually-hidden">{value} / 5</span>
+              <span class="visually-hidden">
+                {copy.ratingOption[locale].replace('{value}', String(value))}
+              </span>
             </label>
           ))}
         </div>
+        <p class="review-form__rating-value" data-rating-value aria-live="polite">
+          {copy.ratingEmpty[locale]}
+        </p>
         <p class="review-form__error" data-error="rating" role="alert" hidden>
           {copy.formErrorRating[locale]}
         </p>
@@ -181,6 +188,8 @@ const stars = [5, 4, 3, 2, 1];
           errorDuplicate: 'Esa opinión ya se ha enviado. No la repitas.',
           success: '¡Gracias! Tu opinión ya está publicada.',
           successPending: '¡Gracias! Tu opinión se publicará en cuanto sea revisada.',
+          ratingValue: '{value} de 5',
+          ratingEmpty: 'Sin elegir',
         },
         en: {
           sending: 'Publishing…',
@@ -192,6 +201,8 @@ const stars = [5, 4, 3, 2, 1];
           errorDuplicate: 'That opinion has already been sent. Please do not repeat it.',
           success: 'Thank you! Your opinion has been published.',
           successPending: 'Thank you! Your opinion will be published once it has been reviewed.',
+          ratingValue: '{value} out of 5',
+          ratingEmpty: 'Not selected',
         },
       }[locale];
 
@@ -219,23 +230,43 @@ const stars = [5, 4, 3, 2, 1];
       });
       updateCounter();
 
-      // Pintado de las estrellas al elegir
-      const stars = Array.from(form.querySelectorAll<HTMLElement>('.review-form__star'));
-      const paint = () => {
-        const chosen = Number(
-          form.querySelector<HTMLInputElement>('input[name="rating"]:checked')?.value ?? 0,
-        );
-        stars.forEach((star) => {
-          star.classList.toggle('is-active', Number(star.dataset.value) <= chosen);
+      // Estrellas: se rellenan de izquierda a derecha y al principio no hay
+      // ninguna marcada, para no puntuar sin querer.
+      const starElements = Array.from(form.querySelectorAll<HTMLElement>('.review-form__star'));
+      const ratingValue = form.querySelector<HTMLElement>('[data-rating-value]');
+      const selectedValue = () =>
+        Number(form.querySelector<HTMLInputElement>('input[name="rating"]:checked')?.value ?? 0);
+
+      /** Rellena las estrellas desde la izquierda hasta el valor indicado. */
+      const paint = (upTo: number) => {
+        starElements.forEach((star) => {
+          star.classList.toggle('is-active', Number(star.dataset.value) <= upTo);
         });
       };
-      stars.forEach((star) => {
+
+      const showRating = () => {
+        const chosen = selectedValue();
+        paint(chosen);
+        if (ratingValue) {
+          ratingValue.textContent = chosen
+            ? copy.ratingValue.replace('{value}', String(chosen))
+            : copy.ratingEmpty;
+        }
+      };
+
+      starElements.forEach((star) => {
+        const value = Number(star.dataset.value);
         star.querySelector('input')?.addEventListener('change', () => {
-          paint();
+          showRating();
           show('rating', false);
         });
+        // Vista previa al pasar el ratón o al moverse con el teclado.
+        star.addEventListener('mouseenter', () => paint(value));
+        star.addEventListener('focusin', () => paint(value));
+        star.addEventListener('mouseleave', () => showRating());
+        star.addEventListener('focusout', () => showRating());
       });
-      paint();
+      showRating();
 
       form.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -289,7 +320,8 @@ const stars = [5, 4, 3, 2, 1];
             setStatus(data.pending ? copy.successPending : copy.success, 'ok');
             form.reset();
             updateCounter();
-            paint();
+            // Tras enviar, el formulario vuelve a quedar sin puntuar.
+            showRating();
             // La API de GitHub puede tardar unos segundos en reflejar la
             // opinión nueva. Se espera a que aparezca y se recarga la página.
             await waitForReview(data.number ?? 0);

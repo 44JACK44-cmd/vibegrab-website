@@ -222,6 +222,12 @@ export const communityCopy = {
     en: 'The alias is public. If you leave it empty, your opinion will appear as “Community member”.',
   },
   formRating: { es: 'Tu puntuación', en: 'Your rating' },
+  ratingOption: {
+    es: '{value} de 5 estrellas',
+    en: '{value} out of 5 stars',
+  },
+  ratingValue: { es: '{value} de 5', en: '{value} out of 5' },
+  ratingEmpty: { es: 'Sin elegir', en: 'Not selected' },
   formText: { es: 'Tu opinión', en: 'Your opinion' },
   formTextPlaceholder: {
     es: '¿Qué te ha funcionado bien? ¿Qué echaste en falta? Sé concreto: ayuda más que los elogios.',

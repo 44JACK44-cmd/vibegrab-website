@@ -70,6 +70,6 @@ export function collectStats(payload: ReleasesPayload): ProductStats {
  * repositories.
  */
 export const downloadCountCaveat = {
-  es: 'Descargas del archivo. No equivalen a usuarios: una misma persona puede descargar el APK más de una vez.',
-  en: 'Downloads of the file. They are not users: the same person can download the APK more than once.',
+  es: 'Suma de todas las versiones publicadas. No equivalen a usuarios: una misma persona puede descargar el APK más de una vez.',
+  en: 'Sum of every published version. They are not users: the same person can download the APK more than once.',
 } as const;

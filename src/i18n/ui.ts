@@ -449,6 +449,14 @@ const dict = {
     es: 'Archivo único para cualquier dispositivo',
     en: 'A single file for any device',
   },
+  'stats.apkDownloads': {
+    es: 'Descargas del APK',
+    en: 'APK downloads',
+  },
+  'stats.latestDownloads': {
+    es: 'La última versión: {count}.',
+    en: 'The latest version: {count}.',
+  },
   'stats.fileDownloads': {
     es: 'Descargas del archivo',
     en: 'Downloads of the file',

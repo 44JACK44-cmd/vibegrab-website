@@ -25,7 +25,7 @@ interface Metric {
   icon: string;
   value: string;
   label: string;
-  note?: string;
+  note?: string | string[];
 }
 
 const metrics: Metric[] = [];
@@ -62,12 +62,17 @@ if (stats.apkSizeBytes) {
   });
 }
 
-if (stats.apkDownloadCount && stats.apkDownloadCount > 0) {
+if (stats.totalDownloadCount > 0) {
   metrics.push({
     icon: 'download',
-    value: formatCount(stats.apkDownloadCount, locale),
-    label: t('stats.fileDownloads'),
-    note: downloadCountCaveat[locale],
+    value: formatCount(stats.totalDownloadCount, locale),
+    label: t('stats.apkDownloads'),
+    note: [
+      downloadCountCaveat[locale],
+      stats.apkDownloadCount
+        ? t('stats.latestDownloads', { count: formatCount(stats.apkDownloadCount, locale) })
+        : undefined,
+    ].filter(Boolean) as string[],
   });
 }
 ---
@@ -83,7 +88,13 @@ if (stats.apkDownloadCount && stats.apkDownloadCount > 0) {
           <div class="stat-strip__body">
             <p class="stat-strip__value">{metric.value}</p>
             <p class="stat-strip__label">{metric.label}</p>
-            {metric.note && <p class="stat-strip__note">{metric.note}</p>}
+            {
+              metric.note && (
+                <p class="stat-strip__note">
+                  {Array.isArray(metric.note) ? metric.note.join(' ') : metric.note}
+                </p>
+              )
+            }
           </div>
         </li>
       ))}
