@@ -13,7 +13,7 @@ services:
     branch: main
     autoDeploy: true
     buildCommand: npm ci && npm run build
-    startCommand: node ./dist/server/entry.mjs
+    startCommand: npm run start
     healthCheckPath: /
     envVars:
       # El adaptador se detecta solo: Render define RENDER=true al compilar.

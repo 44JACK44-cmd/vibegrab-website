@@ -6,7 +6,7 @@
   "description": "Sitio web oficial de VibeGrab: presentación, descargas y novedades de la app.",
   "scripts": {
     "dev": "astro dev",
-    "start": "node ./dist/server/entry.mjs",
+    "start": "node ./scripts/start.mjs",
     "build": "astro check && astro build",
     "build:fast": "astro build",
     "preview": "astro preview",
