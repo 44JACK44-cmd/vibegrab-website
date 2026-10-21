@@ -1,8 +1,17 @@
-# Despliegue en Vercel
+# Despliegue
 
 El sitio usa `output: 'server'`: las páginas de descarga, versiones y las rutas
-`/api/*` se ejecutan como funciones de Vercel, para leer GitHub en cada
-petición (con caché). El resto se sirve estático.
+`/api/*` se generan en el servidor, para leer GitHub en cada petición (con
+caché). El resto se sirve estático.
+
+El mismo repositorio despliega en **Render** (servidor Node) y en **Vercel**
+(funciones serverless). Solo cambia el adaptador, y se elige con la variable de
+entorno `DEPLOY_TARGET`:
+
+| `DEPLOY_TARGET` | Adaptador | Salida | Plataforma |
+| --- | --- | --- | --- |
+| `render` (o `node`) | `@astrojs/node` en modo `standalone` | `dist/server/entry.mjs` | Render |
+| `vercel` (por defecto) | `@astrojs/vercel` | `.vercel/output` | Vercel |
 
 ## 1. Subir el repositorio
 
@@ -17,7 +26,40 @@ git push -u origin main
 
 No se sube `.env` (está en `.gitignore`).
 
-## 2. Importar en Vercel
+## 2. Desplegar en Render
+
+1. Entra en <https://render.com/deploy?repo=https://github.com/44JACK44-cmd/vibegrab-website>
+   (usa el `render.yaml` de este repositorio, que trae los ajustes ya puestos).
+2. Elige **Web Service** y el plan **Free**.
+3. Render detectará el repositorio y la rama `main`.
+4. Deja estas variables (las pide el propio panel):
+   - `SITE_URL`: el dominio del servicio, por ejemplo
+     `https://vibegrab-website.onrender.com`. **Es obligatoria en Render**:
+     no hay forma automática de saber el dominio, y de ella dependen las URL
+     canónicas, los sitemaps y el `robots.txt`.
+   - `GITHUB_TOKEN`: token de GitHub con permiso `public_repo` (para el canal
+     de opiniones).
+5. `DEPLOY_TARGET=render` y `NODE_VERSION=22` ya vienen en el blueprint.
+6. **Deploy**. El primer arranque tarda un poco (instala dependencias y
+   compila).
+
+Ajustes equivalentes si lo creas a mano:
+
+| Campo | Valor |
+| --- | --- |
+| Runtime | Node |
+| Build command | `npm ci && npm run build` |
+| Start command | `node ./dist/server/entry.mjs` |
+| Health check path | `/` |
+| Auto-deploy | Sí, desde `main` |
+
+> **Arranques en frío.** En el plan gratuito Render apaga el servicio tras
+> unos minutos sin tráfico y el siguiente visitante espera a que arranque
+> (unos 30–60 segundos). El workflow `keep-alive.yml` lo despierta cada 10
+> minutos para evitarlo, pero las tareas programadas de GitHub pueden retrasarse.
+> Con el plan de pago el problema desaparece.
+
+## 3. Desplegar en Vercel
 
 1. Entra en <https://vercel.com/new>.
 2. Importa `44JACK44-cmd/vibegrab-website`.
@@ -27,14 +69,18 @@ No se sube `.env` (está en `.gitignore`).
 6. Node.js: 22.x.
 
 Cada `push` a `main` despliega en producción; las ramas generan previews.
+En Vercel no hace falta `DEPLOY_TARGET`: el adaptador correcto es el de por
+defecto.
 
-## 3. Variables de entorno
+## 4. Variables de entorno
 
-En **Project → Settings → Environment Variables** (Production y Preview):
+En **Project → Settings → Environment Variables** (Vercel) o **Service →
+Environment** (Render):
 
 | Nombre | Valor | Obligatoria |
 | --- | --- | --- |
-| `SITE_URL` | Dominio propio, solo si ya lo has registrado | No |
+| `DEPLOY_TARGET` | `render` en Render, `vercel` en Vercel | Sí |
+| `SITE_URL` | Dominio real del servicio | **Sí en Render** |
 | `GITHUB_REPO` | `44JACK44-cmd/vibeGrab` | No (ya es el valor por defecto) |
 | `GITHUB_TOKEN` | Token de GitHub con permiso `public_repo` | Sí, para publicar opiniones |
 | `RELEASES_CACHE_MINUTES` | `10` | No |
@@ -44,8 +90,8 @@ En **Project → Settings → Environment Variables** (Production y Preview):
 | `REVIEWS_MAX_PER_HOUR` | `5` | No |
 | `CONTACT_EMAIL` | Correo real de soporte | No |
 | `SUPPORT_URL` | Foro o formulario de soporte | No |
-| `CONTACT_PHONE` | `944834202` | No (ya está en el código) |
-| `CONTACT_PHONE_E164` | Formato internacional, p. ej. `+34600000000` | No |
+| `CONTACT_PHONE` | `944 834 202` | No (ya está en el código) |
+| `CONTACT_PHONE_E164` | `+51944834202` | No (ya está en el código) |
 | `CONTACT_FACEBOOK` | Perfil de Facebook | No (ya está en el código) |
 | `CONTACT_TIKTOK` | Perfil de TikTok | No (ya está en el código) |
 | `PUBLIC_ANALYTICS_DOMAIN` | Dominio de Plausible | No |
@@ -82,7 +128,7 @@ redespliega.
 > en Vercel: el sitio publicaría URLs ajenas y, si el dominio queda apuntado al
 > proyecto, `*.vercel.app` redirige allí y **el sitio queda inaccesible**.
 
-## 4. Dominio propio
+## 5. Dominio propio
 
 > **Aviso importante.** Añade en Vercel **solo** dominios que ya hayas registrado
 > a tu nombre y cuyo DNS puedas editar. Añadir un dominio de terceros (por
@@ -102,7 +148,7 @@ redespliega.
 5. Elige el dominio principal y redirige el otro.
 6. Actualiza `SITE_URL` y redespliega.
 
-## 5. Comprobar que la integración funciona
+## 6. Comprobar que la integración funciona
 
 Con el sitio desplegado (sustituye el dominio):
 
@@ -137,7 +183,7 @@ Comprobaciones manuales:
 - [ ] Una etiqueta inventada responde 404.
 - [ ] `robots.txt` y los dos sitemaps responden 200.
 
-## 6. Actualizaciones automáticas de la app
+## 7. Actualizaciones automáticas de la app
 
 **No hay que redesplegar al publicar una versión.** El flujo es:
 
@@ -154,7 +200,7 @@ Para que el respaldo estático también esté al día, el workflow
 commit si cambió. También se puede lanzar a mano desde **Actions → Refresh
 releases snapshot → Run workflow**.
 
-## 7. Límites y errores de GitHub
+## 8. Límites y errores de GitHub
 
 - Sin token: 60 peticiones/hora. La caché de 10 minutos reduce el uso a unas 6/h
   por instancia caliente.
@@ -164,7 +210,7 @@ releases snapshot → Run workflow**.
 - `404`: repositorio mal escrito en `GITHUB_REPO`; revisa el valor.
 - La web funciona aunque GitHub esté caído, con el aviso de datos antiguos.
 
-## 8. Seguridad
+## 9. Seguridad
 
 - Ningún secreto llega al navegador: el token solo se lee en el servidor.
 - Las URLs de descarga se validan contra
@@ -175,12 +221,12 @@ releases snapshot → Run workflow**.
 - Sin analítica por defecto. Si se activa Plausible, es sin cookies y solo si
   `PUBLIC_ANALYTICS_DOMAIN` tiene valor.
 
-## 9. Revertir un despliegue
+## 10. Revertir un despliegue
 
 En Vercel, **Deployments → … → Promote to Production** sobre el despliegue
 anterior. No hace falta tocar el repositorio de la app.
 
-## 10. Notas de mantenimiento
+## 11. Notas de mantenimiento
 
 - Actualiza `@astrojs/vercel` cuando haya versión nueva para resolver los
   avisos de `npm audit` en dependencias transitivas.
@@ -189,7 +235,7 @@ anterior. No hace falta tocar el repositorio de la app.
 - Si el APK deja de llamarse `VibeGrab.apk`, no hay que cambiar código: se usa
   el primer `.apk` válido y se prefiere el nombre conocido si existe.
 
-## 11. Verificación de Google Search Console
+## 12. Verificación de Google Search Console
 
 El archivo `public/googlec0d5ac6fe8d7300f.html` verifica la propiedad del sitio
 en Google Search Console (propiedad de tipo "prefijo de URL"). Se sirve en la

@@ -1,0 +1,36 @@
+# Blueprint de Render.
+#
+# Crea el servicio web con los ajustes correctos en un solo clic:
+#   https://render.com/deploy?repo=https://github.com/44JACK44-cmd/vibegrab-website
+#
+# Las variables marcadas con `sync: false` se piden al desplegar (las
+# rellenas tú en el panel de Render).
+services:
+  - type: web
+    name: vibegrab-website
+    runtime: node
+    plan: free
+    branch: main
+    autoDeploy: true
+    buildCommand: npm ci && npm run build
+    startCommand: node ./dist/server/entry.mjs
+    healthCheckPath: /
+    envVars:
+      # Elige el adaptador de Node en lugar del de Vercel.
+      - key: DEPLOY_TARGET
+        value: render
+      - key: NODE_VERSION
+        value: "22"
+      # Dominio real del servicio, p. ej. https://vibegrab-website.onrender.com
+      - key: SITE_URL
+        sync: false
+      # Token de GitHub con permiso `public_repo`. Necesario para que el canal
+      # de opiniones de la comunidad pueda guardar las opiniones.
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: GITHUB_REPO
+        value: 44JACK44-cmd/vibeGrab
+      - key: RELEASES_CACHE_MINUTES
+        value: "10"
+      - key: REVIEWS_CACHE_MINUTES
+        value: "10"

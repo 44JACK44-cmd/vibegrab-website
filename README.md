@@ -13,7 +13,8 @@ se obtiene de **GitHub Releases** y se actualiza sin tocar el código.
 | Pieza | Qué se usa |
 | --- | --- |
 | Framework | Astro 7 con TypeScript, `output: 'server'` |
-| Despliegue | Vercel (`@astrojs/vercel`) |
+| Despliegue | Render (Node autónomo) o Vercel (serverless), según `DEPLOY_TARGET` |
+| Adaptador | `@astrojs/node` (standalone) o `@astrojs/vercel` |
 | Estilos | CSS propio con tokens, sin framework de UI |
 | Tipografías | Inter Variable y Space Grotesk Variable, autoalojadas |
 | Datos | API REST pública de GitHub Releases |
@@ -47,10 +48,10 @@ El sitio queda en <http://localhost:4321>.
 | `npm run dev` | Servidor de desarrollo con recarga en caliente |
 | `npm run build` | Comprobación de tipos + build de producción |
 | `npm run build:fast` | Build sin `astro check` (más rápido) |
+| `npm start` | Arranca el servidor Node ya compilado (lo que usa Render) |
 | `npm run check` | Diagnóstico de TypeScript y plantillas Astro |
 | `npm test` | Pruebas de la integración, la caché y las rutas de descarga |
 | `npm run check:links` | Rastrea las páginas y comprueba que no hay enlaces ni anclas rotas |
-| `npm run preview` | Previsualiza el resultado del build |
 | `npm run snapshot` | Regenera `src/data/releases.snapshot.json` desde GitHub |
 | `npm run assets` | Regenera la imagen Open Graph y los favicons |
 
@@ -99,7 +100,8 @@ src/
 tests/                   Pruebas con Vitest
 scripts/                 Snapshot, imágenes y comprobador de enlaces
 public/                  Logo, favicons, og-image, robots
-vercel.json              Cabeceras de seguridad y caché
+vercel.json              Cabeceras de seguridad y caché (Vercel)
+render.yaml              Blueprint de despliegue en Render
 ```
 
 ## La portada
@@ -295,4 +297,9 @@ formulario no cambian.
 
 ## Despliegue
 
-Ver [DEPLOY.md](./DEPLOY.md).
+Ver [DEPLOY.md](./DEPLOY.md). El mismo repositorio despliega en **Render**
+(servidor Node) y en **Vercel** (serverless); solo cambia el adaptador, y se
+elige con la variable `DEPLOY_TARGET`.
+
+En Render, el archivo `render.yaml` deja el servicio configurado con los
+ajustes correctos; en Vercel se importa el repositorio desde el panel.

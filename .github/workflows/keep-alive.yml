@@ -1,0 +1,32 @@
+name: Mantener el sitio despierto
+
+# El plan gratuito de Render apaga el servicio tras unos minutos sin tráfico y
+# el siguiente visitante espera a un arranque en frío. Esta tarea lo despierta
+# cada 10 minutos para que la descarga del APK sea inmediata.
+#
+# La URL se toma de la variable de repositorio `SITE_URL`; si no está
+# definida, se usa la de Vercel.
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: keep-alive
+  cancel-in-progress: true
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Despertar el sitio
+        run: |
+          URL="${{ vars.SITE_URL || 'https://vibegrab-website.vercel.app' }}"
+          echo "Despertando $URL"
+          curl -sS -o /dev/null -w "HTTP=%{http_code}\n" --max-time 90 "$URL/" || true
+          # De paso se refresca la copia de seguridad de las publicaciones.
+          curl -sS -o /dev/null -w "API=%{http_code}\n" --max-time 90 "$URL/api/releases" || true

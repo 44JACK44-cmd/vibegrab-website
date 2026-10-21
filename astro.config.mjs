@@ -1,8 +1,30 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import node from '@astrojs/node';
 import vercel from '@astrojs/vercel';
 import sitemap from '@astrojs/sitemap';
-import { resolveSiteUrl } from './src/config/site-url.ts';
+import { resolveSiteUrl, warnIfSiteUrlMissing } from './src/config/site-url.ts';
+
+/**
+ * Objetivo del despliegue.
+ *
+ * El proyecto se construye para las dos plataformas desde el mismo
+ * repositorio, porque solo cambia el adaptador:
+ *
+ *  · `vercel` (por defecto): functions serverless de Vercel.
+ *  · `render`: servidor Node autónomo (`node ./dist/server/entry.mjs`), que es
+ *    lo que usa Render.
+ *
+ * Se elige con la variable de entorno `DEPLOY_TARGET`.
+ */
+const DEPLOY_TARGET = (process.env.DEPLOY_TARGET ?? 'vercel').toLowerCase();
+const IS_RENDER = DEPLOY_TARGET === 'render' || DEPLOY_TARGET === 'node';
+
+const adapter = IS_RENDER
+  ? node({ mode: 'standalone' })
+  : vercel({
+      maxDuration: 20,
+    });
 
 /**
  * Dominio canónico del sitio.
@@ -14,6 +36,8 @@ import { resolveSiteUrl } from './src/config/site-url.ts';
  */
 const SITE = resolveSiteUrl(process.env);
 
+warnIfSiteUrlMissing(process.env, DEPLOY_TARGET);
+
 // https://astro.build/config
 export default defineConfig({
   site: SITE,
@@ -22,9 +46,7 @@ export default defineConfig({
   // se generan al vuelo desde GitHub Releases (con caché). Las páginas que no
   // dependen de la API se prerenderizan para servirse como HTML estático.
   output: 'server',
-  adapter: vercel({
-    maxDuration: 20,
-  }),
+  adapter,
 
   i18n: {
     defaultLocale: 'es',
