@@ -44,6 +44,28 @@ describe('resolveSiteUrl', () => {
     expect(resolveSiteUrl({})).toBe(SITE_URL_FALLBACK);
   });
 
+  it('usa la URL pública que inyecta Render', () => {
+    expect(resolveSiteUrl({ RENDER_EXTERNAL_URL: 'https://mi-servicio.onrender.com' })).toBe(
+      'https://mi-servicio.onrender.com',
+    );
+  });
+
+  it('acepta el hostname de Render sin esquema', () => {
+    expect(resolveSiteUrl({ RENDER_EXTERNAL_URL: 'mi-servicio.onrender.com' })).toBe(
+      'https://mi-servicio.onrender.com',
+    );
+  });
+
+  it('SITE_URL tiene prioridad sobre la URL de la plataforma', () => {
+    expect(
+      resolveSiteUrl({
+        SITE_URL: 'https://ejemplo.test',
+        RENDER_EXTERNAL_URL: 'https://mi-servicio.onrender.com',
+        VERCEL_PROJECT_PRODUCTION_URL: 'proyecto.vercel.app',
+      }),
+    ).toBe('https://ejemplo.test');
+  });
+
   it('el respaldo es la URL real del proyecto, no un dominio de terceros', () => {
     expect(SITE_URL_FALLBACK).not.toContain('vibegrab.com');
     expect(SITE_URL_FALLBACK.startsWith('https://')).toBe(true);

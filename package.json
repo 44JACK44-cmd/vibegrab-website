@@ -18,7 +18,7 @@
     "assets": "node scripts/generate-og.mjs"
   },
   "engines": {
-    "node": ">=22"
+    "node": "22.x"
   },
   "dependencies": {
     "@astrojs/node": "^11.1.9",

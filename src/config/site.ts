@@ -58,10 +58,14 @@ export const siteConfig = {
 
   /**
    * URL canónica. Se resuelve en `@/config/site-url`: primero `SITE_URL`, luego
-   * el dominio de producción que Vercel inyecta solo, y por último el respaldo.
+   * el dominio que inyecta la plataforma (Render o Vercel) y, por último, el
+   * respaldo.
    */
   url: resolveSiteUrl({
     SITE_URL: publicEnv('SITE_URL') ?? serverEnv('SITE_URL'),
+    PUBLIC_URL: publicEnv('PUBLIC_URL') ?? serverEnv('PUBLIC_URL'),
+    RENDER_EXTERNAL_URL:
+      publicEnv('RENDER_EXTERNAL_URL') ?? serverEnv('RENDER_EXTERNAL_URL'),
     VERCEL_PROJECT_PRODUCTION_URL: serverEnv('VERCEL_PROJECT_PRODUCTION_URL'),
   }),
 

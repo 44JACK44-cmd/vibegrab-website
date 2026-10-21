@@ -16,12 +16,14 @@ services:
     startCommand: node ./dist/server/entry.mjs
     healthCheckPath: /
     envVars:
-      # Elige el adaptador de Node en lugar del de Vercel.
+      # El adaptador se detecta solo: Render define RENDER=true al compilar.
+      # Se puede forzar con DEPLOY_TARGET=render.
       - key: DEPLOY_TARGET
         value: render
       - key: NODE_VERSION
         value: "22"
-      # Dominio real del servicio, p. ej. https://vibegrab-website.onrender.com
+      # Dominio propio. Opcional: Render publica su URL en
+      # RENDER_EXTERNAL_URL y la web la usa sola.
       - key: SITE_URL
         sync: false
       # Token de GitHub con permiso `public_repo`. Necesario para que el canal

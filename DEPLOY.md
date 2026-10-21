@@ -5,13 +5,15 @@ El sitio usa `output: 'server'`: las páginas de descarga, versiones y las rutas
 caché). El resto se sirve estático.
 
 El mismo repositorio despliega en **Render** (servidor Node) y en **Vercel**
-(funciones serverless). Solo cambia el adaptador, y se elige con la variable de
-entorno `DEPLOY_TARGET`:
+(funciones serverless). Solo cambia el adaptador, y **se detecta solo**:
 
-| `DEPLOY_TARGET` | Adaptador | Salida | Plataforma |
+| Plataforma | Cómo se detecta | Adaptador | Salida |
 | --- | --- | --- | --- |
-| `render` (o `node`) | `@astrojs/node` en modo `standalone` | `dist/server/entry.mjs` | Render |
-| `vercel` (por defecto) | `@astrojs/vercel` | `.vercel/output` | Vercel |
+| Render | Render define `RENDER=true` al compilar | `@astrojs/node` (standalone) | `dist/server/entry.mjs` |
+| Vercel | es el valor por defecto | `@astrojs/vercel` | `.vercel/output` |
+
+La variable `DEPLOY_TARGET` (`render` o `vercel`) permite forzar cualquiera de
+los dos siAlguna vez hiciera falta.
 
 ## 1. Subir el repositorio
 
@@ -33,13 +35,13 @@ No se sube `.env` (está en `.gitignore`).
 2. Elige **Web Service** y el plan **Free**.
 3. Render detectará el repositorio y la rama `main`.
 4. Deja estas variables (las pide el propio panel):
-   - `SITE_URL`: el dominio del servicio, por ejemplo
-     `https://vibegrab-website.onrender.com`. **Es obligatoria en Render**:
-     no hay forma automática de saber el dominio, y de ella dependen las URL
-     canónicas, los sitemaps y el `robots.txt`.
+   - `SITE_URL`: **opcional**. Render publica su URL en
+     `RENDER_EXTERNAL_URL` y la web la usa sola. Solo rellénala si más
+     adelante registras un dominio propio.
    - `GITHUB_TOKEN`: token de GitHub con permiso `public_repo` (para el canal
      de opiniones).
-5. `DEPLOY_TARGET=render` y `NODE_VERSION=22` ya vienen en el blueprint.
+5. `DEPLOY_TARGET` no hace falta: Render se detecta solo. `NODE_VERSION=22`
+   tampoco, porque `package.json` fija `engines.node`.
 6. **Deploy**. El primer arranque tarda un poco (instala dependencias y
    compila).
 
@@ -79,8 +81,8 @@ Environment** (Render):
 
 | Nombre | Valor | Obligatoria |
 | --- | --- | --- |
-| `DEPLOY_TARGET` | `render` en Render, `vercel` en Vercel | Sí |
-| `SITE_URL` | Dominio real del servicio | **Sí en Render** |
+| `DEPLOY_TARGET` | `render` o `vercel` | No (se detecta solo) |
+| `SITE_URL` | Dominio real del servicio | No (la plataforma lo publica) |
 | `GITHUB_REPO` | `44JACK44-cmd/vibeGrab` | No (ya es el valor por defecto) |
 | `GITHUB_TOKEN` | Token de GitHub con permiso `public_repo` | Sí, para publicar opiniones |
 | `RELEASES_CACHE_MINUTES` | `10` | No |

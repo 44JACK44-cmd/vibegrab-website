@@ -15,10 +15,12 @@ import { resolveSiteUrl, warnIfSiteUrlMissing } from './src/config/site-url.ts';
  *  · `render`: servidor Node autónomo (`node ./dist/server/entry.mjs`), que es
  *    lo que usa Render.
  *
- * Se elige con la variable de entorno `DEPLOY_TARGET`.
+ * Se detecta solo: Render define `RENDER=true` durante la compilación. La
+ * variable `DEPLOY_TARGET` permite forzar cualquiera de los dos.
  */
-const DEPLOY_TARGET = (process.env.DEPLOY_TARGET ?? 'vercel').toLowerCase();
-const IS_RENDER = DEPLOY_TARGET === 'render' || DEPLOY_TARGET === 'node';
+const DEPLOY_TARGET = (process.env.DEPLOY_TARGET ?? '').toLowerCase();
+const IS_RENDER =
+  process.env.RENDER === 'true' || DEPLOY_TARGET === 'render' || DEPLOY_TARGET === 'node';
 
 const adapter = IS_RENDER
   ? node({ mode: 'standalone' })
@@ -36,7 +38,7 @@ const adapter = IS_RENDER
  */
 const SITE = resolveSiteUrl(process.env);
 
-warnIfSiteUrlMissing(process.env, DEPLOY_TARGET);
+warnIfSiteUrlMissing(process.env, IS_RENDER ? 'render' : 'vercel');
 
 // https://astro.build/config
 export default defineConfig({

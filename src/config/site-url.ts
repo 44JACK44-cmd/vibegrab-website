@@ -5,9 +5,11 @@
  *
  *  1. `SITE_URL` — variable propia. Es la forma de fijar el dominio definitivo.
  *  2. `PUBLIC_URL` — la usan algunos alojamientos (por ejemplo Netlify).
- *  3. `VERCEL_PROJECT_PRODUCTION_URL` — la inyecta Vercel automáticamente con el
+ *  3. `RENDER_EXTERNAL_URL` — la inyecta Render con la URL pública del
+ *     servicio (`https://mi-servicio.onrender.com`).
+ *  4. `VERCEL_PROJECT_PRODUCTION_URL` — la inyecta Vercel automáticamente con el
  *     dominio de producción del proyecto.
- *  4. `SITE_URL_FALLBACK` — respaldo para desarrollo local sin `.env`.
+ *  5. `SITE_URL_FALLBACK` — respaldo para desarrollo local sin `.env`.
  *
  * Nunca se inventa un dominio: o viene de la configuración, o es el que la
  * plataforma asigna, o es el respaldo comprobado.
@@ -16,6 +18,7 @@
 export interface SiteUrlEnv {
   SITE_URL?: string | undefined;
   PUBLIC_URL?: string | undefined;
+  RENDER_EXTERNAL_URL?: string | undefined;
   VERCEL_PROJECT_PRODUCTION_URL?: string | undefined;
 }
 
@@ -40,6 +43,10 @@ export function resolveSiteUrl(env: SiteUrlEnv): string {
   const publicUrl = env.PUBLIC_URL?.trim();
   if (publicUrl) return stripTrailingSlashes(withScheme(publicUrl));
 
+  // Render publica la URL del servicio durante la compilación.
+  const renderUrl = env.RENDER_EXTERNAL_URL?.trim();
+  if (renderUrl) return stripTrailingSlashes(withScheme(renderUrl));
+
   const vercel = env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
   if (vercel) return stripTrailingSlashes(withScheme(vercel));
 
@@ -53,6 +60,7 @@ export function resolveSiteUrl(env: SiteUrlEnv): string {
  */
 export function warnIfSiteUrlMissing(env: SiteUrlEnv, target: string): void {
   if (env.SITE_URL?.trim() || env.PUBLIC_URL?.trim()) return;
+  if (env.RENDER_EXTERNAL_URL?.trim()) return;
   if (env.VERCEL_PROJECT_PRODUCTION_URL?.trim()) return;
 
   // eslint-disable-next-line no-console
