@@ -1,7 +1,54 @@
 {
-  "fetchedAt": "2026-10-21T13:04:47.168Z",
+  "fetchedAt": "2026-10-22T08:44:45.958Z",
   "repo": "44JACK44-cmd/vibeGrab",
   "releases": [
+    {
+      "tag_name": "v1.1.42-53",
+      "name": "v1.1.42-53",
+      "body": "<!-- es -->\n## ✨ Novedades\n- 🎨 **Tres estilos de reproductor** — Elige en Ajustes entre el estilo clásico, el inmersivo con la carátula de fondo y el compacto. El estilo se aplica igual en la biblioteca, en Explorar y en el mini reproductor.\n- 🎚️ **Ecualizador y letras en la música** — Al abrir una canción se abre su reproductor completo, con ecualizador, cola y control de reproducción. Las letras se buscan con el título real de la canción y puedes reintentar la búsqueda.\n- 🌐 **Filtro de publicidad en el navegador** — El navegador integrado puede detener los anuncios y rastreadores de terceros más conocidos, con un contador discreto, un interruptor para desactivarlo y la opción de permitir un sitio concreto. Los recursos que ya venían en la primera respuesta de la página no se pueden filtrar.\n\n## ⚡ Mejoras\n- 🔔 **Las notificaciones de descarga se cierran solas** — El aviso de descarga terminada o fallida desaparece solo tras unos segundos y nunca tapa el trabajo que sigue en marcha. Con varias descargas a la vez hay un aviso por descarga, con su porcentaje y su velocidad real.\n- ⚡ **Analizar un enlace va más rápido** — Repetir el análisis del mismo enlace ya no vuelve a lanzar la búsqueda, y el resultado se reutiliza un rato antes de volver a preguntarse al servidor. Si una actualización falla, no pierdes lo que ya tenías.\n- 🚀 **Explorar carga antes** — Para ti y Tendencias buscan en varias fuentes a la vez en lugar de una detrás de otra, así que los resultados aparecen antes.\n\n## 🛠️ Correcciones\n- 🧹 **Cada descarga aparece una sola vez** — Lo que descargas ya no se repite en Local: la biblioteca unifica el archivo del teléfono y el de la carpeta de descargas, y al borrar una entrada solo se borra esa.\n- 🎬 **Los Shorts dicen qué les pasa** — Si un Shorts no puede reproducir el vídeo, la app lo explica y te ofrece reintentar pidiendo enlaces nuevos, en lugar de dejar una carátula quieta sin decir nada.\n\n## 🛡️ Estabilidad\n- 📥 **Las descargas que se cortan se reanudan** — Si la conexión se cae a mitad de una descarga, VibeGrab guarda lo descargado y lo retoma con una sola pasada más, en lugar de empezar de cero. El archivo solo aparece en tu carpeta cuando está completo y es válido.\n- 🩹 **La app vuelve a abrirse bien** — La versión anterior se cerraba al abrirla: el empaquetado de release (R8) eliminaba una pieza que la librería de trabajo en segundo plano que llega con el SDK de anuncios necesita para crear su base de datos, y el fallo ocurría antes de que la app pudiera dibujar nada. Esa pieza ya se conserva y se ha comprobado abriendo la app y navegando por Explore. El aviso de actualización tampoco se desborda ni esconde la descarga.\n- 📦 **APK más pequeños y con verificación** — El instalador se publica también por arquitectura (arm64, armv7, x86_64), así que pesa alrededor de la cuarta parte en lugar de 67 MB, que es lo que se solía corromper en redes móviles. Junto a él, `SHA256SUMS.txt` permite comprobar que el fichero descargado es el de verdad y no uno cortado o una página de error.\n\n<!-- en -->\n## ✨ New\n- 🎨 **Three player styles** — Choose between the classic style, the immersive one with the artwork in the background and the compact one in Settings. The style is applied the same way in your library, in Explore and in the mini player.\n- 🎚️ **Equalizer and lyrics in the music player** — Opening a song now opens its full player, with the equalizer, the queue and the playback controls. Lyrics are searched with the real song title and you can retry the search.\n- 🌐 **Ad filter in the browser** — The built-in browser can stop the best known third-party ads and trackers, with a discreet counter, a switch to turn it off and the option to allow a specific site. Resources already included in the first page response cannot be filtered.\n\n## ⚡ Improvements\n- 🔔 **Download notifications close on their own** — The finished or failed download notice disappears on its own after a few seconds and never covers work that is still running. With several downloads at once there is one notice per download, with its percentage and its real speed.\n- ⚡ **Analysing a link is faster** — Repeating the analysis of the same link no longer starts the search again, and the result is reused for a while before asking the server again. If an update fails, you do not lose what you already had.\n- 🚀 **Explore loads sooner** — For you and Trending search several sources at once instead of one after another, so results appear sooner.\n\n## 🛠️ Fixes\n- 🧹 **Each download shows up only once** — What you download no longer repeats in your library: the library merges the phone file with the one in the downloads folder, and deleting one entry only removes that one.\n- 🎬 **Shorts now tell you what is wrong** — If a Short cannot play the video, the app explains it and offers to retry with fresh links instead of leaving a still thumbnail with no explanation.\n\n## 🛡️ Stability\n- 📥 **Interrupted downloads pick up where they stopped** — If the connection drops halfway through a download, VibeGrab keeps what was downloaded and resumes it with one extra attempt instead of starting over. The file only appears in your folder when it is complete and valid.\n- 🩹 **The app opens again** — The previous build closed right after opening: the release packaging (R8) removed a piece that the background-work library shipped with the ads SDK needs to create its database, and the failure happened before the app could draw anything. That piece is kept now, and it was verified by opening the app and browsing Explore. The update notice also no longer overflows nor hides the download.\n- 📦 **Smaller APKs, with verification** — The installer is now published per architecture (arm64, armv7, x86_64), so it weighs about a quarter of the 67 MB that used to get corrupted on mobile networks. A `SHA256SUMS.txt` file ships next to it so you can check that the file you downloaded is the real one and not a cut download or an error page.\n",
+      "draft": false,
+      "prerelease": false,
+      "published_at": "2026-10-22T05:15:19Z",
+      "created_at": "2026-10-22T05:02:38Z",
+      "html_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/tag/v1.1.42-53",
+      "assets": [
+        {
+          "name": "SHA256SUMS.txt",
+          "size": 345,
+          "digest": "sha256:816eb0b830ee2999332c561b8eb967ddab6c417e139405f28b92ba7d3c40e9b1",
+          "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.42-53/SHA256SUMS.txt",
+          "download_count": 1
+        },
+        {
+          "name": "VibeGrab-arm64-v8a.apk",
+          "size": 26465591,
+          "digest": "sha256:8994311f66575125c2bc9cba5f299e373393afb22591f5236eeefb4a895ce940",
+          "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.42-53/VibeGrab-arm64-v8a.apk",
+          "download_count": 1
+        },
+        {
+          "name": "VibeGrab-armeabi-v7a.apk",
+          "size": 24349444,
+          "digest": "sha256:d39820dd17f66561027a81c0779ccd86c8298df8007629ca7a6657973192983d",
+          "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.42-53/VibeGrab-armeabi-v7a.apk",
+          "download_count": 0
+        },
+        {
+          "name": "VibeGrab-x86_64.apk",
+          "size": 28080421,
+          "digest": "sha256:0498d7b5ff3bc000221ba29fff216cd7a222b3402b527c8438f2ec278a598611",
+          "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.42-53/VibeGrab-x86_64.apk",
+          "download_count": 1
+        },
+        {
+          "name": "VibeGrab.apk",
+          "size": 70155842,
+          "digest": "sha256:c0ff9dcd59b75f4819df7ec9622be95d8f87a60dde29bbf46bf5cc9f28cbeb88",
+          "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.42-53/VibeGrab.apk",
+          "download_count": 3
+        }
+      ]
+    },
     {
       "tag_name": "v1.1.41-48",
       "name": "v1.1.41-48",
@@ -17,7 +64,7 @@
           "size": 67382394,
           "digest": "sha256:a6b30c7d87e24c3cb394f4108dad64c0f0bf0ccd69c6a3514a7853e76f93ee99",
           "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.41-48/VibeGrab.apk",
-          "download_count": 5
+          "download_count": 25
         }
       ]
     },
@@ -36,7 +83,7 @@
           "size": 67185781,
           "digest": "sha256:5d62b86a0fec47fc2a3b800d6041136f62353b936d9fdfc12eee57cf88648c4c",
           "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.40-45/VibeGrab.apk",
-          "download_count": 8
+          "download_count": 12
         }
       ]
     },
@@ -93,7 +140,7 @@
           "size": 66707824,
           "digest": "sha256:716bc7c5a1262c86c331b52033acc55f3536c82aa45c1a900a6a2ec499a47972",
           "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.37-42/VibeGrab.apk",
-          "download_count": 1
+          "download_count": 3
         }
       ]
     },
@@ -207,7 +254,7 @@
           "size": 64203262,
           "digest": "sha256:64fe6f94fa5715858d17ac5a020db9038480efc9f0cb99ad978d6f20c4582592",
           "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.2.0-3/VibeGrab.apk",
-          "download_count": 2
+          "download_count": 6
         }
       ]
     },
@@ -226,7 +273,7 @@
           "size": 64186682,
           "digest": "sha256:4dd01fd4bb889183f9efe476ee00b8d86b2cc8cd635c82735d855fb51fc21e3b",
           "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.0-2/VibeGrab.apk",
-          "download_count": 2
+          "download_count": 4
         }
       ]
     }
