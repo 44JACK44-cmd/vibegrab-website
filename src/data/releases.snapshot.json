@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-24T08:15:34.079Z",
+  "fetchedAt": "2026-10-25T08:33:23.890Z",
   "repo": "44JACK44-cmd/vibeGrab",
   "releases": [
     {
@@ -92,7 +92,7 @@
           "size": 70353027,
           "digest": "sha256:663563f95258baa9921ab756f97c4017543ac480afa7c00c4ce746a1e6221cb8",
           "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.42-54/VibeGrab.apk",
-          "download_count": 1
+          "download_count": 3
         }
       ]
     },
@@ -177,7 +177,7 @@
           "size": 67185781,
           "digest": "sha256:5d62b86a0fec47fc2a3b800d6041136f62353b936d9fdfc12eee57cf88648c4c",
           "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.40-45/VibeGrab.apk",
-          "download_count": 12
+          "download_count": 14
         }
       ]
     },
