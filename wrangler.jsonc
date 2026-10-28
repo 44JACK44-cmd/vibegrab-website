@@ -6,8 +6,10 @@
 // Variables y secretos:
 //  · Los secretos (GITHUB_TOKEN) NO van aquí: se definen con
 //    `npx wrangler secret put GITHUB_TOKEN` o desde el panel.
-//  · `SITE_URL` se define como variable en el panel en cuanto se conoce la
-//    URL final del Worker (o el dominio propio), y obliga a redesplegar.
+//  · `SITE_URL` puede definirse como variable en el panel (build), pero ya no
+//    es imprescindible: el respaldo de `site-url.ts` es la URL real de este
+//    Worker en la cuenta `jackae598`, así que el build nunca publica dominios
+//    muertos aunque la variable falte.
 //  · Para el desarrollo local hay un fichero `.dev.vars` (ignorado por git).
 {
   "$schema": "node_modules/wrangler/config-schema.json",

@@ -259,16 +259,16 @@ Con el sitio desplegado (sustituye el dominio):
 
 ```bash
 # Última versión y feed
-curl -s https://vibegrab-website.vercel.app/api/releases | head -40
+curl -s https://vibegrab.jackae598.workers.dev/api/releases | head -40
 
 # La descarga debe ser un 302 al APK real
-curl -sI "https://vibegrab-website.vercel.app/api/download" | findstr /i "location x-vibegrab-version"
+curl -sI "https://vibegrab.jackae598.workers.dev/api/download" | findstr /i "location x-vibegrab-version"
 
 # Una etiqueta inexistente vuelve a la página con aviso
-curl -sI "https://vibegrab-website.vercel.app/api/download?tag=v9.9.9-99" | findstr /i location
+curl -sI "https://vibegrab.jackae598.workers.dev/api/download?tag=v9.9.9-99" | findstr /i location
 
 # Disponibilidad del archivo
-curl -s "https://vibegrab-website.vercel.app/api/verify"
+curl -s "https://vibegrab.jackae598.workers.dev/api/verify"
 ```
 
 ```bash
@@ -344,7 +344,7 @@ anterior. No hace falta tocar el repositorio de la app.
 
 El archivo `public/googlec0d5ac6fe8d7300f.html` verifica la propiedad del sitio
 en Google Search Console (propiedad de tipo "prefijo de URL"). Se sirve en la
-raíz: `https://vibegrab-website.vercel.app/googlec0d5ac6fe8d7300f.html`.
+raíz: `https://vibegrab.jackae598.workers.dev/googlec0d5ac6fe8d7300f.html`.
 
 **No borrar.** Si se elimina, Google pierde la verificación. No afecta al
 rendimiento ni al SEO negativo (es un archivo estático suelto).

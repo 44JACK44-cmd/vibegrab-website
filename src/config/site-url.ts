@@ -22,8 +22,14 @@ export interface SiteUrlEnv {
   VERCEL_PROJECT_PRODUCTION_URL?: string | undefined;
 }
 
-/** Respaldo: URL real del proyecto mientras no haya dominio propio. */
-export const SITE_URL_FALLBACK = 'https://vibegrab-website.vercel.app';
+/**
+ * Respaldo: URL pública del Worker de Cloudflare «vibegrab» en la cuenta
+ * `jackae598`. Es el dominio definitivo del sitio (no hay dominio propio), así
+ * que aunque el build llegue sin `SITE_URL` —p. ej. porque la variable del
+ * panel se olvidó— canónicas, sitemaps y robots apuntan al dominio real y no a
+ * un alojamiento muerto.
+ */
+export const SITE_URL_FALLBACK = 'https://vibegrab.jackae598.workers.dev';
 
 /** Quita barras finales para no generar URLs con `//`. */
 export function stripTrailingSlashes(url: string): string {
