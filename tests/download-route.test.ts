@@ -141,7 +141,7 @@ describe('/api/download', () => {
     // El host interno (por ejemplo `localhost:10000` detrás de un proxy)
     // nunca debe aparecer en una redirección para el usuario.
     expect(location.hostname).not.toBe('localhost');
-    expect(location.hostname).toBe('vibegrab-website.vercel.app');
+    expect(location.hostname).toBe('vibegrab.jackae598.workers.dev');
   });
 
   it('usa la ruta inglesa cuando lang=en', async () => {
