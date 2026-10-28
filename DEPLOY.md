@@ -4,16 +4,70 @@ El sitio usa `output: 'server'`: las páginas de descarga, versiones y las rutas
 `/api/*` se generan en el servidor, para leer GitHub en cada petición (con
 caché). El resto se sirve estático.
 
-El mismo repositorio despliega en **Render** (servidor Node) y en **Vercel**
-(funciones serverless). Solo cambia el adaptador, y **se detecta solo**:
+El mismo repositorio despliega en **Cloudflare Workers**, en **Vercel**
+(funciones serverless) y en **Render** (servidor Node). Solo cambia el
+adaptador, y **se detecta solo**:
 
 | Plataforma | Cómo se detecta | Adaptador | Salida |
 | --- | --- | --- | --- |
+| Cloudflare | `DEPLOY_TARGET=cloudflare` o `CF_PAGES=1` | `@astrojs/cloudflare` (Workers) | `dist/client` + Worker |
 | Render | Render define `RENDER=true` al compilar | `@astrojs/node` (standalone) | `dist/server/entry.mjs` |
 | Vercel | es el valor por defecto | `@astrojs/vercel` | `.vercel/output` |
 
-La variable `DEPLOY_TARGET` (`render` o `vercel`) permite forzar cualquiera de
-los dos siAlguna vez hiciera falta.
+La variable `DEPLOY_TARGET` (`cloudflare`, `render` o `vercel`) permite forzar
+cualquiera de los tres si alguna vez hiciera falta.
+
+> **Estado (octubre 2026).** Render suspendió el servicio gratuito y la web
+> pasó a Vercel. La migración preparada a Cloudflare Workers es la opción
+> recomendada: sin arranques en frío, sin pings y con el plan gratuito más
+> estable de los tres. Render queda documentado por si se reactiva con soporte.
+
+## 0. Desplegar en Cloudflare Workers (recomendado)
+
+Todo está preparado en el repositorio: adaptador, `wrangler.jsonc`, cabeceras
+de assets y scripts. Son dos caminos, elige uno:
+
+### Opción A: conectar el repositorio (auto-despliegue con cada push)
+
+1. Entra en <https://dash.cloudflare.com> → **Workers & Pages → Create →
+   Workers → Import a repository** (Workers Builds).
+2. Concede acceso a GitHub y elige `44JACK44-cmd/vibegrab-website`, rama `main`.
+3. En la configuración de build:
+   - **Build command:** `npm run build:cf`
+   - **Deploy command:** `npx wrangler deploy`
+   - **Root directory:** `/`
+4. **Deploy**. Con cada push a `main`, Cloudflare compila y despliega solo.
+
+### Opción B: desplegar desde tu equipo
+
+```bash
+npm run build:cf      # compila para Workers (workerd real)
+npx wrangler login    # solo la primera vez: abre el navegador
+npm run deploy:cf     # compila y despliega con wrangler
+```
+
+### Después del primer despliegue
+
+1. Anota la URL del Worker: `https://vibegrab-website.<tu-subdominio>.workers.dev`.
+2. En el panel: **Workers & Pages → vibegrab-website → Settings → Variables
+   and Secrets** y añade:
+   - `GITHUB_TOKEN` (tipo **Secret**): el token con permiso `public_repo`.
+     Sin él la web funciona igual, pero el formulario de opiniones no se
+     muestra y las releases se leen sin autenticar.
+   - `SITE_URL` (tipo **Text**): la URL del paso 1. Redespliega después
+     (Deployments → ⋯ → Redeploy) para que `canonical`, sitemaps y datos
+     estructurados la usen.
+3. Verifica: `/`, `/descargar/`, `/versiones/`, `/api/releases`,
+   `/api/download` (302) y el formulario de opiniones.
+
+> **Dominio propio.** Cuando lo añadas (Workers → Settings → Domains &
+> Routes → Add Custom Domain, gratis), pon `SITE_URL` con el dominio propio y
+> **desactiva la ruta `*.workers.dev`** para que no queden dos dominios
+> sirviendo el sitio.
+
+> **Limites del plan gratuito.** 100 000 peticiones/día al Worker (los assets
+> estáticos no cuentan) y 3 MiB comprimidos por despliegue (el Worker actual
+> ocupa ~267 KiB). No hay arranques en frío ni pings de keep-alive.
 
 ## 1. Subir el repositorio
 
@@ -28,7 +82,12 @@ git push -u origin main
 
 No se sube `.env` (está en `.gitignore`).
 
-## 2. Desplegar en Render
+## 2. Desplegar en Render (suspendido en octubre 2026)
+
+> **El servicio gratuito de Render quedó suspendido** con una página
+> «Service Suspended» (503). El motivo exacto lo muestra el banner del panel.
+> Mientras no se reactive, la web vive en Cloudflare (opción 0) o Vercel
+> (opción 3). Estas instrucciones quedan por si soporte reactiva la cuenta.
 
 1. Entra en <https://render.com/deploy?repo=https://github.com/44JACK44-cmd/vibegrab-website>
    (usa el `render.yaml` de este repositorio, que trae los ajustes ya puestos).
@@ -56,10 +115,11 @@ Ajustes equivalentes si lo creas a mano:
 | Auto-deploy | Sí, desde `main` |
 
 > **Arranques en frío.** En el plan gratuito Render apaga el servicio tras
-> unos minutos sin tráfico y el siguiente visitante espera a que arranque
-> (unos 30–60 segundos). El workflow `keep-alive.yml` lo despierta cada 10
-> minutos para evitarlo, pero las tareas programadas de GitHub pueden retrasarse.
-> Con el plan de pago el problema desaparece.
+> unos minutos sin tráfico. El antiguo workflow `keep-alive.yml` lo despertaba
+> cada 10 minutos, pero **se eliminó del repositorio** (octubre 2026): es el
+> sospechoso habitual de las suspensiones por abuso del plan gratuito y, si
+> Render reactiva la cuenta, es mejor no volver a automatizarlo. Con el plan
+> de pago el problema desaparece.
 
 ## 3. Desplegar en Vercel
 
@@ -76,13 +136,14 @@ defecto.
 
 ## 4. Variables de entorno
 
-En **Project → Settings → Environment Variables** (Vercel) o **Service →
+En **Workers → Settings → Variables and Secrets** (Cloudflare),
+**Project → Settings → Environment Variables** (Vercel) o **Service →
 Environment** (Render):
 
 | Nombre | Valor | Obligatoria |
 | --- | --- | --- |
-| `DEPLOY_TARGET` | `render` o `vercel` | No (se detecta solo) |
-| `SITE_URL` | Dominio real del servicio | No (la plataforma lo publica) |
+| `DEPLOY_TARGET` | `cloudflare`, `render` o `vercel` | No (se detecta solo) |
+| `SITE_URL` | Dominio real del servicio | En Cloudflare, sí (la URL `*.workers.dev` no se publica sola) |
 | `GITHUB_REPO` | `44JACK44-cmd/vibeGrab` | No (ya es el valor por defecto) |
 | `GITHUB_TOKEN` | Token de GitHub con permiso `public_repo` | Sí, para publicar opiniones |
 | `RELEASES_CACHE_MINUTES` | `10` | No |

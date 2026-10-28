@@ -1,0 +1,6 @@
+# Entorno del workerd LOCAL (npx wrangler dev / astro preview).
+#
+# Este fichero NO se sube al repositorio: contiene el token de GitHub que usa
+# el servidor para leer releases y crear las opiniones. En producción, los
+# secretos se definen con `npx wrangler secret put GITHUB_TOKEN`.
+GITHUB_TOKEN=

@@ -11,6 +11,12 @@
  * siguen funcionando con normalidad.
  */
 
+/** Hosts locales: nunca se redirigen, para que el preview funcione. */
+function isLocalHost(host: string): boolean {
+  const bare = host.replace(/:\d+$/, '').toLowerCase();
+  return bare === 'localhost' || bare === '127.0.0.1' || bare === '[::1]' || bare === '::1';
+}
+
 /**
  * Calcula a dónde debe redirigir una petición que llega a un host distinto
  * del canónico.
@@ -34,6 +40,10 @@ export function canonicalRedirectTarget(options: {
   // Sin `SITE_URL` explícito no se redirige: las previsualizaciones y los
   // despliegues de prueba deben seguir siendo accesibles en su propio host.
   if (!explicitSiteUrl?.trim()) return null;
+
+  // El preview local (`astro preview`, `wrangler dev`) se sirve en
+  // localhost: redirigirlo al dominio de producción lo rompería.
+  if (isLocalHost(requestHost)) return null;
 
   let canonicalHost: string;
   try {

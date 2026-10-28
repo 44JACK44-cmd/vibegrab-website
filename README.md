@@ -13,7 +13,7 @@ se obtiene de **GitHub Releases** y se actualiza sin tocar el código.
 | Pieza | Qué se usa |
 | --- | --- |
 | Framework | Astro 7 con TypeScript, `output: 'server'` |
-| Despliegue | Render (Node autónomo) o Vercel (serverless), según `DEPLOY_TARGET` |
+| Despliegue | Cloudflare Workers, Vercel (serverless) o Render (Node), según `DEPLOY_TARGET` |
 | Adaptador | `@astrojs/node` (standalone) o `@astrojs/vercel` |
 | Estilos | CSS propio con tokens, sin framework de UI |
 | Tipografías | Inter Variable y Space Grotesk Variable, autoalojadas |
@@ -55,9 +55,12 @@ El sitio queda en <http://localhost:4321>.
 | `npm run snapshot` | Regenera `src/data/releases.snapshot.json` desde GitHub |
 | `npm run assets` | Regenera la imagen Open Graph y los favicons |
 | `npm run assets:logo` | Regenera los derivados optimizados del logotipo |
+| `npm run build:cf` | Compila para Cloudflare Workers (workerd) |
+| `npm run deploy:cf` | Compila y despliega a Cloudflare con wrangler |
 
-> `npm run preview` no funciona con el adaptador de Vercel: para revisar el
-> resultado usa `npm run dev`, o `npm run build:fast` y el despliegue.
+> `npm run preview` corre el runtime real de workerd (Cloudflare) tras
+> `npm run build:cf`. Con el adaptador de Vercel no está soportado: usa
+> `npm run dev`.
 
 ## Estructura
 
@@ -100,8 +103,9 @@ src/
     ...                  Rutas ES y EN
   styles/                tokens.css, base.css, components.css, sections.css
 tests/                   Pruebas con Vitest
-scripts/                 Snapshot, imágenes, logotipo y comprobador de enlaces
-public/                  Logo, favicons, og-image, robots
+scripts/                 Snapshot, imágenes, logotipo, builds y enlaces
+public/                  Logo, favicons, og-image, robots, _headers
+wrangler.jsonc           Configuración del Worker de Cloudflare
 vercel.json              Cabeceras de seguridad y caché (Vercel)
 render.yaml              Blueprint de despliegue en Render
 ```
@@ -235,7 +239,7 @@ Están documentadas en `.env.example`. Las importantes:
 
 | Variable | Por defecto | Notas |
 | --- | --- | --- |
-| `SITE_URL` | vacío | Dominio propio (opcional). Si falta, se usa el dominio de producción de Vercel |
+| `SITE_URL` | vacío | Dominio propio (recomendado). Si falta, se usa el dominio de producción del alojamiento |
 | `GITHUB_REPO` | `44JACK44-cmd/vibeGrab` | Repositorio de releases |
 | `GITHUB_TOKEN` | vacío | Solo servidor; sube el límite de la API |
 | `RELEASES_CACHE_MINUTES` | `10` | 1–1440 |
@@ -321,9 +325,10 @@ formulario no cambian.
 
 ## Despliegue
 
-Ver [DEPLOY.md](./DEPLOY.md). El mismo repositorio despliega en **Render**
-(servidor Node) y en **Vercel** (serverless); solo cambia el adaptador, y se
-elige con la variable `DEPLOY_TARGET`.
+Ver [DEPLOY.md](./DEPLOY.md). El mismo repositorio despliega en
+**Cloudflare Workers**, en **Vercel** (serverless) y en **Render** (servidor
+Node); solo cambia el adaptador, y se elige con la variable `DEPLOY_TARGET`.
 
-En Render, el archivo `render.yaml` deja el servicio configurado con los
-ajustes correctos; en Vercel se importa el repositorio desde el panel.
+En Cloudflare se conecta el repositorio (Workers Builds) o se despliega con
+`npm run deploy:cf`; en Render existe `render.yaml` y en Vercel se importa el
+repositorio desde el panel.

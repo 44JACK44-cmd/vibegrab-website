@@ -1,0 +1,31 @@
+// Configuración del Worker de Cloudflare para VibeGrab.
+//
+// El adaptador de Astro (`@astrojs/cloudflare` v13+) despliega en **Workers**
+// con assets estáticos; Cloudflare Pages ya no está soportado.
+//
+// Variables y secretos:
+//  · Los secretos (GITHUB_TOKEN) NO van aquí: se definen con
+//    `npx wrangler secret put GITHUB_TOKEN` o desde el panel.
+//  · `SITE_URL` se define como variable en el panel en cuanto se conoce la
+//    URL final del Worker (o el dominio propio), y obliga a redesplegar.
+//  · Para el desarrollo local hay un fichero `.dev.vars` (ignorado por git).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "vibegrab-website",
+  // El entrypoint unificado del adaptador: sirve el SSR de Astro.
+  "main": "@astrojs/cloudflare/entrypoints/server",
+  // nodejs_compat expone las variables y secretos del Worker en `process.env`,
+  // que es lo que lee `serverEnv()`; sin él, GITHUB_TOKEN no llegaría.
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  // Assets estáticos (el HTML prerenderizado, CSS, imágenes y favicons).
+  // Si la petición no coincide con un asset, cae al Worker para el SSR.
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS"
+  },
+  // Registro de peticiones y errores en el panel (plan gratuito incluido).
+  "observability": {
+    "enabled": true
+  }
+}

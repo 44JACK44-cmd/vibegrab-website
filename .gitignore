@@ -10,6 +10,12 @@ dist/
 .env
 .env.local
 .env.*.local
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+
+# Caché local de Cloudflare (workerd)
+.wrangler/
 
 # Sistema operativo / editores
 .DS_Store

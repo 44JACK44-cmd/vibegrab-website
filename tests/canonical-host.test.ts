@@ -75,4 +75,28 @@ describe('dominio canónico', () => {
 
     expect(target).toBeNull();
   });
+
+  it('no redirige el preview local (localhost y 127.0.0.1)', () => {
+    for (const host of ['localhost:4321', '127.0.0.1:4321', '[::1]:4321']) {
+      const target = canonicalRedirectTarget({
+        requestHost: host,
+        explicitSiteUrl: CANONICAL,
+        canonicalBase: CANONICAL,
+        pathname: '/',
+      });
+
+      expect(target, host).toBeNull();
+    }
+  });
+
+  it('si redirige un host con nombre parecido al local', () => {
+    const target = canonicalRedirectTarget({
+      requestHost: 'fakelocalhost.example:8080',
+      explicitSiteUrl: CANONICAL,
+      canonicalBase: CANONICAL,
+      pathname: '/',
+    });
+
+    expect(target).toBe(`${CANONICAL}/`);
+  });
 });

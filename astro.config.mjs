@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import cloudflare from '@astrojs/cloudflare';
 import node from '@astrojs/node';
 import vercel from '@astrojs/vercel';
 import sitemap from '@astrojs/sitemap';
@@ -8,25 +9,37 @@ import { resolveSiteUrl, warnIfSiteUrlMissing } from './src/config/site-url.ts';
 /**
  * Objetivo del despliegue.
  *
- * El proyecto se construye para las dos plataformas desde el mismo
+ * El proyecto se construye para varias plataformas desde el mismo
  * repositorio, porque solo cambia el adaptador:
  *
  *  · `vercel` (por defecto): functions serverless de Vercel.
  *  · `render`: servidor Node autónomo (`node ./dist/server/entry.mjs`), que es
  *    lo que usa Render.
+ *  · `cloudflare`: Worker de Cloudflare con assets estáticos (el destino que
+ *    el adaptador oficial soporta desde la v13; Pages ya no lo está).
  *
- * Se detecta solo: Render define `RENDER=true` durante la compilación. La
- * variable `DEPLOY_TARGET` permite forzar cualquiera de los dos.
+ * Se detecta solo: Render define `RENDER=true` y Cloudflare define `CF_PAGES`
+ * durante la compilación. La variable `DEPLOY_TARGET` permite forzar
+ * cualquiera de los tres.
  */
 const DEPLOY_TARGET = (process.env.DEPLOY_TARGET ?? '').toLowerCase();
 const IS_RENDER =
   process.env.RENDER === 'true' || DEPLOY_TARGET === 'render' || DEPLOY_TARGET === 'node';
+const IS_CLOUDFLARE =
+  DEPLOY_TARGET === 'cloudflare' ||
+  DEPLOY_TARGET === 'cf' ||
+  DEPLOY_TARGET === 'workers' ||
+  process.env.CF_PAGES === '1';
 
-const adapter = IS_RENDER
-  ? node({ mode: 'standalone' })
-  : vercel({
-      maxDuration: 20,
-    });
+const adapter = IS_CLOUDFLARE
+  ? // Sin servicio de imágenes (todas las imágenes son ficheros estáticos):
+    // así el Worker no necesita el binding de Cloudflare Images.
+    cloudflare({ imageService: 'passthrough' })
+  : IS_RENDER
+    ? node({ mode: 'standalone' })
+    : vercel({
+        maxDuration: 20,
+      });
 
 /**
  * Dominio canónico del sitio.
@@ -38,7 +51,10 @@ const adapter = IS_RENDER
  */
 const SITE = resolveSiteUrl(process.env);
 
-warnIfSiteUrlMissing(process.env, IS_RENDER ? 'render' : 'vercel');
+warnIfSiteUrlMissing(
+  process.env,
+  IS_CLOUDFLARE ? 'cloudflare' : IS_RENDER ? 'render' : 'vercel',
+);
 
 // https://astro.build/config
 export default defineConfig({
@@ -49,6 +65,10 @@ export default defineConfig({
   // dependen de la API se prerenderizan para servirse como HTML estático.
   output: 'server',
   adapter,
+
+  // El proyecto no usa sesiones de Astro. En Cloudflare esto evita que se
+  // provisione un namespace de KV que no se necesita.
+  session: false,
 
   i18n: {
     defaultLocale: 'es',
