@@ -11,7 +11,7 @@
 //  · Para el desarrollo local hay un fichero `.dev.vars` (ignorado por git).
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "vibegrab-website",
+  "name": "vibegrab",
   // El entrypoint unificado del adaptador: sirve el SSR de Astro.
   "main": "@astrojs/cloudflare/entrypoints/server",
   // nodejs_compat expone las variables y secretos del Worker en `process.env`,

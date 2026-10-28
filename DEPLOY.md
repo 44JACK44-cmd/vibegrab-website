@@ -48,7 +48,7 @@ npm run deploy:cf     # compila y despliega con wrangler
 
 ### Después del primer despliegue
 
-1. Anota la URL del Worker: `https://vibegrab-website.<tu-subdominio>.workers.dev`.
+1. Anota la URL del Worker: `https://vibegrab.<tu-subdominio>.workers.dev`.
 2. En el panel: **Workers & Pages → vibegrab-website → Settings → Variables
    and Secrets** y añade:
    - `GITHUB_TOKEN` (tipo **Secret**): el token con permiso `public_repo`.
