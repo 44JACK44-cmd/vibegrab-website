@@ -22,7 +22,7 @@
     "assets:logo": "node scripts/optimize-logo.mjs"
   },
   "engines": {
-    "node": "22.x"
+    "node": ">=22"
   },
   "dependencies": {
     "@astrojs/node": "^11.1.9",

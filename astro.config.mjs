@@ -29,7 +29,11 @@ const IS_CLOUDFLARE =
   DEPLOY_TARGET === 'cloudflare' ||
   DEPLOY_TARGET === 'cf' ||
   DEPLOY_TARGET === 'workers' ||
-  process.env.CF_PAGES === '1';
+  process.env.CF_PAGES === '1' ||
+  // Workers Builds inyecta WORKERS_CI=1 en su entorno de compilación: aunque
+  // el comando de build fuera el genérico (`npm run build`), el adaptador
+  // correcto es el de Cloudflare y el deploy no puede fallar por eso.
+  process.env.WORKERS_CI === '1';
 
 const adapter = IS_CLOUDFLARE
   ? // Sin servicio de imágenes (todas las imágenes son ficheros estáticos):

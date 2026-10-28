@@ -34,6 +34,9 @@ de assets y scripts. Son dos caminos, elige uno:
 2. Concede acceso a GitHub y elige `44JACK44-cmd/vibegrab-website`, rama `main`.
 3. En la configuración de build:
    - **Build command:** `npm run build:cf`
+     (aun si se usara el genérico `npm run build`, el adaptador de Cloudflare
+     se detecta solo: Workers Builds inyecta `WORKERS_CI=1` y
+     `src/config` lo reconoce)
    - **Deploy command:** `npx wrangler deploy`
    - **Root directory:** `/`
 4. **Deploy**. Con cada push a `main`, Cloudflare compila y despliega solo.
