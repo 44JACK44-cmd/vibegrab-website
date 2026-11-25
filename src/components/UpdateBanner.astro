@@ -1,0 +1,114 @@
+---
+/**
+ * Aviso de nueva versión.
+ *
+ * Es lo primero que se ve al entrar: una tarjeta promocional con la versión
+ * publicada, sus novedades destacadas y el botón de descarga. Se puede
+ * ocultar; en ese navegador no vuelve a aparecer hasta la siguiente versión.
+ */
+import Icon from '@/components/Icon.astro';
+import { formatDate } from '@/lib/format';
+import { stripMarkdown } from '@/lib/notes';
+import type { Release } from '@/lib/releases';
+import type { Locale } from '@/config/routes';
+
+interface Props {
+  locale: Locale;
+  latest: Release;
+  downloadHref: string;
+  /** Dos o tres novedades concretas de la versión. */
+  highlights?: string[];
+}
+
+const { locale, latest, downloadHref, highlights = [] } = Astro.props;
+
+const copy = {
+  es: {
+    badge: 'Nueva versión',
+    title: `VibeGrab v${latest.version} ya está disponible`,
+    cta: 'Descargar ahora',
+    notes: 'Ver novedades',
+    close: 'Ocultar el aviso de esta versión',
+  },
+  en: {
+    badge: 'New release',
+    title: `VibeGrab v${latest.version} is now available`,
+    cta: 'Download now',
+    notes: "See what's new",
+    close: 'Hide this release notice',
+  },
+}[locale];
+---
+
+<div class="container update-banner" data-update-banner data-version={latest.version}>
+  <div class="update-banner__card">
+    <div class="update-banner__mark">
+      <span class="update-banner__badge">{copy.badge}</span>
+      <span class="update-banner__version">v{latest.version}</span>
+    </div>
+
+    <div class="update-banner__body">
+      <p class="update-banner__title">{copy.title}</p>
+      {
+        highlights.length > 0 && (
+          <ul class="update-banner__list">
+            {highlights.map((item) => (
+              <li>{stripMarkdown(item)}</li>
+            ))}
+          </ul>
+        )
+      }
+      <span class="update-banner__date">
+        <Icon name="calendar" size={14} />
+        {formatDate(latest.publishedAt, locale)}
+      </span>
+    </div>
+
+    <div class="update-banner__actions">
+      <a class="btn btn--primary" href={downloadHref}>
+        <Icon name="download" size={18} />
+        {copy.cta}
+      </a>
+      <a class="btn btn--ghost" href="#novedades">{copy.notes}</a>
+      <button
+        class="update-banner__close"
+        type="button"
+        data-update-close
+        aria-label={copy.close}
+        title={copy.close}
+      >
+        <Icon name="close" size={16} />
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function initUpdateBanner() {
+    const banner = document.querySelector<HTMLElement>('[data-update-banner]');
+    if (!banner) return;
+
+    const version = banner.dataset.version ?? '';
+    const KEY = 'vibegrab-seen-version';
+
+    let seen = '';
+    try {
+      seen = localStorage.getItem(KEY) ?? '';
+    } catch {
+      /* modo privado: se muestra siempre */
+    }
+    if (version && seen === version) {
+      banner.hidden = true;
+      return;
+    }
+
+    banner.querySelector('[data-update-close]')?.addEventListener('click', () => {
+      try {
+        localStorage.setItem(KEY, version);
+      } catch {
+        /* modo privado: solo se oculta en esta página */
+      }
+      banner.hidden = true;
+    });
+  })();
+</script>

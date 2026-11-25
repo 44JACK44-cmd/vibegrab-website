@@ -1,0 +1,48 @@
+{
+  "generatedAt": "2026-11-25T23:29:13.126Z",
+  "repo": "44JACK44-cmd/vibegrab-website",
+  "reviews": [
+    {
+      "id": "gh-5966976552",
+      "number": 10,
+      "author": "MOON",
+      "authorUrl": "",
+      "verified": false,
+      "date": "2026-10-21T19:17:28Z",
+      "rating": 4,
+      "version": "1.1.41",
+      "lang": "es",
+      "text": "Esta bien, buena aplicación",
+      "source": "GitHub",
+      "sourceUrl": "https://github.com/44JACK44-cmd/vibegrab-website/issues/10"
+    },
+    {
+      "id": "gh-5966742281",
+      "number": 9,
+      "author": "Nehemias",
+      "authorUrl": "",
+      "verified": false,
+      "date": "2026-10-21T19:02:24Z",
+      "rating": 3,
+      "version": "1.1.41",
+      "lang": "es",
+      "text": "Interesante, pero falta optimisar, que sea mas flexible y velos,",
+      "source": "GitHub",
+      "sourceUrl": "https://github.com/44JACK44-cmd/vibegrab-website/issues/9"
+    },
+    {
+      "id": "gh-5955142226",
+      "number": 8,
+      "author": "Ali NV",
+      "authorUrl": "",
+      "verified": false,
+      "date": "2026-10-21T05:52:03Z",
+      "rating": 3,
+      "version": "1.1.39",
+      "lang": "es",
+      "text": "un apk exelente. cumple con su funcion pero analiza muy lento, y ni hablar de los bug. aunqeu son pocos pero son muy tediosos",
+      "source": "GitHub",
+      "sourceUrl": "https://github.com/44JACK44-cmd/vibegrab-website/issues/8"
+    }
+  ]
+}

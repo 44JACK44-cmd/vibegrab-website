@@ -16,6 +16,7 @@ import {
   type ReviewSubmission,
 } from '@/lib/reviews';
 import { serverEnv, serverEnvBool, serverEnvNumber } from '@/lib/env';
+import reviewsSnapshot from '@/data/reviews-snapshot.json';
 
 export interface ReviewsPayload {
   ok: boolean;
@@ -23,7 +24,9 @@ export interface ReviewsPayload {
   average: number | null;
   count: number;
   breakdown: Array<{ rating: number; count: number }>;
-  source: 'issues' | 'none';
+  source: 'issues' | 'snapshot' | 'none';
+  /** `true` cuando los datos vienen del snapshot y no de GitHub en vivo. */
+  stale?: boolean;
   error?: string;
 }
 
@@ -35,6 +38,30 @@ const EMPTY: ReviewsPayload = {
   breakdown: [],
   source: 'none',
 };
+
+/**
+ * Respaldo: opiniones guardadas en el repositorio (`reviews-snapshot.json`).
+ *
+ * Se sirve cuando GitHub no responde (límite de peticiones, token caducado,
+ * red…). Así la sección de comunidad nunca se queda vacía por un fallo
+ * puntual del almacén. El workflow `reviews-snapshot.yml` lo mantiene al día.
+ */
+function snapshotPayload(error?: string): ReviewsPayload {
+  const reviews = (Array.isArray(reviewsSnapshot.reviews)
+    ? reviewsSnapshot.reviews
+    : []) as Review[];
+  if (reviews.length === 0) return { ...EMPTY, error };
+  return {
+    ok: true,
+    reviews,
+    average: averageRating(reviews),
+    count: reviews.length,
+    breakdown: ratingBreakdown(reviews),
+    source: 'snapshot',
+    stale: true,
+    error,
+  };
+}
 
 /**
  * Caché en memoria.
@@ -231,7 +258,9 @@ export async function getReviews(options: { force?: boolean } = {}): Promise<Rev
   }
 
   if (!options.force && now < backoffUntil && memo) {
-    return { ...memo.payload, ok: false };
+    // Se devuelve lo último válido (puede ser el snapshot): mejor mostrar
+    // opiniones reales de ayer que una sección vacía.
+    return memo.payload;
   }
 
   if (inFlight) return inFlight;
@@ -240,10 +269,16 @@ export async function getReviews(options: { force?: boolean } = {}): Promise<Rev
     const payload = await fetchReviews();
     if (payload.ok) {
       // Tras un envío la lista puede tardar unos segundos en reflejar la
-      // opinión nueva, así que la copia se caduca antes.
-      const ttl = Date.now() < freshUntil ? FRESH_TTL_MS : CACHE_TTL_MS;
+      // opinión nueva, así que la copia se caduca antes. Si lo servido es el
+      // snapshot, se reintenta GitHub pronto en lugar de esperar la caché.
+      const ttl =
+        Date.now() < freshUntil
+          ? FRESH_TTL_MS
+          : payload.source === 'snapshot'
+            ? 2 * 60 * 1000
+            : CACHE_TTL_MS;
       memo = { payload, expiresAt: Date.now() + ttl };
-      backoffUntil = 0;
+      backoffUntil = payload.source === 'snapshot' ? Date.now() + BACKOFF_MS : 0;
     } else {
       backoffUntil = Date.now() + BACKOFF_MS;
       // Si ya había una respuesta válida, se conserva: las opiniones no
@@ -282,7 +317,7 @@ async function fetchReviews(): Promise<ReviewsPayload> {
     });
 
     if (!response.ok) {
-      return { ...EMPTY, error: `GitHub respondió ${response.status}` };
+      return snapshotPayload(`GitHub respondió ${response.status}`);
     }
 
     const issues = (await response.json()) as unknown[];
@@ -302,10 +337,7 @@ async function fetchReviews(): Promise<ReviewsPayload> {
       source: 'issues',
     };
   } catch (error) {
-    return {
-      ...EMPTY,
-      error: error instanceof Error ? error.message : 'Error desconocido',
-    };
+    return snapshotPayload(error instanceof Error ? error.message : 'Error desconocido');
   } finally {
     clearTimeout(timeout);
   }

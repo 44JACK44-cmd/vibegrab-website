@@ -145,21 +145,22 @@ const jsonLd = {
 ---
 
 <!doctype html>
-<html lang={locale} data-theme="dark">
+<html lang={locale} data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Tema antes del primer pintado: evita el destello blanco -->
+    <!-- Tema antes del primer pintado: evita el destello blanco.
+         El tema claro es el predeterminado; el oscuro solo se aplica si la
+         persona lo eligió con el botón de la cabecera. -->
     <script is:inline>
       (function () {
         try {
           var stored = localStorage.getItem('vibegrab-theme');
-          var prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-          var theme = stored === 'light' || stored === 'dark' ? stored : prefersLight ? 'light' : 'dark';
+          var theme = stored === 'dark' ? 'dark' : 'light';
           document.documentElement.dataset.theme = theme;
         } catch (error) {
-          document.documentElement.dataset.theme = 'dark';
+          document.documentElement.dataset.theme = 'light';
         }
       })();
     </script>
@@ -201,7 +202,7 @@ const jsonLd = {
     <meta name="twitter:image" content={ogImageUrl} />
 
     <meta name="theme-color" content={siteConfig.seo.themeColor} />
-    <meta name="color-scheme" content="dark light" />
+    <meta name="color-scheme" content="light dark" />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />

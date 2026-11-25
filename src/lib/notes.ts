@@ -104,3 +104,19 @@ export function renderInline(text: string): string {
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
     .replace(/(^|\s)\*([^*\n]+)\*/g, '$1<em>$2</em>');
 }
+
+/**
+ * Quita el Markdown (`**negrita**`, `*cursiva*`, `` `código` ``, `[texto](url)`)
+ * y devuelve el texto plano para mostrarlo sin formato, por ejemplo en listas
+ * de novedades o en resúmenes.
+ */
+export function stripMarkdown(text: string): string {
+  return text
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/(^|\s)\*([^*\n]+)\*/g, '$1$2')
+    .replace(/`([^`]*)`/g, '$1')
+    .replace(/^\s{0,3}#{1,6}\s+/gm, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}

@@ -18,6 +18,7 @@ import StatStrip from '@/components/StatStrip.astro';
 import AppTour from '@/components/AppTour.astro';
 import ScreenshotGallery from '@/components/ScreenshotGallery.astro';
 import Community from '@/components/Community.astro';
+import UpdateBanner from '@/components/UpdateBanner.astro';
 import ReleaseNotes from '@/components/ReleaseNotes.astro';
 import Steps from '@/components/Steps.astro';
 import FaqList from '@/components/FaqList.astro';
@@ -27,7 +28,7 @@ import { howItWorks, provenanceNote } from '@/content/install';
 import { securityPoints, limitations } from '@/content/security';
 import { faq } from '@/content/faq';
 import { heroScreenshot } from '@/config/screenshots';
-import { pickImportant, withoutImportant } from '@/lib/notes';
+import { pickImportant, stripMarkdown, withoutImportant } from '@/lib/notes';
 import { formatBytes, formatDate } from '@/lib/format';
 import { collectStats } from '@/lib/stats';
 import { path, type Locale } from '@/config/routes';
@@ -47,6 +48,16 @@ const latest = payload.latest;
 const stats = collectStats(payload);
 const important = latest ? pickImportant(latest.notes, locale) : null;
 const latestNotes = latest ? withoutImportant(latest.notes, locale) : [];
+/** Dos novedades concretas para la tarjeta de nueva versión. */
+const bannerHighlights = latest
+  ? latest.notes
+      .flatMap((section) => section.items)
+      .map((item) => item.text[locale])
+      .filter((text): text is string => typeof text === 'string')
+      .map((text) => stripMarkdown(text))
+      .filter((text) => text.length > 2)
+      .slice(0, 2)
+  : [];
 const faqPreview = faq.slice(0, 6);
 
 const description = t('home.seo.description');
@@ -66,6 +77,16 @@ const downloadHref = latest?.apk
   <!-- ------------------------------------------------------------ Portada -->
   <section class="hero">
     <div class="grid-backdrop" aria-hidden="true"></div>
+    {
+      latest && (
+        <UpdateBanner
+          locale={locale}
+          latest={latest}
+          downloadHref={downloadHref}
+          highlights={bannerHighlights}
+        />
+      )
+    }
     <div class="container hero__inner">
       <div class="hero__copy">
         {

@@ -138,7 +138,7 @@ export const siteConfig = {
     twitterCard: 'summary_large_image',
     ogImage: '/og-image.png',
     ogImageEn: '/og-image-en.png',
-    themeColor: '#05070B',
+    themeColor: '#F7F5F0',
   },
 } as const;
 

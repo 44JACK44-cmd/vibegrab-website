@@ -1,0 +1,44 @@
+name: Snapshot de opiniones
+
+# Mantiene `src/data/reviews-snapshot.json` al día. Ese archivo es el respaldo
+# que sirve la web cuando la API de GitHub no responde, así que conviene que
+# refleje las opiniones reales más recientes.
+
+on:
+  schedule:
+    # Una vez al día, de madrugada.
+    - cron: '15 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Generar snapshot
+        run: node scripts/snapshot-reviews.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Confirmar si cambió
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/reviews-snapshot.json
+          if git diff --cached --quiet; then
+            echo "Sin cambios en las opiniones."
+          else
+            git commit -m "Actualiza el snapshot de opiniones"
+            git push
+          fi
