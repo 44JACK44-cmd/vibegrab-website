@@ -1,7 +1,54 @@
 {
-  "fetchedAt": "2026-11-26T12:50:31.076Z",
+  "fetchedAt": "2026-11-27T12:44:10.409Z",
   "repo": "44JACK44-cmd/vibeGrab",
   "releases": [
+    {
+      "tag_name": "v1.1.51-63",
+      "name": "v1.1.51-63",
+      "body": "<!-- es -->\n## 🛠️ Correcciones\n- ⬇️ **Descargas de YouTube más rápidas** — Los formatos de YouTube se descargan ahora directamente desde el enlace firmado del dispositivo, sin pasar por el servidor.\n\n<!-- en -->\n## 🛠️ Fixes\n- ⬇️ **Faster YouTube downloads** — YouTube formats are now downloaded directly from the device-signed link, without going through the server.\n",
+      "draft": false,
+      "prerelease": false,
+      "published_at": "2026-11-26T14:03:42Z",
+      "created_at": "2026-11-26T13:49:21Z",
+      "html_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/tag/v1.1.51-63",
+      "assets": [
+        {
+          "name": "SHA256SUMS.txt",
+          "size": 345,
+          "digest": "sha256:253728d4c6fa3b80b0ba64eb3b3a19da86a3c018ed0c1bbd5c2828669f574e25",
+          "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.51-63/SHA256SUMS.txt",
+          "download_count": 0
+        },
+        {
+          "name": "VibeGrab-arm64-v8a.apk",
+          "size": 27154528,
+          "digest": "sha256:77db0757467d45068edc8b9acafdf9a10c3235ef0215ce187ad4387d15fdfd2d",
+          "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.51-63/VibeGrab-arm64-v8a.apk",
+          "download_count": 1
+        },
+        {
+          "name": "VibeGrab-armeabi-v7a.apk",
+          "size": 25087540,
+          "digest": "sha256:a25579dc234d23305f1278f202b9ae29c1243f983b691b604270a54c792df593",
+          "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.51-63/VibeGrab-armeabi-v7a.apk",
+          "download_count": 0
+        },
+        {
+          "name": "VibeGrab-x86_64.apk",
+          "size": 28769365,
+          "digest": "sha256:3fd0b2c4c95a71080781bf34cc09851b6f85cea4b215f64125b45e7233862707",
+          "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.51-63/VibeGrab-x86_64.apk",
+          "download_count": 0
+        },
+        {
+          "name": "VibeGrab.apk",
+          "size": 71287172,
+          "digest": "sha256:395adcb0ad72d6856263fb8266f75dbd07413b1bf3b572b08dd7efba71a27cf8",
+          "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.51-63/VibeGrab.apk",
+          "download_count": 0
+        }
+      ]
+    },
     {
       "tag_name": "v1.1.50-62",
       "name": "v1.1.50-62",
@@ -17,35 +64,35 @@
           "size": 345,
           "digest": "sha256:4660afb060ee828791fc14fd97ab3716e519c47ab098dc81665c89b5a430d396",
           "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.50-62/SHA256SUMS.txt",
-          "download_count": 0
+          "download_count": 2
         },
         {
           "name": "VibeGrab-arm64-v8a.apk",
           "size": 27154525,
           "digest": "sha256:4daae871f4ed7dc7b720705c54a9c894caf7c7c831ddd6817b6f6743bf58c2b7",
           "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.50-62/VibeGrab-arm64-v8a.apk",
-          "download_count": 0
+          "download_count": 2
         },
         {
           "name": "VibeGrab-armeabi-v7a.apk",
           "size": 25087526,
           "digest": "sha256:86393354d079bdbe8346ce4c0ca7a0bc6c5755b01efe9a0f79e8de164248d3c5",
           "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.50-62/VibeGrab-armeabi-v7a.apk",
-          "download_count": 0
+          "download_count": 1
         },
         {
           "name": "VibeGrab-x86_64.apk",
           "size": 28769367,
           "digest": "sha256:a8533920f4c934678ae6e39798b9438b08e713ee96784633e1faafbf4ded4c07",
           "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.50-62/VibeGrab-x86_64.apk",
-          "download_count": 0
+          "download_count": 2
         },
         {
           "name": "VibeGrab.apk",
           "size": 71287150,
           "digest": "sha256:acbfe35d90563337d860256a57bb4dd59bf1117844717b6ce1862fd4c890a2d8",
           "browser_download_url": "https://github.com/44JACK44-cmd/vibeGrab/releases/download/v1.1.50-62/VibeGrab.apk",
-          "download_count": 0
+          "download_count": 1
         }
       ]
     },
